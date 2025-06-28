@@ -1,31 +1,23 @@
-let balance = 0;
+let score = 0;
+const scoreElement = document.getElementById('score');
+const tapButton = document.getElementById('tapButton');
 
-const balanceEl = document.getElementById('balance');
-const clickButton = document.getElementById('clickButton');
+tapButton.addEventListener('click', () => {
+  score++;
+  scoreElement.innerText = score;
 
-clickButton.addEventListener('click', (e) => {
-  balance++;
-  balanceEl.textContent = balance;
+  // Вибрация
+  if (navigator.vibrate) navigator.vibrate(50);
 
-  // вибрация (для смартфонов)
-  if (window.navigator.vibrate) {
-    window.navigator.vibrate(50);
-  }
+  // Анимация +1
+  const plus = document.createElement('div');
+  plus.innerText = '+1';
+  plus.className = 'float-plus';
+  plus.style.left = (tapButton.offsetLeft + 100 + (Math.random() * 60 - 30)) + 'px';
+  plus.style.top = (tapButton.offsetTop + 100 + (Math.random() * 60 - 30)) + 'px';
+  document.body.appendChild(plus);
 
-  // эффект +1
-  const plusOne = document.createElement('div');
-  plusOne.className = 'plus-one';
-  plusOne.textContent = '+1';
-  document.body.appendChild(plusOne);
-
-  // случайная позиция вокруг кнопки
-  const x = e.clientX + (Math.random() * 80 - 40);
-  const y = e.clientY + (Math.random() * 80 - 40);
-  plusOne.style.left = x + 'px';
-  plusOne.style.top = y + 'px';
-
-  // удалить через анимацию
   setTimeout(() => {
-    plusOne.remove();
-  }, 800);
+    plus.remove();
+  }, 1000);
 });

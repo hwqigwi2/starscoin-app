@@ -1,52 +1,91 @@
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(0deg, rgba(255,187,0,1) 19%, rgba(255,209,3,1) 44%, rgba(0,0,0,1) 97%);
-  font-family: sans-serif;
-  text-align: center;
   overflow: hidden;
+  background: linear-gradient(0deg, rgba(255, 187, 0, 1) 19%, rgba(255, 209, 3, 1) 44%, rgba(0, 0, 0, 1) 97%);
+  font-family: sans-serif;
+  color: white;
+  user-select: none;
 }
 
-.container {
-  padding-top: 30px;
+.header {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
-#balance {
-  font-size: 36px;
-  color: #fff;
-  margin: 20px 0;
-}
-
-#clickButton {
-  width: 180px;
-  height: 180px;
+.avatar {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: none;
-  background: url('IMG_2056.PNG') no-repeat center/cover;
-  cursor: pointer;
-  box-shadow: 0 8px 15px rgba(0,0,0,0.6);
-  transition: transform 0.1s;
+  margin-right: 10px;
 }
 
-#clickButton:active {
+#username {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.score {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 42px;
+  font-weight: bold;
+}
+
+.tap-area {
+  position: absolute;
+  top: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tap-button {
+  width: 220px;
+  height: 220px;
+  transition: transform 0.1s ease;
+}
+
+.tap-button:active {
   transform: scale(0.95);
 }
 
-.plus-one {
+.energy {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  font-size: 18px;
+}
+
+.bottom-menu {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  font-size: 18px;
+}
+
+.float-plus {
   position: absolute;
   color: #fff;
   font-size: 24px;
-  animation: fly 0.8s ease-out forwards;
   pointer-events: none;
+  animation: rise 1s ease-out forwards;
 }
 
-@keyframes fly {
+@keyframes rise {
   0% {
     opacity: 1;
-    transform: translateY(0px);
+    transform: translateY(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(-80px);
+    transform: translateY(-50px);
   }
 }

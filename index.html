@@ -2,16 +2,31 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Starscoin App</title>
+  <title>Starscoin</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="header">
+    <img src="public/avatar.png" class="avatar" alt="avatar">
+    <span id="username">user123</span>
+  </div>
 
-<div class="container">
-  <div id="balance">0</div>
-  <button id="clickButton"></button>
-</div>
+  <div class="score" id="score">0</div>
 
-<script src="script.js"></script>
+  <div class="tap-area">
+    <img src="public/IMG_2056.PNG" class="tap-button" id="tapButton">
+  </div>
+
+  <div class="energy">
+    ⚡ <span id="energy">1398</span> / 6000
+  </div>
+
+  <div class="bottom-menu">
+    <div>🐻 Frens</div>
+    <div>🪙 Earn</div>
+    <div>🚀 Boosts</div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
