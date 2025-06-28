@@ -1,4 +1,4 @@
-let balance = 52970;
+let balance = 0;
 let energy = 1398;
 const maxEnergy = 6000;
 
@@ -20,10 +20,16 @@ clickButton.addEventListener('click', () => {
   balance += 1;
   energy -= 1;
 
-  // Вибрация на телефоне
+  // Вибрация
   if (navigator.vibrate) {
     navigator.vibrate(50);
   }
+
+  // Анимация круга
+  clickButton.classList.add('animate');
+  setTimeout(() => {
+    clickButton.classList.remove('animate');
+  }, 300);
 
   updateUI();
 });

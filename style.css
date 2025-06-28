@@ -6,7 +6,7 @@
 
 body {
   font-family: sans-serif;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  background: linear-gradient(to bottom, #b34700, #ff9a00);
   color: #fff;
   height: 100vh;
   overflow: hidden;
@@ -18,56 +18,30 @@ body {
 .top-bar {
   width: 100%;
   display: flex;
-  justify-content: space-between;
-  padding: 10px 20px;
-  font-size: 24px;
-}
-
-.title {
-  font-weight: bold;
-}
-
-.profile {
-  display: flex;
   align-items: center;
-  width: 90%;
-  justify-content: space-between;
-  margin: 10px 0;
+  padding: 10px 20px;
+  font-size: 20px;
 }
 
 .avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
 }
 
-.info {
-  flex-grow: 1;
-  padding: 0 15px;
-}
-
-.coins {
-  font-size: 18px;
-}
-
-.rank {
-  font-size: 16px;
-  color: #ccc;
+.nickname {
+  margin-left: 10px;
+  font-weight: bold;
 }
 
 .balance-section {
   text-align: center;
-  margin: 20px 0;
+  margin: 20px 0 10px;
 }
 
 .big-balance {
   font-size: 48px;
   font-weight: bold;
-}
-
-.rank-label {
-  font-size: 18px;
-  color: #ccc;
 }
 
 .click-area {
@@ -78,14 +52,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 20px #f9d71c;
+  box-shadow: 0 0 30px #f9d71c;
   margin: 20px 0;
   cursor: pointer;
-  transition: transform 0.1s;
-}
-
-.click-area:active {
-  transform: scale(0.93);
+  transition: transform 0.1s, box-shadow 0.2s;
 }
 
 .coin-symbol {
@@ -126,4 +96,25 @@ body {
 .menu-item {
   text-align: center;
   font-size: 14px;
+}
+
+/* Анимация круга */
+.click-area.animate {
+  animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 30px #f9d71c;
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 50px #f9d71c;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 30px #f9d71c;
+  }
+}
 }
