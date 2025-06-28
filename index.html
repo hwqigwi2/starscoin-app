@@ -1,33 +1,21 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-<title>StarsCoin 1v1</title>
-<link rel="stylesheet" href="style.css" />
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
-<body>
-  <div class="app-container">
-    <header>
-      <img src="https://telegram.org/img/t_logo.svg?2" alt="Telegram" class="tg-logo" />
-      <h1>StarsCoin 1v1</h1>
-      <div class="stars">⭐ ⭐ ⭐</div>
-    </header>
-
-    <main>
-      <div class="balance-container">
-        Баланс: <span id="balance">0</span> 🪙
-      </div>
-
-      <button id="tap-btn" aria-label="Тапай, чтобы заработать">
-        <div class="tap-text">ТАП</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TAP Bot</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <img src="telegram-logo.png" alt="Telegram Logo" class="logo" />
+      <div class="balance">Баланс: <span id="balance">0</span></div>
+      <button id="tap-btn" class="tap-button">
+        <img src="your-logo.png" alt="TAP Logo" class="tap-icon" />
       </button>
-    </main>
-  </div>
-
-  <audio id="click-sound" src="click.mp3" preload="auto"></audio>
-
-  <script src="script.js"></script>
-</body>
+    </div>
+    <audio id="tap-sound" src="tap.mp3" preload="auto"></audio>
+    <script src="script.js"></script>
+  </body>
 </html>

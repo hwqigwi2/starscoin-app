@@ -1,32 +1,23 @@
+// Telegram Web App SDK init
 const tg = window.Telegram.WebApp;
 tg.expand();
 
+// Баланс и звук
 const balanceEl = document.getElementById('balance');
 const tapBtn = document.getElementById('tap-btn');
-const clickSound = document.getElementById('click-sound');
+const tapSound = document.getElementById('tap-sound');
 
-let balance = 0;
+let balance = parseInt(localStorage.getItem('tap-balance')) || 0;
+balanceEl.textContent = balance;
 
-// Загрузка баланса из localStorage
-const savedBalance = localStorage.getItem('starscoin_balance');
-if (savedBalance !== null) {
-  balance = parseInt(savedBalance, 10);
-  updateBalance();
-}
-
-function updateBalance() {
-  balanceEl.textContent = balance;
-}
-
-// Обработка клика
 tapBtn.addEventListener('click', () => {
   balance++;
-  updateBalance();
+  balanceEl.textContent = balance;
+  localStorage.setItem('tap-balance', balance);
+  tapSound.currentTime = 0;
+  tapSound.play();
 
-  // Сохраняем баланс
-  localStorage.setItem('starscoin_balance', balance);
-
-  // Воспроизведение звука
-  clickSound.currentTime = 0;
-  clickSound.play();
+  // лёгкая анимация при клике
+  tapBtn.classList.add('clicked');
+  setTimeout(() => tapBtn.classList.remove('clicked'), 200);
 });
