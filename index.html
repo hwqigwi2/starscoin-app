@@ -2,37 +2,36 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Starscoin</title>
+  <title>Starscoin Mini App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div class="top-bar">
-    <img src="https://via.placeholder.com/40" class="avatar">
-    <div class="nickname">user123</div>
+    <div class="user-info">
+      <img id="user-avatar" src="" alt="avatar">
+      <span id="user-name">User</span>
+    </div>
   </div>
 
   <div class="balance-section">
-    <div class="big-balance" id="balance">0</div>
+    <div id="balance">0</div>
   </div>
 
-  <div class="click-area" id="clickButton">
-    <div class="coin-symbol">⭐</div>
-  </div>
+  <button id="clickButton">⭐</button>
 
-  <div class="energy">⚡ <span id="energy">1398</span> / 6000</div>
+  <div class="actions">
+    <img src="icon1.png" class="icon">
+    <img src="icon2.png" class="icon">
+    <img src="icon3.png" class="icon">
+  </div>
 
   <div class="progress-bar">
-    <div class="fill" id="progressFill"></div>
+    <div id="energy" style="width: 100%;"></div>
   </div>
 
-  <div class="menu">
-    <div class="menu-item">🧸<br>Frens</div>
-    <div class="menu-item">🟡<br>Earn</div>
-    <div class="menu-item">🚀<br>Boosts</div>
-  </div>
-
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -1,37 +1,39 @@
+// Получаем WebApp данные из Telegram
+Telegram.WebApp.ready();
+
+const userData = Telegram.WebApp.initDataUnsafe.user;
+const userId = userData?.id || 'guest';
+const username = userData?.username || 'Гость';
+const photoUrl = userData?.photo_url || 'default-avatar.png';
+
+// Подставляем данные
+document.getElementById('user-name').textContent = username;
+document.getElementById('user-avatar').src = photoUrl;
+
 let balance = 0;
-let energy = 1398;
-const maxEnergy = 6000;
 
-const balanceEl = document.getElementById('balance');
-const energyEl = document.getElementById('energy');
-const progressFill = document.getElementById('progressFill');
-const clickButton = document.getElementById('clickButton');
-
-function updateUI() {
-  balanceEl.textContent = balance.toLocaleString();
-  energyEl.textContent = energy;
-  const percent = Math.min((energy / maxEnergy) * 100, 100);
-  progressFill.style.width = `${percent}%`;
+// Обновить баланс на экране
+function updateBalance() {
+  document.getElementById('balance').textContent = balance;
 }
 
-clickButton.addEventListener('click', () => {
-  if (energy <= 0) return;
-
-  balance += 1;
-  energy -= 1;
-
+// Анимация + вибрация на клике
+document.getElementById('clickButton').addEventListener('click', () => {
+  balance++;
+  updateBalance();
+  
   // Вибрация
   if (navigator.vibrate) {
-    navigator.vibrate(50);
+    navigator.vibrate(100);
   }
 
-  // Анимация круга
-  clickButton.classList.add('animate');
+  // Анимация нажатия
+  const btn = document.getElementById('clickButton');
+  btn.style.transform = 'scale(0.92)';
   setTimeout(() => {
-    clickButton.classList.remove('animate');
-  }, 300);
-
-  updateUI();
+    btn.style.transform = 'scale(1)';
+  }, 100);
 });
 
-updateUI();
+// Стартовый баланс
+updateBalance();
