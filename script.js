@@ -1,20 +1,31 @@
-// Инициализация Telegram Web App
-const tg = window.Telegram.WebApp;
-tg.expand();
+let balance = 52970;
+let energy = 1398;
+const maxEnergy = 6000;
 
-// Работа с балансом
 const balanceEl = document.getElementById('balance');
-const tapBtn = document.getElementById('tap-btn');
-const tapSound = document.getElementById('tap-sound');
+const energyEl = document.getElementById('energy');
+const progressFill = document.getElementById('progressFill');
+const clickButton = document.getElementById('clickButton');
 
-let balance = parseInt(localStorage.getItem('tap-balance'), 10) || 0;
-balanceEl.textContent = balance;
+function updateUI() {
+  balanceEl.textContent = balance.toLocaleString();
+  energyEl.textContent = energy;
+  const percent = Math.min((energy / maxEnergy) * 100, 100);
+  progressFill.style.width = `${percent}%`;
+}
 
-tapBtn.addEventListener('click', () => {
+clickButton.addEventListener('click', () => {
+  if (energy <= 0) return;
+
   balance += 1;
-  balanceEl.textContent = balance;
-  localStorage.setItem('tap-balance', balance);
+  energy -= 1;
 
-  tapSound.currentTime = 0;
-  tapSound.play();
+  // Вибрация на телефоне
+  if (navigator.vibrate) {
+    navigator.vibrate(50);
+  }
+
+  updateUI();
 });
+
+updateUI();

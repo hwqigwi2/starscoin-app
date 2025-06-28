@@ -1,86 +1,129 @@
-/* Убираем двойной зум и масштабирование */
-html, body {
+* {
   margin: 0;
   padding: 0;
-  height: 100%;
-  user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  overscroll-behavior: none;
+  box-sizing: border-box;
 }
 
 body {
+  font-family: sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: #fff;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  background: #0F0F13;
-  font-family: 'Roboto', sans-serif;
-}
-
-.wrapper {
-  width: 360px;
-  max-width: 100%;
-  text-align: center;
-  color: #FFF;
-  position: relative;
-}
-
-.header {
-  position: relative;
-  height: 50px;
 }
 
 .top-bar {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  font-size: 24px;
 }
 
-.header-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.title {
+  font-weight: bold;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  width: 90%;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+}
+
+.info {
+  flex-grow: 1;
+  padding: 0 15px;
+}
+
+.coins {
   font-size: 18px;
-  font-weight: 500;
 }
 
-.balance-container {
-  margin: 30px 0;
+.rank {
+  font-size: 16px;
+  color: #ccc;
 }
 
-.balance-label {
-  display: block;
-  font-size: 14px;
-  opacity: 0.6;
+.balance-section {
+  text-align: center;
+  margin: 20px 0;
 }
 
-.balance-value {
-  display: block;
-  font-size: 32px;
-  margin-top: 5px;
+.big-balance {
+  font-size: 48px;
+  font-weight: bold;
 }
 
-.tap-button {
+.rank-label {
+  font-size: 18px;
+  color: #ccc;
+}
+
+.click-area {
   width: 200px;
   height: 200px;
-  border: none;
-  border-radius: 50%;
-  background: linear-gradient(180deg, #4FABFF 0%, #006AFF 100%);
-  box-shadow: 0 10px 20px rgba(0, 106, 255, 0.4);
+  background: radial-gradient(circle, #f9d71c, #e7b100);
+  border-radius: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 0 20px #f9d71c;
+  margin: 20px 0;
+  cursor: pointer;
+  transition: transform 0.1s;
 }
 
-.tap-button img {
-  width: 80px;
-  height: 80px;
+.click-area:active {
+  transform: scale(0.93);
 }
 
-.tap-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 6px 12px rgba(0, 106, 255, 0.6);
+.coin-symbol {
+  font-size: 64px;
+}
+
+.energy {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.progress-bar {
+  width: 90%;
+  height: 10px;
+  background: #444;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(to right, #ffae00, #ff4500);
+  width: 0%;
+  transition: width 0.3s ease-in-out;
+}
+
+.menu {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 0;
+  position: absolute;
+  bottom: 0;
+}
+
+.menu-item {
+  text-align: center;
+  font-size: 14px;
 }
