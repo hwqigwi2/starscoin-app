@@ -1,61 +1,82 @@
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #121212;
-  color: #ffffff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 16px;
+* {
+  box-sizing: border-box;
 }
 
-.container {
-  text-align: center;
-  width: 100%;
+body, html {
+  margin: 0; padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: #fff;
+  user-select: none;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   max-width: 420px;
+  margin: 0 auto;
+  padding: 16px;
+  justify-content: space-between;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tg-logo {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 8px;
 }
 
 h1 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin: 0;
 }
 
-.balance {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
+.stars {
+  margin-top: 6px;
+  font-size: 1.4rem;
+  letter-spacing: 6px;
+}
+
+.balance-container {
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: 600;
+  text-shadow: 0 0 8px #ffd700aa;
 }
 
 #tap-btn {
-  font-size: 1.2rem;
-  padding: 14px 24px;
-  background-color: #00bfa6;
+  background: linear-gradient(45deg, #ffd700, #ffa500);
   border: none;
-  border-radius: 12px;
-  color: white;
+  border-radius: 40px;
   width: 100%;
-  max-width: 320px;
-  transition: 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 191, 166, 0.3);
+  max-width: 360px;
+  height: 120px;
+  font-size: 3rem;
+  font-weight: 900;
+  color: #222;
+  cursor: pointer;
+  box-shadow: 0 8px 16px #ffbf0099;
+  transition: transform 0.15s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
 }
 
 #tap-btn:active {
-  transform: scale(0.94);
-  background-color: #00a28e;
+  transform: scale(0.95);
+  box-shadow: 0 4px 8px #ffbf0077;
 }
 
-.animate:active {
-  animation: tap 0.15s ease;
-}
-
-@keyframes tap {
-  0% { transform: scale(1); }
-  50% { transform: scale(0.95); }
-  100% { transform: scale(1); }
-}
-
-.footer {
-  margin-top: 40px;
-  font-size: 0.9rem;
-  color: #999;
+.tap-text {
+  pointer-events: none;
+  user-select: none;
 }

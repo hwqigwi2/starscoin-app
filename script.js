@@ -1,24 +1,30 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-let balance = 0;
 const balanceEl = document.getElementById('balance');
-const usernameEl = document.getElementById('username');
 const tapBtn = document.getElementById('tap-btn');
 const clickSound = document.getElementById('click-sound');
 
-// Telegram user info
-const user = tg.initDataUnsafe?.user;
-if (user) {
-  usernameEl.textContent = user.first_name || user.username || "неизвестен";
-} else {
-  usernameEl.textContent = "гость";
+let balance = 0;
+
+// Загрузка баланса из localStorage
+const savedBalance = localStorage.getItem('starscoin_balance');
+if (savedBalance !== null) {
+  balance = parseInt(savedBalance, 10);
+  updateBalance();
 }
 
-// Тап логика
-tapBtn.addEventListener('click', () => {
-  balance += 1;
+function updateBalance() {
   balanceEl.textContent = balance;
+}
+
+// Обработка клика
+tapBtn.addEventListener('click', () => {
+  balance++;
+  updateBalance();
+
+  // Сохраняем баланс
+  localStorage.setItem('starscoin_balance', balance);
 
   // Воспроизведение звука
   clickSound.currentTime = 0;
