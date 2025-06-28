@@ -1,39 +1,31 @@
-// Получаем WebApp данные из Telegram
-Telegram.WebApp.ready();
-
-const userData = Telegram.WebApp.initDataUnsafe.user;
-const userId = userData?.id || 'guest';
-const username = userData?.username || 'Гость';
-const photoUrl = userData?.photo_url || 'default-avatar.png';
-
-// Подставляем данные
-document.getElementById('user-name').textContent = username;
-document.getElementById('user-avatar').src = photoUrl;
-
 let balance = 0;
 
-// Обновить баланс на экране
-function updateBalance() {
-  document.getElementById('balance').textContent = balance;
-}
+const balanceEl = document.getElementById('balance');
+const clickButton = document.getElementById('clickButton');
 
-// Анимация + вибрация на клике
-document.getElementById('clickButton').addEventListener('click', () => {
+clickButton.addEventListener('click', (e) => {
   balance++;
-  updateBalance();
-  
-  // Вибрация
-  if (navigator.vibrate) {
-    navigator.vibrate(100);
+  balanceEl.textContent = balance;
+
+  // вибрация (для смартфонов)
+  if (window.navigator.vibrate) {
+    window.navigator.vibrate(50);
   }
 
-  // Анимация нажатия
-  const btn = document.getElementById('clickButton');
-  btn.style.transform = 'scale(0.92)';
-  setTimeout(() => {
-    btn.style.transform = 'scale(1)';
-  }, 100);
-});
+  // эффект +1
+  const plusOne = document.createElement('div');
+  plusOne.className = 'plus-one';
+  plusOne.textContent = '+1';
+  document.body.appendChild(plusOne);
 
-// Стартовый баланс
-updateBalance();
+  // случайная позиция вокруг кнопки
+  const x = e.clientX + (Math.random() * 80 - 40);
+  const y = e.clientY + (Math.random() * 80 - 40);
+  plusOne.style.left = x + 'px';
+  plusOne.style.top = y + 'px';
+
+  // удалить через анимацию
+  setTimeout(() => {
+    plusOne.remove();
+  }, 800);
+});

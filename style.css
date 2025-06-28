@@ -1,90 +1,52 @@
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom, #1a0000, #ff6600, #ffa64d);
+  background: linear-gradient(0deg, rgba(255,187,0,1) 19%, rgba(255,209,3,1) 44%, rgba(0,0,0,1) 97%);
   font-family: sans-serif;
-  color: #fff;
   text-align: center;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
-.top-bar {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  background: transparent;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-}
-
-.user-info img {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-#user-name {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.balance-section {
-  margin: 50px 0 20px;
-  font-size: 32px;
+.container {
+  padding-top: 30px;
 }
 
 #balance {
-  font-size: 64px;
-  margin-bottom: 10px;
+  font-size: 36px;
+  color: #fff;
+  margin: 20px 0;
 }
 
 #clickButton {
-  background: linear-gradient(145deg, #ffcc00, #ff9900);
-  border: none;
-  border-radius: 50%;
   width: 180px;
   height: 180px;
-  font-size: 64px;
-  color: #fff;
+  border-radius: 50%;
+  border: none;
+  background: url('IMG_2056.PNG') no-repeat center/cover;
   cursor: pointer;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-  transition: transform 0.1s, box-shadow 0.1s;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.6);
+  transition: transform 0.1s;
 }
 
 #clickButton:active {
-  transform: scale(0.92);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transform: scale(0.95);
 }
 
-.actions {
-  display: flex;
-  justify-content: center;
-  gap: 25px;
-  margin: 30px 0;
+.plus-one {
+  position: absolute;
+  color: #fff;
+  font-size: 24px;
+  animation: fly 0.8s ease-out forwards;
+  pointer-events: none;
 }
 
-.icon {
-  width: 48px;
-  height: 48px;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 14px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 10px;
-  overflow: hidden;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-}
-
-#energy {
-  background: linear-gradient(to right, #ffff00, #ffaa00);
-  height: 100%;
-  transition: width 0.3s ease;
+@keyframes fly {
+  0% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px);
+  }
 }
