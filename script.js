@@ -1,23 +1,36 @@
-let score = 0;
-const scoreElement = document.getElementById('score');
-const tapButton = document.getElementById('tapButton');
+let balance = 0;
+let energy = 6000;
 
-tapButton.addEventListener('click', () => {
-  score++;
-  scoreElement.innerText = score;
+document.getElementById("tapButton").addEventListener("click", (e) => {
+  if (energy <= 0) return;
 
-  // Вибрация
+  balance++;
+  energy--;
+
+  document.getElementById("balance").textContent = balance;
+  document.getElementById("energy").textContent = energy;
+
   if (navigator.vibrate) navigator.vibrate(50);
 
-  // Анимация +1
-  const plus = document.createElement('div');
-  plus.innerText = '+1';
-  plus.className = 'float-plus';
-  plus.style.left = (tapButton.offsetLeft + 100 + (Math.random() * 60 - 30)) + 'px';
-  plus.style.top = (tapButton.offsetTop + 100 + (Math.random() * 60 - 30)) + 'px';
-  document.body.appendChild(plus);
+  const plusOne = document.createElement("div");
+  plusOne.className = "plus-one";
+  plusOne.style.left = `${e.clientX - 50}px`;
+  plusOne.style.top = `${e.clientY - 70}px`;
+  plusOne.textContent = "+1";
+
+  document.body.appendChild(plusOne);
 
   setTimeout(() => {
-    plus.remove();
-  }, 1000);
+    plusOne.remove();
+  }, 500);
 });
+
+// Получение данных Telegram
+if (window.Telegram.WebApp) {
+  window.Telegram.WebApp.ready();
+  const user = window.Telegram.WebApp.initDataUnsafe?.user;
+  if (user) {
+    document.getElementById("username").textContent = user.username || "User";
+    document.getElementById("avatar").src = user.photo_url;
+  }
+}

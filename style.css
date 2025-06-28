@@ -1,91 +1,87 @@
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  background: linear-gradient(0deg, rgba(255, 187, 0, 1) 19%, rgba(255, 209, 3, 1) 44%, rgba(0, 0, 0, 1) 97%);
   font-family: sans-serif;
-  color: white;
-  user-select: none;
+  text-align: center;
+  background: linear-gradient(0deg, #000 10%, #ffbb00 45%, #ffd103 80%);
+  overflow-x: hidden;
 }
 
-.header {
+.top-bar {
   display: flex;
   align-items: center;
-  padding: 12px;
-  position: absolute;
-  top: 0;
-  left: 0;
+  gap: 8px;
+  padding: 10px;
+  color: white;
 }
 
 .avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  margin-right: 10px;
 }
 
-#username {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.score {
-  position: absolute;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 42px;
-  font-weight: bold;
+.balance {
+  font-size: 48px;
+  color: white;
+  margin: 20px 0;
 }
 
 .tap-area {
-  position: absolute;
-  top: 140px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
 }
 
 .tap-button {
-  width: 220px;
-  height: 220px;
-  transition: transform 0.1s ease;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  box-shadow: 0 0 20px #FFD103, 0 0 40px #ffbb00, inset 0 0 10px #fff;
+  transition: all 0.1s ease;
 }
 
 .tap-button:active {
   transform: scale(0.95);
 }
 
-.energy {
+.plus-one {
   position: absolute;
-  bottom: 80px;
-  left: 20px;
-  font-size: 18px;
-}
-
-.bottom-menu {
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  font-size: 18px;
-}
-
-.float-plus {
-  position: absolute;
-  color: #fff;
-  font-size: 24px;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  animation: moveUp 0.5s ease forwards;
   pointer-events: none;
-  animation: rise 1s ease-out forwards;
 }
 
-@keyframes rise {
+@keyframes moveUp {
   0% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0px);
   }
   100% {
     opacity: 0;
     transform: translateY(-50px);
   }
+}
+
+.energy {
+  color: #FFD103;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.bottom-menu {
+  display: flex;
+  justify-content: space-around;
+  background: #ffa500;
+  padding: 10px;
+  border-radius: 16px 16px 0 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.bottom-menu button {
+  background: none;
+  border: none;
+  font-size: 16px;
 }
