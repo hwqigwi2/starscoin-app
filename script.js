@@ -1,23 +1,20 @@
-// Telegram Web App SDK init
+// Инициализация Telegram Web App
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-// Баланс и звук
+// Работа с балансом
 const balanceEl = document.getElementById('balance');
 const tapBtn = document.getElementById('tap-btn');
 const tapSound = document.getElementById('tap-sound');
 
-let balance = parseInt(localStorage.getItem('tap-balance')) || 0;
+let balance = parseInt(localStorage.getItem('tap-balance'), 10) || 0;
 balanceEl.textContent = balance;
 
 tapBtn.addEventListener('click', () => {
-  balance++;
+  balance += 1;
   balanceEl.textContent = balance;
   localStorage.setItem('tap-balance', balance);
+
   tapSound.currentTime = 0;
   tapSound.play();
-
-  // лёгкая анимация при клике
-  tapBtn.classList.add('clicked');
-  setTimeout(() => tapBtn.classList.remove('clicked'), 200);
 });
