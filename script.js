@@ -34,11 +34,15 @@ try {
   });
 
   giftAnimation.addEventListener('complete', () => {
-    giftEl.style.display = 'none';
-    finalImage.style.display = 'block';
-    iceEl.style.display = 'block';
-    iceAnimation.play();
-  });
+  giftEl.classList.add('fade-out'); // запускаем плавное исчезновение
+
+  setTimeout(() => {
+    giftEl.style.display = 'none';           // скрываем после затухания
+    finalImage.style.display = 'block';      // показываем PNG
+    iceEl.style.display = 'block';           // включаем анимацию льда
+    iceAnimation.play();                     // запускаем ice.json
+  }, 500); // 0.5 секунды (в миллисекундах)
+});
 
 } catch (e) {
   console.error('Ошибка загрузки анимаций:', e);

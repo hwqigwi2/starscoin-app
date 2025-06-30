@@ -32,7 +32,15 @@ body {
   max-height: 90vh;
 }
 
-#giftAnimation, #finalImage, #iceAnimation {
+#giftAnimation {
+  transition: opacity 0.5s ease;
+}
+
+.fade-out {
+  opacity: 0;
+} 
+
+#finalImage, #iceAnimation {
   display: none;
 }
 
