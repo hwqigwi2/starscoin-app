@@ -4,17 +4,20 @@ body {
   background-image: url('IMG_2126.JPG');
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  touch-action: manipulation;
 }
 
 #container {
   position: relative;
   width: 300px;
   height: 300px;
+  touch-action: manipulation;
 }
 
 #giftAnimation, #iceAnimation {
@@ -24,8 +27,8 @@ body {
   transform: translate(-50%, -50%);
   width: 150px;
   height: 150px;
-  cursor: pointer;
   user-select: none;
+  pointer-events: auto;
 }
 
 #iceAnimation {
