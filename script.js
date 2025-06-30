@@ -34,18 +34,17 @@ try {
   });
 
  giftAnimation.addEventListener('complete', () => {
-  giftEl.classList.add('fade-out');              // плавное исчезновение
+  giftEl.classList.add('fade-out'); // запускаем затухание
 
-  finalImage.classList.add('fade-in');           // плавное появление PNG
-  iceEl.classList.add('fade-in');                // плавное появление анимации
-  iceAnimation.play();                           // запускаем анимацию
-
+  // Через 500 мс (после fade-out) начинаем показывать следующее
   setTimeout(() => {
-    giftEl.style.display = 'none';               // убираем gift полностью
-  }, 500); // 0.5 секунды
+    giftEl.style.display = 'none';
+
+    finalImage.classList.add('fade-in'); // теперь плавно появляется
+    iceEl.classList.add('fade-in');
+    iceAnimation.play();
+  }, 500); // 0.5 секунды = длительность затухания
 });
-
-
 
 } catch (e) {
   console.error('Ошибка загрузки анимаций:', e);
