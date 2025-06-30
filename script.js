@@ -34,17 +34,17 @@ try {
   });
 
  giftAnimation.addEventListener('complete', () => {
-  giftEl.classList.add('fade-out'); // запускаем затухание
+  giftEl.classList.add('fade-out');
 
-  // Через 500 мс (после fade-out) начинаем показывать следующее
+  finalImage.classList.add('fade-in');
+  iceEl.classList.add('fade-in');
+  iceAnimation.play();
+
   setTimeout(() => {
     giftEl.style.display = 'none';
-
-    finalImage.classList.add('fade-in'); // теперь плавно появляется
-    iceEl.classList.add('fade-in');
-    iceAnimation.play();
-  }, 500); // 0.5 секунды = длительность затухания
+  }, 500); // спустя 0.5 секунды, когда анимация затухания закончится
 });
+
 
 } catch (e) {
   console.error('Ошибка загрузки анимаций:', e);
