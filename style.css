@@ -20,10 +20,7 @@ body {
   overflow: hidden;
 }
 
-#startImage,
-#giftAnimation,
-#finalImage,
-#iceAnimation {
+#startImage, #giftAnimation, #finalImage, #iceAnimation {
   position: absolute;
   top: 40%;
   left: 50%;
@@ -35,12 +32,8 @@ body {
   max-height: 90vh;
 }
 
-#giftAnimation,
-#finalImage,
-#iceAnimation {
+#giftAnimation, #finalImage, #iceAnimation {
   display: none;
-  opacity: 0;
-  transition: opacity 0.5s ease;
 }
 
 #iceAnimation {
@@ -52,6 +45,11 @@ body {
   z-index: 2;
 }
 
+/* ↓↓↓ Добавлено ↓↓↓ */
+#giftAnimation {
+  transition: opacity 0.3s ease;
+}
+
 .fade-out {
   opacity: 0;
 }
@@ -59,5 +57,5 @@ body {
 .fade-in {
   display: block !important;
   opacity: 1 !important;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.3s ease;
 }
