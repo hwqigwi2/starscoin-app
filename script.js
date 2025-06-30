@@ -1,10 +1,10 @@
 let clickCount = 0;
 
+const startImage = document.getElementById('startImage');
 const giftEl = document.getElementById('giftAnimation');
 const iceEl = document.getElementById('iceAnimation');
 const finalImage = document.getElementById('finalImage');
 
-// Проверим загрузку Lottie-анимаций
 let giftAnimation, iceAnimation;
 
 try {
@@ -12,7 +12,7 @@ try {
     container: giftEl,
     renderer: 'svg',
     loop: false,
-    autoplay: true,
+    autoplay: false,
     path: 'gift.tgs'
   });
 
@@ -24,17 +24,22 @@ try {
     path: 'ice.tgs'
   });
 
-  giftEl.addEventListener('click', () => {
+  startImage.addEventListener('click', () => {
     clickCount++;
     if (clickCount >= 2) {
-      giftAnimation.stop();
-      giftEl.style.display = 'none';
-      finalImage.style.display = 'block';
-      iceEl.style.display = 'block';
-      iceAnimation.play();
+      startImage.style.display = 'none';
+      giftEl.style.display = 'block';
+      giftAnimation.play();
     }
   });
 
+  giftAnimation.addEventListener('complete', () => {
+    giftEl.style.display = 'none';
+    finalImage.style.display = 'block';
+    iceEl.style.display = 'block';
+    iceAnimation.play();
+  });
+
 } catch (e) {
-  console.error('Ошибка загрузки стикеров:', e);
+  console.error('Ошибка загрузки анимаций:', e);
 }
