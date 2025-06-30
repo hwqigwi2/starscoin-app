@@ -33,19 +33,18 @@ try {
     }
   });
 
-  giftAnimation.addEventListener('complete', () => {
-  giftEl.classList.add('fade-out');
+ giftAnimation.addEventListener('complete', () => {
+  giftEl.classList.add('fade-out');              // плавное исчезновение
 
-  // Показываем финальную PNG и запускаем анимацию сразу
-  finalImage.style.display = 'block';
-  iceEl.style.display = 'block';
-  iceAnimation.play();
+  finalImage.classList.add('fade-in');           // плавное появление PNG
+  iceEl.classList.add('fade-in');                // плавное появление анимации
+  iceAnimation.play();                           // запускаем анимацию
 
-  // Через 0.3 сек полностью убираем gift-анимацию
   setTimeout(() => {
-    giftEl.style.display = 'none';
-  }, 300);
+    giftEl.style.display = 'none';               // убираем gift полностью
+  }, 500); // 0.5 секунды
 });
+
 
 
 } catch (e) {

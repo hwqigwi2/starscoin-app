@@ -47,9 +47,15 @@ body {
 
 /* ↓↓↓ Добавлено ↓↓↓ */
 #giftAnimation {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s ease;
 }
 
 .fade-out {
   opacity: 0;
+}
+
+.fade-in {
+  display: block !important;
+  opacity: 1 !important;
+  transition: opacity 0.5s ease;
 }
