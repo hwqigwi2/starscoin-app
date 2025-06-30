@@ -39,5 +39,8 @@ body {
 #iceAnimation {
   width: 150px;
   height: 150px;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 2;
 }
