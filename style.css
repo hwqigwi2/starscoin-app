@@ -1,4 +1,4 @@
-style body {
+  body {
   margin: 0;
   height: 100vh;
   background-image: url('IMG_2126.JPG');
@@ -22,8 +22,8 @@ style body {
 
 #startImage, #giftAnimation, #finalImage, #iceAnimation {
   position: absolute;
-  top: 40%;
-  left: 50%;
+  top: 35%;
+  left: 40%;
   transform: translate(-50%, -50%);
   user-select: none;
   pointer-events: auto;
@@ -39,8 +39,8 @@ style body {
 #iceAnimation {
   width: 150px;
   height: 150px;
-  top: 35%;
-  left: 50%;
+  top: 30%;
+  left: 40%;
   transform: translate(-50%, -50%);
   z-index: 2;
 }
