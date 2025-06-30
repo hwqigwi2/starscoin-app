@@ -45,3 +45,10 @@
   z-index: 2;
 }
 
+#finalImage {
+  top: 55%; /* ниже чем 40% */
+}
+
+#iceAnimation {
+  top: 60%; /* ещё ниже */
+}
