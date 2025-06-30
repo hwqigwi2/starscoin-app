@@ -46,9 +46,9 @@
 }
 
 #finalImage {
-  top: 55%; /* ниже чем 40% */
+  top: 50%; 
 }
 
 #iceAnimation {
-  top: 60%; /* ещё ниже */
+  top: 55%; 
 }
