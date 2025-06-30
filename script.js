@@ -34,17 +34,11 @@ try {
   });
 
   giftAnimation.addEventListener('complete', () => {
-  giftEl.classList.add('fade-out'); // Плавно исчезает
-
-  finalImage.classList.add('fade-in'); // PNG плавно появляется
-  iceEl.classList.add('fade-in');      // Вторая анимация появляется
-  iceAnimation.play();                 // Запуск анимации
-
-  setTimeout(() => {
-    giftEl.style.display = 'none';    // Убираем первый элемент из DOM через 0.5 сек
-  }, 500);
-});
-
+    giftEl.style.display = 'none';
+    finalImage.style.display = 'block';
+    iceEl.style.display = 'block';
+    iceAnimation.play();
+  });
 
 } catch (e) {
   console.error('Ошибка загрузки анимаций:', e);
