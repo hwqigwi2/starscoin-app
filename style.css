@@ -1,4 +1,4 @@
-body {
+style body {
   margin: 0;
   height: 100vh;
   background-image: url('IMG_2126.JPG');
@@ -43,19 +43,4 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 2;
-}
-
-/* ↓↓↓ Добавлено ↓↓↓ */
-#giftAnimation {
-  transition: opacity 0.3s ease;
-}
-
-.fade-out {
-  opacity: 0;
-}
-
-.fade-in {
-  display: block !important;
-  opacity: 1 !important;
-  transition: opacity 0.3s ease;
 }

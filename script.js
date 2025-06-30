@@ -33,18 +33,12 @@ try {
     }
   });
 
- giftAnimation.addEventListener('complete', () => {
-  giftEl.classList.add('fade-out'); // запускаем затухание
-
-  // Через 300 мс (после fade-out) начинаем показывать следующее
-  setTimeout(() => {
+  giftAnimation.addEventListener('complete', () => {
     giftEl.style.display = 'none';
-
-    finalImage.classList.add('fade-in'); // теперь плавно появляется
-    iceEl.classList.add('fade-in');
+    finalImage.style.display = 'block';
+    iceEl.style.display = 'block';
     iceAnimation.play();
-  }, 300); // 0.3 секунды = длительность затухания
-});
+  });
 
 } catch (e) {
   console.error('Ошибка загрузки анимаций:', e);
