@@ -34,15 +34,19 @@ try {
   });
 
   giftAnimation.addEventListener('complete', () => {
-    giftEl.classList.add('fade-out');
+  giftEl.classList.add('fade-out');
 
-    setTimeout(() => {
-      giftEl.style.display = 'none';
-      finalImage.style.display = 'block';
-      iceEl.style.display = 'block';
-      iceAnimation.play();
-    }, 500); // 0.5 сек
-  });
+  // Показываем финальную PNG и запускаем анимацию сразу
+  finalImage.style.display = 'block';
+  iceEl.style.display = 'block';
+  iceAnimation.play();
+
+  // Через 0.3 сек полностью убираем gift-анимацию
+  setTimeout(() => {
+    giftEl.style.display = 'none';
+  }, 300);
+});
+
 
 } catch (e) {
   console.error('Ошибка загрузки анимаций:', e);
