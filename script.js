@@ -13,7 +13,7 @@ try {
     renderer: 'svg',
     loop: false,
     autoplay: false,
-    path: 'gift.tgs'
+    path: 'gift.json'
   });
 
   iceAnimation = lottie.loadAnimation({
@@ -21,7 +21,7 @@ try {
     renderer: 'svg',
     loop: true,
     autoplay: false,
-    path: 'ice.tgs'
+    path: 'ice.json'
   });
 
   startImage.addEventListener('click', () => {
