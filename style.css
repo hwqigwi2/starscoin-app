@@ -39,16 +39,12 @@
 #iceAnimation {
   width: 150px;
   height: 150px;
-  top: 30%;
+  top: 55%;
   left: 49%;
   transform: translate(-50%, -50%);
   z-index: 2;
 }
 
 #finalImage {
-  top: 53%; 
-}
-
-#iceAnimation {
-  top: 63%; 
+  top: 50%; 
 }
