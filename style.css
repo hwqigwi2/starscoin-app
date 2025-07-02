@@ -44,3 +44,20 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+#giftAnimation {
+  position: absolute;
+  top: 45%;     /* Такое же значение, как у #startImage */
+  left: 50%;    /* Такое же значение, как у #startImage */
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  height: auto;
+  max-height: 90vh;
+  display: none; /* Изначально скрыта */
+}
+
+#startImage {
+  top: 45%;    /* Очень низко */
+  left: 50%;   /* Очень право */
+  transform: translate(-50%, -50%);
+}

@@ -9,7 +9,7 @@ const finalImage = document.getElementById('finalImage');
 const RANDOM_ANIMATIONS = [
   { path: 'ice.json', top: '40%', left: '49%', scale: 1.0 },
   { path: 'esk.json', top: '40%', left: '49%', scale: 1.0 },
-  { path: 'plomb.json', top: '40%', left: '49%', scale: 1.0 }
+  { path: 'plomb.json', top: '40%', left: '50%', scale: 1.0 }
 ];
 
 let giftAnimation, currentAnimation;
