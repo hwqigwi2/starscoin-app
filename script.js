@@ -8,8 +8,8 @@ const finalImage = document.getElementById('finalImage');
 // Конфигурация анимаций
 const RANDOM_ANIMATIONS = [
   { path: 'ice.json', top: '40%', left: '49%', scale: 1.0 },
-  { path: 'esk.json', top: '45%', left: '50%', scale: 0.9 },
-  { path: 'plomb.json', top: '38%', left: '51%', scale: 1.1 }
+  { path: 'esk.json', top: '40%', left: '49%', scale: 1.0 },
+  { path: 'plomb.json', top: '40%', left: '49%', scale: 1.0 }
 ];
 
 let giftAnimation, currentAnimation;
