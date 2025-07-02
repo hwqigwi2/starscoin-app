@@ -47,7 +47,7 @@
 
 #giftAnimation {
   position: absolute;
-  top: 45%;     /* Такое же значение, как у #startImage */
+  top: 40%;     /* Такое же значение, как у #startImage */
   left: 50%;    /* Такое же значение, как у #startImage */
   transform: translate(-50%, -50%);
   width: 90vw;
@@ -57,7 +57,7 @@
 }
 
 #startImage {
-  top: 45%;    /* Очень низко */
+  top: 40%;    /* Очень низко */
   left: 50%;   /* Очень право */
   transform: translate(-50%, -50%);
 }
