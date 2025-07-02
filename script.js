@@ -2,12 +2,37 @@ let clickCount = 0;
 
 const startImage = document.getElementById('startImage');
 const giftEl = document.getElementById('giftAnimation');
-const iceEl = document.getElementById('iceAnimation');
+const animationContainer = document.getElementById('animationContainer');
 const finalImage = document.getElementById('finalImage');
 
-let giftAnimation, iceAnimation;
+// Конфигурация анимаций
+const RANDOM_ANIMATIONS = [
+  { path: 'ice.json', top: '40%', left: '49%', scale: 1.0 },
+  { path: 'esk.json', top: '45%', left: '50%', scale: 0.9 },
+  { path: 'plomb.json', top: '38%', left: '51%', scale: 1.1 }
+];
+
+let giftAnimation, currentAnimation;
+
+// Предзагрузка анимаций
+function preloadAnimations() {
+  RANDOM_ANIMATIONS.forEach(anim => {
+    const tempContainer = document.createElement('div');
+    document.body.appendChild(tempContainer);
+    tempContainer.style.display = 'none';
+    
+    lottie.loadAnimation({
+      container: tempContainer,
+      renderer: 'svg',
+      loop: true,
+      autoplay: false,
+      path: anim.path
+    });
+  });
+}
 
 try {
+  // Загрузка основной анимации подарка
   giftAnimation = lottie.loadAnimation({
     container: giftEl,
     renderer: 'svg',
@@ -16,13 +41,8 @@ try {
     path: 'gift.json'
   });
 
-  iceAnimation = lottie.loadAnimation({
-    container: iceEl,
-    renderer: 'svg',
-    loop: true,
-    autoplay: false,
-    path: 'ice.json'
-  });
+  // Предзагрузка случайных анимаций
+  preloadAnimations();
 
   startImage.addEventListener('click', () => {
     clickCount++;
@@ -36,10 +56,34 @@ try {
   giftAnimation.addEventListener('complete', () => {
     giftEl.style.display = 'none';
     finalImage.style.display = 'block';
-    iceEl.style.display = 'block';
-    iceAnimation.play();
+    animationContainer.style.display = 'block';
+    
+    // Выбираем случайную анимацию
+    const randomAnim = RANDOM_ANIMATIONS[Math.floor(Math.random() * RANDOM_ANIMATIONS.length)];
+    
+    // Очищаем контейнер
+    animationContainer.innerHTML = '';
+    
+    // Загружаем выбранную анимацию
+    currentAnimation = lottie.loadAnimation({
+      container: animationContainer,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: randomAnim.path
+    });
+    
+    // Настраиваем позиционирование
+    animationContainer.style.top = randomAnim.top;
+    animationContainer.style.left = randomAnim.left;
+    animationContainer.style.transform = `translate(-50%, -50%) scale(${randomAnim.scale})`;
   });
 
 } catch (e) {
   console.error('Ошибка загрузки анимаций:', e);
+  // Фолбэк: если анимации не загрузились, показываем финальное изображение
+  startImage.addEventListener('click', () => {
+    startImage.style.display = 'none';
+    finalImage.style.display = 'block';
+  });
 }
