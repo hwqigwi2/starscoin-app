@@ -5,70 +5,41 @@ const giftEl = document.getElementById('giftAnimation');
 const iceEl = document.getElementById('iceAnimation');
 const finalImage = document.getElementById('finalImage');
 
-let giftAnimation, randomAnimation;
+let giftAnimation, iceAnimation;
 
-const randomAnimations = [
-  { path: 'ice.json' },
-  { path: 'plomb.json' },
-  { path: 'esk.json' },
-];
+try {
+  giftAnimation = lottie.loadAnimation({
+    container: giftEl,
+    renderer: 'svg',
+    loop: false,
+    autoplay: false,
+    path: 'gift.json'
+  });
 
-// Загружаем gift-анимацию
-giftAnimation = lottie.loadAnimation({
-  container: giftEl,
-  renderer: 'svg',
-  loop: false,
-  autoplay: false,
-  path: 'gift.json',
-});
-
-// Функция запуска случайной анимации
-function playRandomAnimation() {
-  const choice = randomAnimations[Math.floor(Math.random() * randomAnimations.length)];
-
-  // Если была предыдущая анимация — уничтожаем
-  if (randomAnimation) randomAnimation.destroy();
-
-  randomAnimation = lottie.loadAnimation({
+  iceAnimation = lottie.loadAnimation({
     container: iceEl,
     renderer: 'svg',
     loop: true,
-    autoplay: true,
-    path: choice.path,
+    autoplay: false,
+    path: 'ice.json'
   });
-}
 
-startImage.classList.add('fade-in');
-giftEl.classList.remove('fade-in');
-iceEl.classList.remove('fade-in');
-finalImage.classList.remove('fade-in');
+  startImage.addEventListener('click', () => {
+    clickCount++;
+    if (clickCount >= 2) {
+      startImage.style.display = 'none';
+      giftEl.style.display = 'block';
+      giftAnimation.play();
+    }
+  });
 
-startImage.addEventListener('click', () => {
-  clickCount++;
-  if (clickCount >= 2) {
-    startImage.classList.remove('fade-in');
-    startImage.classList.add('fade-out');
-
-    giftEl.classList.remove('fade-out');
-    giftEl.classList.add('fade-in');
-    giftAnimation.play();
-  }
-});
-
-giftAnimation.addEventListener('complete', () => {
-  giftEl.classList.remove('fade-in');
-  giftEl.classList.add('fade-out');
-
-  finalImage.classList.remove('fade-out');
-  finalImage.classList.add('fade-in');
-
-  iceEl.classList.remove('fade-out');
-  iceEl.classList.add('fade-in');
-
-  playRandomAnimation();
-
-  setTimeout(() => {
+  giftAnimation.addEventListener('complete', () => {
     giftEl.style.display = 'none';
-    startImage.style.display = 'none';
-  }, 500);
-});
+    finalImage.style.display = 'block';
+    iceEl.style.display = 'block';
+    iceAnimation.play();
+  });
+
+} catch (e) {
+  console.error('Ошибка загрузки анимаций:', e);
+}
