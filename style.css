@@ -27,13 +27,21 @@ html, body {
   gap: 20px;
 }
 
+/* CSS-переменные для смещения колеса */
+:root {
+  --wheel-offset-x: -20px; /* сдвиг влево */
+  --wheel-offset-y: 30px;  /* сдвиг вниз */
+}
+
 /* Колесо и оверлей */
 .wheel-wrapper {
   position: relative;
-  width: 330px;
-  height: 330px;
+  width: 350px;
+  height: 350px;
+
+  /* Смещение колеса и оверлея */
+  transform: translate(var(--wheel-offset-x), var(--wheel-offset-y));
   margin-bottom: 15px;
-  transform: translateY(-10%);
 }
 
 .wheel,
@@ -58,10 +66,10 @@ html, body {
 
 .btn-bilets-wrapper,
 .btn-spin-wrapper {
-  width: 360px;
+  width: 280px;
   height: 180px;
   position: relative;
-  margin-bottom: 10px;
+  margin-bottom: 5px; /* минимальный отступ между кнопками */
 }
 
 .btn-img {
