@@ -9,12 +9,6 @@ html, body {
   height: 100%;
   font-family: 'Lilita One', cursive;
   user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-text-size-adjust: 100%;
-  -moz-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  text-size-adjust: 100%;
   overflow: hidden;
   background: url('IMG_2601.PNG') no-repeat center center fixed;
   background-size: cover;
@@ -55,40 +49,36 @@ html, body {
   -webkit-user-drag: none;
 }
 
-/* Кнопки контейнер */
+/* Кнопки обёртка */
 .buttons {
   position: absolute;
-  top: 600px; /* отступ от верха, под колесом */
+  top: calc(12% + 330px + 10px); /* 10px ниже колеса */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
+  gap: 10px; /* 10px между кнопками */
   width: 600px;
   height: auto;
-  padding-bottom: 20px;
 }
 
 /* Кнопка крутить */
 .btn-spin {
   width: 600px;
-  cursor: pointer;
-  user-select: none;
-  display: block;
-  -webkit-user-drag: none;
   height: 360px;
+  cursor: pointer;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
   object-fit: contain;
 }
 
-/* Кнопка билетов */
+/* БИЛЕТЫ */
 .btn-bilets-wrapper {
   position: relative;
   width: 600px;
-  cursor: default;
-  user-select: none;
   height: 360px;
-  margin-top: 25px; /* 25px ниже кнопки крутить */
 }
 
 .btn-bilets {
@@ -97,12 +87,11 @@ html, body {
   display: block;
   pointer-events: none;
   user-select: none;
-  position: relative;
   object-fit: contain;
   -webkit-user-drag: none;
 }
 
-/* Кол-во билетов — белый текст по центру */
+/* Кол-во билетов */
 .ticket-count {
   position: absolute;
   top: 50%;
