@@ -1,7 +1,33 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Колесо фортуны</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>Колесо удачи</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Колесо -->
+    <img id="wheel" class="wheel" src="IMG_2598.PNG" alt="Колесо удачи" />
+
+    <!-- Оверлей поверх колеса -->
+    <img class="overlay" src="IMG_2595.PNG" alt="Оверлей" />
+
+    <!-- Кнопки -->
+    <div class="buttons">
+      <div class="btn-bilets-wrapper">
+        <img id="btnBilets" class="btn-bilets" src="IMG_2617.PNG" alt="Билеты" />
+        <span id="ticketCount" class="ticket-count">3</span>
+      </div>
+      <img id="btnSpin" class="btn-spin" src="IMG_2618.PNG" alt="Крутить" />
+    </div>
+
+    <!-- Сообщение -->
+    <div id="message" class="message"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
