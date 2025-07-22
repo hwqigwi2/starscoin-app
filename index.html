@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Колесо фортуны</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Мини апп колесо</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <!-- Колесо -->
-    <div class="wheel" id="wheel"></div>
-    
-    <!-- Оверлей -->
-    <div class="overlay"></div>
-    
-    <!-- Кнопки -->
+    <img id="wheel" class="wheel" src="IMG_2625.PNG" alt="Колесо" />
+    <img id="overlay" class="overlay" src="IMG_2626.PNG" alt="Оверлей" />
+
     <div class="buttons">
-      <!-- Кнопка билетов -->
+      <!-- Кнопка Крутить сверху -->
+      <img id="btnSpin" class="btn-spin" src="IMG_2618.PNG" alt="Крутить" />
+
+      <!-- Кнопка Билеты ниже на 15px -->
       <div class="btn-bilets-wrapper">
-        <div class="ticket-count" id="ticket-count">3</div>
+        <img id="btnBilets" class="btn-bilets" src="IMG_2617.PNG" alt="Билеты" />
+        <span id="ticketCount" class="ticket-count">3</span>
       </div>
-      
-      <!-- Кнопка крутить -->
-      <button class="btn-spin" id="spin-btn"></button>
     </div>
-    
-    <!-- Сообщение -->
-    <div class="message" id="message">В следующий раз повезёт!</div>
+
+    <div id="message" class="message"></div>
   </div>
 
   <script src="script.js"></script>
