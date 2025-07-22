@@ -1,4 +1,4 @@
- let tickets = 3;
+let tickets = 3;
 let spinning = false;
 
 const wheel = document.getElementById('wheel');
@@ -21,10 +21,9 @@ btnSpin.addEventListener('click', () => {
 
   btnSpin.src = IMG_SPIN_SPINNING;
   message.classList.remove('visible');
-  
-  // Накопленный угол вращения (чтобы не было скачков назад)
+
   let currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
-  const spins = 3; // количество полных оборотов
+  const spins = 3;
   const randomAngle = Math.floor(Math.random() * 360);
   const newRotation = currentRotation + spins * 360 + randomAngle;
 
@@ -33,8 +32,7 @@ btnSpin.addEventListener('click', () => {
 
   setTimeout(() => {
     spinning = false;
-
-    const won = Math.random() < 0.4; // 40% шанс выиграть билет
+    const won = Math.random() < 0.4;
 
     if (won) {
       tickets++;
