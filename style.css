@@ -31,8 +31,8 @@ html, body {
   position: absolute;
   top: 12%;
   left: 50%;
-  width: 320px;
-  height: 320px;
+  width: 280px;
+  height: 280px;
   transform: translateX(-50%) rotate(0deg);
   transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
   border-radius: 50%;
@@ -45,10 +45,10 @@ html, body {
 /* Оверлей */
 .overlay {
   position: absolute;
-  top: 12%;
+  top: 9.5%;  /* уменьшил с 12% на ~2.5% */
   left: 50%;
-  width: 325px;
-  height: 325px;
+  width: 280px;
+  height: 280px;
   pointer-events: none;
   transform: translateX(-50%);
   user-select: none;
@@ -65,12 +65,12 @@ html, body {
   flex-direction: column;
   align-items: center;
   gap: 15px;
-  width: 350px; /* больше чем колесо */
+  width: 340px; /* обновлено на 340 */
 }
 
 /* Кнопка крутить */
 .btn-spin {
-  width: 100%;
+  width: 340px; /* обновлено на 340 */
   cursor: pointer;
   user-select: none;
   display: block;
@@ -82,7 +82,7 @@ html, body {
 /* Кнопка билетов */
 .btn-bilets-wrapper {
   position: relative;
-  width: 100%;
+  width: 340px; /* обновлено на 340 */
   cursor: default;
   user-select: none;
   height: 140px;
@@ -105,10 +105,10 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 15px;
+  font-size: 48px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 3px black;
+  text-shadow: 0 0 8px black;
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
