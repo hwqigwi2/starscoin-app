@@ -2,29 +2,25 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Колесо удачи</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Мини апп колесо</title>
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <!-- Колесо -->
-    <img id="wheel" class="wheel" src="IMG_2625.PNG" alt="Колесо удачи" />
+    <img id="wheel" class="wheel" src="IMG_2625.PNG" alt="Колесо" />
+    <img id="overlay" class="overlay" src="IMG_2626.PNG" alt="Оверлей" />
 
-    <!-- Оверлей -->
-    <img class="overlay" src="IMG_2626.PNG" alt="Оверлей" />
-
-    <!-- Кнопки -->
     <div class="buttons">
-      <img id="btnSpin" class="btn-spin" src="IMG_2618.PNG" alt="Крутить" />
       <div class="btn-bilets-wrapper">
         <img id="btnBilets" class="btn-bilets" src="IMG_2617.PNG" alt="Билеты" />
         <span id="ticketCount" class="ticket-count">3</span>
       </div>
+
+      <img id="btnSpin" class="btn-spin" src="IMG_2618.PNG" alt="Крутить" />
     </div>
 
-    <!-- Сообщение -->
     <div id="message" class="message"></div>
   </div>
 
