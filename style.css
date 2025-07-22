@@ -48,23 +48,18 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px; /* отступ между кнопками */
-  width: 100%;
-  max-width: 400px;
+  gap: 0;
+  width: 600px; /* фиксированная ширина */
   z-index: 10;
 }
 
-/* Кнопка Билеты - выше */
+/* Кнопка Билеты */
 .btn-bilets-wrapper {
   position: relative;
-  width: 100%;
-  max-width: 400px;
+  width: 600px;
+  height: 360px;
   cursor: default;
-  z-index: 20;
   user-select: none;
-  border: 2px solid red; /* для отладки */
-  background: rgba(255,0,0,0.1); /* для отладки */
-  height: 120px; /* фиксированная высота */
 }
 
 .btn-bilets {
@@ -81,10 +76,10 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 80px;
+  font-size: 90px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 15px black;
+  text-shadow: 0 0 20px black;
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
@@ -92,13 +87,12 @@ html, body {
 
 /* Кнопка Крутить */
 .btn-spin {
-  width: 100%;
-  max-width: 400px;
+  width: 600px;
+  height: 360px;
   cursor: pointer;
   user-select: none;
   -webkit-user-drag: none;
   object-fit: contain;
-  height: 120px; /* фиксированная высота */
   display: block;
   z-index: 10;
 }
