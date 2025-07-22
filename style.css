@@ -47,8 +47,8 @@ html, body {
   position: absolute;
   top: 12%;
   left: 50%;
-  width: 350px;
-  height: 350px;
+  width: 330px;
+  height: 330px;
   pointer-events: none;
   transform: translateX(-50%);
   user-select: none;
@@ -58,6 +58,7 @@ html, body {
 /* Кнопки контейнер */
 .buttons {
   position: absolute;
+  top: 600px; /* отступ от верха, под колесом */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -67,8 +68,6 @@ html, body {
   width: 600px;
   height: auto;
   padding-bottom: 20px;
-  /* Чтобы кнопка крутить была на 200px ниже колеса: */
-  top: calc(12% + 330px + 200px);
 }
 
 /* Кнопка крутить */
@@ -109,10 +108,10 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 20px; /* пропорционально уменьшил */
+  font-size: 90px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 2px black;
+  text-shadow: 0 0 20px black;
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
