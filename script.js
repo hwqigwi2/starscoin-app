@@ -30,6 +30,7 @@ btnSpin.addEventListener('click', () => {
 
   setTimeout(() => {
     spinning = false;
+
     const won = Math.random() < 0.4;
 
     if (won) {

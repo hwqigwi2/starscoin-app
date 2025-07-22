@@ -42,16 +42,15 @@ html, body {
 /* Контейнер кнопок */
 .buttons {
   position: absolute;
-  top: calc(12% + 330px + 5px); /* Сразу под колесом + 5px */
+  top: calc(12% + 330px + 5px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px; /* Минимальный отступ между кнопками */
+  gap: 8px;
   width: 600px;
   z-index: 100;
-  /* height не задаём, чтобы не обрезать кнопки */
 }
 
 /* Кнопка Билеты */
