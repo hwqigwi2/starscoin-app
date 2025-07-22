@@ -1,4 +1,3 @@
-/* Сброс */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -18,51 +17,20 @@ html, body {
   position: relative;
   width: 100vw;
   height: 100vh;
-
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 24px;
+  justify-content: space-between;
+  padding: 20px 0;
 }
 
-/* Баланс билетов — выше колеса */
-.btn-bilets-wrapper {
-  width: 600px;
-  height: 360px;
-  top: 15;
-  position: relative;
-  cursor: default;
-  user-select: none;
-}
-
-.btn-bilets {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  -webkit-user-drag: none;
-}
-
-.ticket-count {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 25px;
-  font-weight: 900;
-  color: white;
-  text-shadow: 0 0 5px black;
-  pointer-events: none;
-  user-select: none;
-  font-family: 'Lilita One', cursive;
-}
-
-/* Обертка для колеса и оверлея */
+/* Колесо — выше центра */
 .wheel-wrapper {
   position: relative;
   width: 330px;
   height: 330px;
+  margin-top: 20px;
+  transform: translateY(-10%);
 }
 
 /* Колесо */
@@ -75,18 +43,18 @@ html, body {
   border-radius: 50%;
   transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
   position: absolute;
-  top: 50;
+  top: 0;
   left: 0;
   transform-origin: 50% 50%;
 }
 
-/* Оверлей — всегда над колесом, не смещается */
+/* Оверлей */
 .overlay {
   position: absolute;
   top: 0;
   left: 0;
-  width: 350px;
-  height: 350px;
+  width: 330px;
+  height: 330px;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
@@ -94,18 +62,43 @@ html, body {
   z-index: 10;
 }
 
-/* Кнопка Крутить — ниже колеса */
-.btn-spin-wrapper {
-  width: 600px;
-  height: 360px;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
+/* Кнопки внизу вместе */
+.bottom-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
+.btn-bilets-wrapper,
+.btn-spin-wrapper {
+  width: 280px;
+  height: 180px;
+  position: relative;
+}
+
+.btn-bilets,
 .btn-spin {
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.ticket-count {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 80px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 0 20px black;
+  pointer-events: none;
+  user-select: none;
+  font-family: 'Lilita One', cursive;
 }
