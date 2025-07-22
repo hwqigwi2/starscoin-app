@@ -18,19 +18,12 @@ html, body {
   position: relative;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
 
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-start;
-  padding-top: 5%;
-  gap: 20px;
-}
-
-/* CSS-переменные для смещения колеса */
-:root {
-  --wheel-offset-x: -20px; /* сдвиг влево */
-  --wheel-offset-y: 30px;  /* сдвиг вниз */
+  flex-direction: column;
 }
 
 /* Колесо и оверлей */
@@ -38,19 +31,14 @@ html, body {
   position: relative;
   width: 350px;
   height: 350px;
-
-  /* Смещение колеса и оверлея */
-  transform: translate(var(--wheel-offset-x), var(--wheel-offset-y));
   margin-bottom: 15px;
 }
 
-.wheel,
-.overlay {
+.wheel, .overlay {
   width: 350px;
   height: 350px;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   border-radius: 50%;
   object-fit: contain;
   -webkit-user-drag: none;
@@ -62,24 +50,25 @@ html, body {
   z-index: 10;
 }
 
-/* Кнопки */
-
-.btn-bilets-wrapper,
-.btn-spin-wrapper {
+/* Кнопка билеты — фиксируем вниз, сдвигаем на 50% от низа */
+.btn-bilets-wrapper {
+  position: fixed;
+  bottom: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%);
   width: 280px;
   height: 180px;
-  position: relative;
-  margin-bottom: 5px; /* минимальный отступ между кнопками */
+  user-select: none;
 }
 
-.btn-img {
+.btn-bilets {
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
   -webkit-user-drag: none;
-  user-select: none;
-  cursor: pointer;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* Счетчик билетов */
@@ -95,4 +84,24 @@ html, body {
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
+}
+
+/* Кнопка крутить — под билеты */
+.btn-spin-wrapper {
+  position: fixed;
+  bottom: calc(50% - 190px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 180px;
+  user-select: none;
+}
+
+.btn-spin {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  -webkit-user-drag: none;
+  cursor: pointer;
 }
