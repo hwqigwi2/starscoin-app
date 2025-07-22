@@ -1,132 +1,102 @@
-/* Сброс */
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
-  height: 100%;
-  font-family: 'Lilita One', cursive;
-  user-select: none;
+body {
+  background: #000;
+  font-family: 'Lilita One', sans-serif;
   overflow: hidden;
-  background: url('IMG_2601.PNG') no-repeat center center fixed;
-  background-size: cover;
+  touch-action: manipulation;
 }
 
 .container {
   position: relative;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
 }
 
 /* Колесо */
 .wheel {
   position: absolute;
-  top: 12%;
+  top: 50%;
   left: 50%;
-  width: 330px;
-  height: 330px;
-  transform: translateX(-50%) rotate(0deg);
-  transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
-  border-radius: 50%;
-  object-fit: contain;
-  user-select: none;
-  pointer-events: none;
-  -webkit-user-drag: none;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -50%);
+  transition: transform 3s ease-out;
+  z-index: 1;
 }
 
 /* Оверлей */
 .overlay {
   position: absolute;
-  top: 12%;
+  top: calc(50% - 150px - 5%);
   left: 50%;
-  width: 330px;
-  height: 330px;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, 0);
   pointer-events: none;
-  transform: translateX(-50%);
-  user-select: none;
-  -webkit-user-drag: none;
+  z-index: 2;
 }
 
-/* Кнопки контейнер */
-.buttons {
+/* Кнопки */
+.btn {
   position: absolute;
-  top: calc(12% + 330px + 5px); /* колесо + 5px */
+  width: 600px;
+  height: 360px;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px; /* между кнопками 1px */
-  width: 600px;
+  z-index: 3;
 }
 
-/* Кнопка крутить */
 .btn-spin {
-  width: 600px;
-  height: 360px;
-  cursor: pointer;
-  display: block;
-  user-select: none;
-  -webkit-user-drag: none;
-  object-fit: contain;
+  top: calc(50% + 150px + 5px); /* Колесо + 5px */
 }
 
-/* Обёртка билетов */
 .btn-bilets-wrapper {
-  position: relative;
+  position: absolute;
+  top: calc(50% + 150px + 5px + 360px + 1px); /* Кнопка крутить + 1px */
+  left: 50%;
+  transform: translateX(-50%);
   width: 600px;
   height: 360px;
+  z-index: 3;
 }
 
-/* Кнопка билеты */
 .btn-bilets {
   width: 100%;
   height: 100%;
-  display: block;
-  pointer-events: none;
-  user-select: none;
-  object-fit: contain;
-  -webkit-user-drag: none;
 }
 
-/* Кол-во билетов */
 .ticket-count {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 90px;
-  font-weight: 900;
   color: white;
-  text-shadow: 0 0 20px black;
+  font-size: 64px;
+  text-shadow: 2px 2px 4px #000;
   pointer-events: none;
-  user-select: none;
-  font-family: 'Lilita One', cursive;
 }
 
 /* Сообщение */
 .message {
   position: absolute;
-  top: 60%;
+  bottom: 20px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 220px;
-  text-align: center;
-  font-size: 22px;
+  transform: translateX(-50%);
   color: white;
-  font-family: 'Lilita One', cursive;
-  text-shadow: 0 0 5px black;
-  user-select: none;
-  pointer-events: none;
-  padding: 10px 15px;
-  background: rgba(0,0,0,0.4);
-  border-radius: 10px;
+  font-size: 32px;
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.5s;
   z-index: 10;
 }
+
 .message.visible {
   opacity: 1;
 }
