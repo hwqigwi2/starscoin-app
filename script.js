@@ -5,9 +5,9 @@ const wheel = document.getElementById('wheel');
 const btnSpin = document.getElementById('btnSpin');
 const btnBack = document.getElementById('btnBack');
 const btnBilets = document.getElementById('btnBilets');
+const ticketCount = document.getElementById('ticketCount');
 const message = document.getElementById('message');
 
-// Пути к картинкам для кнопок крутить
 const IMG_SPIN_NORMAL = "IMG_2618.PNG";
 const IMG_SPIN_SPINNING = "IMG_2620.PNG";
 const IMG_SPIN_DISABLED = "IMG_2619.PNG";
@@ -23,9 +23,14 @@ btnSpin.onclick = () => {
 
   btnSpin.src = IMG_SPIN_SPINNING;
 
-  // Вращаем колесо на случайный угол с 3 полными оборотами
-  const rotation = 360 * 3 + Math.floor(Math.random() * 360);
-  wheel.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+  // Вращаем колесо плавно в одну сторону с 3+ оборотами
+  // Накапливаем угол, чтобы не скакало назад
+  let currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
+  const spins = 3;
+  const randomAngle = Math.floor(Math.random() * 360);
+  const newRotation = currentRotation + spins * 360 + randomAngle;
+  wheel.style.transform = `translateX(-50%) rotate(${newRotation}deg)`;
+  wheel.dataset.rotation = newRotation;
 
   setTimeout(() => {
     spinning = false;
@@ -52,7 +57,7 @@ btnBack.onclick = () => {
 };
 
 function updateUI() {
-  btnBilets.title = `Билеты: ${tickets}`;
+  ticketCount.textContent = tickets;
   if (tickets <= 0 && !spinning) {
     btnSpin.src = IMG_SPIN_DISABLED;
   } else if (!spinning) {

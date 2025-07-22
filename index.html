@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Колесо Удачи</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -14,11 +14,13 @@
   <!-- Оверлей поверх колеса -->
   <img class="overlay" src="IMG_2595.PNG" alt="Оверлей" />
 
-  <!-- Кнопка билетов -->
-  <img class="btn btn-bilets" id="btnBilets" src="IMG_2617.PNG" alt="Билеты" title="Билеты: 3" />
-
-  <!-- Кнопка крутить -->
-  <img class="btn btn-spin" id="btnSpin" src="IMG_2618.PNG" alt="Крутить" />
+  <div class="buttons-container">
+    <div class="btn-bilets-wrapper">
+      <img class="btn btn-bilets" id="btnBilets" src="IMG_2617.PNG" alt="Билеты" />
+      <div id="ticketCount" class="ticket-count">3</div>
+    </div>
+    <img class="btn btn-spin" id="btnSpin" src="IMG_2618.PNG" alt="Крутить" />
+  </div>
 
   <!-- Кнопка назад -->
   <img class="btn btn-back" id="btnBack" src="IMG_2623.PNG" alt="Назад" />
