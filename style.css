@@ -47,8 +47,8 @@ html, body {
   position: absolute;
   top: 12%;
   left: 50%;
-  width: 355px;
-  height: 355px;
+  width: 350px;
+  height: 350px;
   pointer-events: none;
   transform: translateX(-50%);
   user-select: none;
@@ -58,7 +58,6 @@ html, body {
 /* Кнопки контейнер */
 .buttons {
   position: absolute;
-  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -68,7 +67,8 @@ html, body {
   width: 600px;
   height: auto;
   padding-bottom: 20px;
-  margin-top: 150px; /* опущено вниз на 150px */
+  /* Чтобы кнопка крутить была на 200px ниже колеса: */
+  top: calc(12% + 330px + 200px);
 }
 
 /* Кнопка крутить */
@@ -89,7 +89,7 @@ html, body {
   cursor: default;
   user-select: none;
   height: 360px;
-  margin-top: 15px; /* небольшой отступ между кнопками */
+  margin-top: 25px; /* 25px ниже кнопки крутить */
 }
 
 .btn-bilets {
@@ -109,10 +109,10 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 26px;
+  font-size: 20px; /* пропорционально уменьшил */
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 4px black;
+  text-shadow: 0 0 2px black;
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
