@@ -9,7 +9,7 @@ html, body {
   height: 100%;
   font-family: 'Lilita One', cursive;
   user-select: none;
-  overflow-x: hidden;
+  overflow: hidden;
   background: url('IMG_2601.PNG') no-repeat center center fixed;
   background-size: cover;
 }
@@ -42,16 +42,15 @@ html, body {
 /* Контейнер кнопок */
 .buttons {
   position: absolute;
-  top: calc(12% + 330px + 20px); /* Под колесом */
+  top: calc(12% + 330px + 1px); /* Крутить на 1 пиксель ниже колеса */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 60px; /* Увеличенный отступ между кнопками */
+  gap: 0; /* Без отступа между кнопками */
   width: 100%;
   max-width: 400px;
-  padding-bottom: 100px;
   z-index: 10;
 }
 
@@ -99,43 +98,4 @@ html, body {
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
-}
-
-/* Модальное окно */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.6);
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px 30px;
-  border-radius: 15px;
-  text-align: center;
-  font-family: 'Lilita One', cursive;
-  max-width: 280px;
-  box-shadow: 0 0 15px black;
-}
-
-.modal-content p {
-  font-size: 22px;
-  color: #222;
-  margin-bottom: 20px;
-}
-
-.modal-content button {
-  background: #ffd700;
-  border: none;
-  font-size: 18px;
-  padding: 8px 30px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
 }

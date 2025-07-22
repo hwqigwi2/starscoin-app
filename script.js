@@ -5,10 +5,6 @@ const wheel = document.getElementById('wheel');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
-const modal = document.getElementById('modal');
-const modalText = document.getElementById('modalText');
-const modalOk = document.getElementById('modalOk');
-
 const IMG_SPIN_NORMAL = "IMG_2618.PNG";
 const IMG_SPIN_SPINNING = "IMG_2620.PNG";
 const IMG_SPIN_DISABLED = "IMG_2619.PNG";
@@ -38,17 +34,13 @@ btnSpin.addEventListener('click', () => {
 
     if (won) {
       tickets++;
-      showModal("🎉 Вы получили 1 билет!");
+      showTelegramAlert("🎉 Вы получили 1 билет!");
     } else {
-      showModal("😔 В следующий раз повезёт");
+      showTelegramAlert("😔 В следующий раз повезёт");
     }
 
     updateUI();
   }, 3000);
-});
-
-modalOk.addEventListener('click', () => {
-  modal.style.display = "none";
 });
 
 function updateUI() {
@@ -57,7 +49,11 @@ function updateUI() {
   btnSpin.src = (tickets <= 0 && !spinning) ? IMG_SPIN_DISABLED : IMG_SPIN_NORMAL;
 }
 
-function showModal(text) {
-  modalText.textContent = text;
-  modal.style.display = "flex";
+function showTelegramAlert(text) {
+  if (window.Telegram && Telegram.WebApp && Telegram.WebApp.showAlert) {
+    Telegram.WebApp.showAlert(text);
+  } else {
+    // fallback на стандартное окно alert если не в Telegram WebApp
+    alert(text);
+  }
 }
