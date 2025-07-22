@@ -30,6 +30,7 @@ html, body {
 .btn-bilets-wrapper {
   width: 600px;
   height: 360px;
+  top: 15;
   position: relative;
   cursor: default;
   user-select: none;
@@ -48,10 +49,10 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 90px;
+  font-size: 25px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 20px black;
+  text-shadow: 0 0 5px black;
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
@@ -74,7 +75,7 @@ html, body {
   border-radius: 50%;
   transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
   position: absolute;
-  top: 0;
+  top: 50;
   left: 0;
   transform-origin: 50% 50%;
 }
@@ -84,8 +85,8 @@ html, body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 330px;
-  height: 330px;
+  width: 350px;
+  height: 350px;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
