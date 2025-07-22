@@ -31,8 +31,8 @@ html, body {
   position: absolute;
   top: 12%;
   left: 50%;
-  width: 280px;
-  height: 280px;
+  width: 320px;
+  height: 320px;
   transform: translateX(-50%) rotate(0deg);
   transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
   border-radius: 50%;
@@ -47,8 +47,8 @@ html, body {
   position: absolute;
   top: 12%;
   left: 50%;
-  width: 280px;
-  height: 280px;
+  width: 325px;
+  height: 325px;
   pointer-events: none;
   transform: translateX(-50%);
   user-select: none;
@@ -105,10 +105,10 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 48px;
+  font-size: 15px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 8px black;
+  text-shadow: 0 0 3px black;
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
