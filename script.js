@@ -4,6 +4,7 @@ let spinning = false;
 const wheel = document.getElementById('wheel');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
+const overlay = document.getElementById('overlay');
 
 const IMG_SPIN_NORMAL = "IMG_2618.PNG";
 const IMG_SPIN_SPINNING = "IMG_2620.PNG";
@@ -25,7 +26,8 @@ btnSpin.addEventListener('click', () => {
   const randomAngle = Math.floor(Math.random() * 360);
   const newRotation = currentRotation + spins * 360 + randomAngle;
 
-  wheel.style.transform = `translateX(-50%) rotate(${newRotation}deg)`;
+  wheel.style.transform = `rotate(${newRotation}deg)`;
+  overlay.style.transform = `rotate(${newRotation}deg)`;
   wheel.dataset.rotation = newRotation;
 
   setTimeout(() => {
@@ -40,6 +42,7 @@ btnSpin.addEventListener('click', () => {
       showTelegramAlert("😔 В следующий раз повезёт");
     }
 
+    btnSpin.src = tickets > 0 ? IMG_SPIN_NORMAL : IMG_SPIN_DISABLED;
     updateUI();
   }, 3000);
 });
@@ -47,7 +50,11 @@ btnSpin.addEventListener('click', () => {
 function updateUI() {
   ticketCount.textContent = tickets;
   btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
-  btnSpin.src = (tickets <= 0 && !spinning) ? IMG_SPIN_DISABLED : IMG_SPIN_NORMAL;
+  if (tickets <= 0 && !spinning) {
+    btnSpin.src = IMG_SPIN_DISABLED;
+  } else if (!spinning) {
+    btnSpin.src = IMG_SPIN_NORMAL;
+  }
 }
 
 function showTelegramAlert(text) {

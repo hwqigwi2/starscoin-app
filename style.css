@@ -18,60 +18,76 @@ html, body {
   position: relative;
   width: 100vw;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Кнопка Крутить сверху */
+.btn-spin-wrapper {
+  width: 600px;
+  height: 360px;
+  margin-bottom: 8px; /* Отступ снизу для кнопки */
+}
+
+.btn-spin {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  object-fit: contain;
+  display: block;
 }
 
 /* Колесо и оверлей */
 .wheel, .overlay {
-  position: absolute;
-  top: 12%;
-  left: 50%;
   width: 330px;
   height: 330px;
-  transform: translateX(-50%);
   object-fit: contain;
   user-select: none;
   pointer-events: none;
   -webkit-user-drag: none;
   border-radius: 50%;
-}
-
-.wheel {
+  position: relative;
   transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
-/* Контейнер кнопок */
-.buttons {
+/* Оверлей */
+.overlay {
   position: absolute;
-  top: calc(12% + 330px + 5px);
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 600px;
-  z-index: 100;
+  width: 330px;
+  height: 330px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  border-radius: 50%;
+  z-index: 10;
 }
 
-/* Кнопка Билеты */
+/* Контейнер билетов снизу */
 .btn-bilets-wrapper {
-  position: relative;
   width: 600px;
   height: 360px;
-  cursor: default;
+  margin-top: 8px; /* Отступ сверху */
+  position: relative;
   user-select: none;
-  z-index: 10;
+  cursor: default;
 }
 
 .btn-bilets {
   width: 100%;
   height: 100%;
+  object-fit: contain;
   display: block;
   -webkit-user-drag: none;
-  object-fit: contain;
 }
 
-/* Счётчик билетов поверх кнопки */
+/* Счётчик билетов */
 .ticket-count {
   position: absolute;
   top: 50%;
@@ -84,17 +100,4 @@ html, body {
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
-}
-
-/* Кнопка Крутить */
-.btn-spin {
-  width: 600px;
-  height: 360px;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  object-fit: contain;
-  display: block;
-  z-index: 20;
-  border: none;
 }
