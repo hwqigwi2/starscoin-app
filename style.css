@@ -49,18 +49,17 @@ html, body {
   -webkit-user-drag: none;
 }
 
-/* Кнопки обёртка */
+/* Кнопки контейнер */
 .buttons {
   position: absolute;
-  top: calc(12% + 330px + 10px); /* 10px ниже колеса */
+  top: calc(12% + 330px + 5px); /* колесо + 5px */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px; /* 10px между кнопками */
+  gap: 1px; /* между кнопками 1px */
   width: 600px;
-  height: auto;
 }
 
 /* Кнопка крутить */
@@ -74,13 +73,14 @@ html, body {
   object-fit: contain;
 }
 
-/* БИЛЕТЫ */
+/* Обёртка билетов */
 .btn-bilets-wrapper {
   position: relative;
   width: 600px;
   height: 360px;
 }
 
+/* Кнопка билеты */
 .btn-bilets {
   width: 100%;
   height: 100%;
