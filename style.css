@@ -50,8 +50,8 @@ html, body {
 
 /* Кнопка билеты под колесом */
 .btn-bilets-wrapper {
-  width: 420px;
-  height: 270px;
+  width: 350px;
+  height: 105px;
   position: relative;
   margin-bottom: 8px;
   margin-top: 65px;
@@ -85,8 +85,8 @@ html, body {
 
 /* Кнопка крутить под кнопкой билеты */
 .btn-spin-wrapper {
-  width: 420px;
-  height: 270px;
+  width: 350px;
+  height: 90px;
   user-select: none;
 }
 
