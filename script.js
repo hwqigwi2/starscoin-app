@@ -26,6 +26,7 @@ btnSpin.addEventListener('click', () => {
   const randomAngle = Math.floor(Math.random() * 360);
   const newRotation = currentRotation + spins * 360 + randomAngle;
 
+  wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
   wheel.style.transform = `rotate(${newRotation}deg)`;
   overlay.style.transform = `rotate(0deg)`;
   wheel.dataset.rotation = newRotation;

@@ -18,20 +18,18 @@ html, body {
   position: relative;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
-
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
 }
 
-/* Колесо и оверлей */
+/* Колесо и оверлей - выше центра, по центру */
 .wheel-wrapper {
   position: relative;
   width: 350px;
   height: 350px;
-  margin-bottom: 15px;
+  margin-top: 10vh; /* отступ сверху для поднятия выше центра */
+  margin-bottom: 20px;
 }
 
 .wheel, .overlay {
@@ -50,14 +48,12 @@ html, body {
   z-index: 10;
 }
 
-/* Кнопка билеты — фиксируем вниз, сдвигаем на 50% от низа */
+/* Кнопка билеты под колесом */
 .btn-bilets-wrapper {
-  position: fixed;
-  bottom: 50%;
-  left: 50%;
-  transform: translate(-50%, 50%);
   width: 280px;
   height: 180px;
+  position: relative;
+  margin-bottom: 8px;
   user-select: none;
 }
 
@@ -86,12 +82,8 @@ html, body {
   font-family: 'Lilita One', cursive;
 }
 
-/* Кнопка крутить — под билеты */
+/* Кнопка крутить под кнопкой билеты */
 .btn-spin-wrapper {
-  position: fixed;
-  bottom: calc(50% - 190px);
-  left: 50%;
-  transform: translateX(-50%);
   width: 280px;
   height: 180px;
   user-select: none;
