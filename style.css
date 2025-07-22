@@ -4,7 +4,7 @@ body {
   overflow: hidden;
   background: url('IMG_2601.PNG') no-repeat center center fixed;
   background-size: cover;
-  -webkit-touch-callout: none; /* отключаем контекстное меню на iOS */
+  -webkit-touch-callout: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
@@ -20,7 +20,10 @@ body {
   width: 320px;
   height: 320px;
   transform: translateX(-50%) rotate(0deg);
-  transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1); /* плавный easing */
+  transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
+  border-radius: 50%;
+  object-fit: contain;
+  user-select: none;
 }
 
 .overlay {
@@ -31,6 +34,7 @@ body {
   height: 320px;
   pointer-events: none;
   transform: translateX(-50%);
+  user-select: none;
 }
 
 .buttons-container {
@@ -56,22 +60,21 @@ body {
   cursor: default;
   user-select: none;
   display: block;
+  position: relative;
 }
 
 .ticket-count {
   position: absolute;
-  top: 10px;
-  right: 20px;
-  background: rgba(255, 215, 0, 0.9);
-  color: black;
-  font-weight: bold;
-  font-size: 28px;
-  border-radius: 16px;
-  padding: 4px 12px;
-  user-select: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: 900;
+  font-size: 32px;
+  text-shadow: 0 0 5px black;
   pointer-events: none;
+  user-select: none;
   font-family: 'Lilita One', cursive;
-  text-shadow: 0 0 2px #000;
 }
 
 .btn-spin {
@@ -79,16 +82,6 @@ body {
   cursor: pointer;
   user-select: none;
   display: block;
-}
-
-.btn-back {
-  position: absolute;
-  bottom: 10px;
-  right: 20px;
-  width: 100px;
-  cursor: pointer;
-  user-select: none;
-  display: none;
 }
 
 .message {
