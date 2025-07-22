@@ -27,16 +27,17 @@ html, body {
 .wheel-wrapper {
   position: relative;
   width: 350px;
-  height: 350px;
+  height: 360px; /* увеличили на 10px высоту для оверлея */
   margin-top: 10vh; /* отступ сверху для поднятия выше центра */
   margin-bottom: 20px;
 }
 
-.wheel, .overlay {
+.wheel {
   width: 350px;
   height: 350px;
   position: absolute;
-  top: 0; left: 0;
+  top: 10px; /* сдвинули колесо чуть ниже, чтобы оверлей был выше */
+  left: 0;
   border-radius: 50%;
   object-fit: contain;
   -webkit-user-drag: none;
@@ -44,17 +45,26 @@ html, body {
 }
 
 .overlay {
+  width: 360px; /* на 10px шире */
+  height: 360px; /* на 10px выше */
+  position: absolute;
+  top: 0; /* подняли выше колеса */
+  left: -5px; /* сдвинули влево, чтобы центр совпадал */
+  border-radius: 50%;
+  object-fit: contain;
   pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
   z-index: 10;
 }
 
-/* Кнопка билеты под колесом */
+/* Кнопка билеты под колесом — поднята выше */
 .btn-bilets-wrapper {
   width: 350px;
   height: 105px;
   position: relative;
   margin-bottom: 8px;
-  margin-top: 65px;
+  margin-top: 40px; /* уменьшен отступ сверху — подняли */
   user-select: none;
 }
 
@@ -83,11 +93,12 @@ html, body {
   font-family: 'Lilita One', cursive;
 }
 
-/* Кнопка крутить под кнопкой билеты */
+/* Кнопка крутить под кнопкой билеты — тоже поднята */
 .btn-spin-wrapper {
   width: 350px;
   height: 90px;
   user-select: none;
+  margin-top: 20px; /* добавлен небольшой отступ сверху */
 }
 
 .btn-spin {
