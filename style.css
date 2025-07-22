@@ -42,7 +42,7 @@ html, body {
 /* Контейнер кнопок */
 .buttons {
   position: absolute;
-  top: calc(12% + 330px + 1px);
+  top: calc(12% + 220px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
