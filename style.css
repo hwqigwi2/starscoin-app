@@ -53,8 +53,8 @@ html, body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 330px;
-  height: 330px;
+  width: 350px;
+  height: 350px;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
@@ -74,8 +74,8 @@ html, body {
 
 .btn-bilets-wrapper,
 .btn-spin-wrapper {
-  width: 280px;
-  height: 180px;
+  width: 560px;
+  height: 360px;
   position: relative;
 }
 
@@ -94,10 +94,10 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 80px;
+  font-size: 25px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 20px black;
+  text-shadow: 0 0 5px black;
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
