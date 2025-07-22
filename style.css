@@ -1,3 +1,4 @@
+/* Сброс */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -17,68 +18,63 @@ html, body {
   position: relative;
   width: 100vw;
   height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 20px;
+  padding-top: 5%;
   gap: 20px;
 }
 
-/* Колесо */
+/* Колесо и оверлей */
 .wheel-wrapper {
   position: relative;
   width: 330px;
   height: 330px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   transform: translateY(-10%);
 }
 
-.wheel {
+.wheel,
+.overlay {
   width: 330px;
   height: 330px;
-  object-fit: contain;
-  user-select: none;
-  -webkit-user-drag: none;
-  border-radius: 50%;
-  transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
   position: absolute;
   top: 0;
   left: 0;
-  transform-origin: 50% 50%;
+  border-radius: 50%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 330px;
-  height: 330px;
   pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  border-radius: 50%;
   z-index: 10;
 }
 
 /* Кнопки */
+
 .btn-bilets-wrapper,
 .btn-spin-wrapper {
   width: 560px;
   height: 360px;
   position: relative;
+  margin-bottom: 10px;
 }
 
-.btn-bilets,
-.btn-spin {
+.btn-img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
   -webkit-user-drag: none;
   user-select: none;
+  cursor: pointer;
 }
 
+/* Счетчик билетов */
 .ticket-count {
   position: absolute;
   top: 50%;
@@ -90,4 +86,5 @@ html, body {
   text-shadow: 0 0 20px black;
   pointer-events: none;
   user-select: none;
+  font-family: 'Lilita One', cursive;
 }

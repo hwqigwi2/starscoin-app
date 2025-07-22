@@ -3,45 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Колесо</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <title>Мини апп колесо</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <!-- Колесо -->
     <div class="wheel-wrapper">
-      <img src="IMG_2639.PNG" alt="Wheel" class="wheel" id="wheel" />
-      <img src="overlay.png" alt="Overlay" class="overlay" />
+      <img src="IMG_2625.PNG" alt="Колесо" id="wheel" class="wheel" />
+      <img src="IMG_2626.PNG" alt="Оверлей" class="overlay" />
     </div>
 
-    <!-- Кнопка Билеты -->
     <div class="btn-bilets-wrapper">
-      <img src="IMG_2628.PNG" alt="Билеты" class="btn-bilets" />
-      <div class="ticket-count" id="ticketCount">3</div>
+      <img src="IMG_2628.PNG" alt="Билеты" id="btnBilets" class="btn-img" />
+      <span id="ticketCount" class="ticket-count">3</span>
     </div>
 
-    <!-- Кнопка Крутить -->
     <div class="btn-spin-wrapper">
-      <img src="IMG_2637.PNG" alt="Крутить" class="btn-spin" id="spinBtn" />
+      <img src="IMG_2637.PNG" alt="Крутить" id="btnSpin" class="btn-img" />
     </div>
   </div>
 
-  <script>
-    const wheel = document.getElementById("wheel");
-    const spinBtn = document.getElementById("spinBtn");
-    let rotating = false;
-
-    spinBtn.addEventListener("click", () => {
-      if (rotating) return;
-      rotating = true;
-      const angle = Math.floor(Math.random() * 360) + 720;
-      wheel.style.transition = "transform 3s cubic-bezier(0.33, 1, 0.68, 1)";
-      wheel.style.transform = `rotate(${angle}deg)`;
-      setTimeout(() => {
-        rotating = false;
-      }, 3000);
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
