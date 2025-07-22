@@ -47,8 +47,8 @@ html, body {
   position: absolute;
   top: 12%;
   left: 50%;
-  width: 350px;
-  height: 350px;
+  width: 355px;
+  height: 355px;
   pointer-events: none;
   transform: translateX(-50%);
   user-select: none;
@@ -64,10 +64,22 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
-  width: 600px; /* 380*3 */
+  gap: 0;
+  width: 600px;
   height: auto;
   padding-bottom: 20px;
+  margin-top: 150px; /* опущено вниз на 150px */
+}
+
+/* Кнопка крутить */
+.btn-spin {
+  width: 600px;
+  cursor: pointer;
+  user-select: none;
+  display: block;
+  -webkit-user-drag: none;
+  height: 360px;
+  object-fit: contain;
 }
 
 /* Кнопка билетов */
@@ -77,6 +89,7 @@ html, body {
   cursor: default;
   user-select: none;
   height: 360px;
+  margin-top: 15px; /* небольшой отступ между кнопками */
 }
 
 .btn-bilets {
@@ -96,24 +109,13 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 20px; /* 56*3 */
+  font-size: 26px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 5px black;
+  text-shadow: 0 0 4px black;
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
-}
-
-/* Кнопка крутить */
-.btn-spin {
-  width: 600px;
-  cursor: pointer;
-  user-select: none;
-  display: block;
-  -webkit-user-drag: none;
-  height: 360px;
-  object-fit: contain;
 }
 
 /* Сообщение */
