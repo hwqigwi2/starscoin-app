@@ -42,15 +42,16 @@ html, body {
 /* Контейнер кнопок */
 .buttons {
   position: absolute;
-  top: calc(12% + 250px); /* поднять кнопки выше колеса */
+  top: calc(12% + 330px + 5px); /* Сразу под колесом + 5px */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px; /* отступ между кнопками для видимости */
+  gap: 8px; /* Минимальный отступ между кнопками */
   width: 600px;
   z-index: 100;
+  /* height не задаём, чтобы не обрезать кнопки */
 }
 
 /* Кнопка Билеты */
@@ -95,6 +96,6 @@ html, body {
   -webkit-user-drag: none;
   object-fit: contain;
   display: block;
-  z-index: 20; /* чтобы была над билетов */
-  border: none; /* убрать рамки, если были */
+  z-index: 20;
+  border: none;
 }
