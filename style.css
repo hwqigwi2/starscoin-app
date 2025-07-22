@@ -42,14 +42,26 @@ html, body {
 /* Контейнер кнопок */
 .buttons {
   position: absolute;
-  top: calc(12% + 220px);
+  top: calc(12% + 250px); /* подняты выше */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  width: 600px; /* фиксированная ширина */
+  gap: 10px; /* добавлен отступ */
+  width: 600px;
+  z-index: 10;
+}
+
+.btn-spin {
+  width: 600px;
+  height: 360px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  object-fit: contain;
+  display: block;
+  margin-top: 0; /* можно убрать, если используешь gap */
   z-index: 10;
 }
 
