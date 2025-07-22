@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="touch-action" content="none">
-  <title>Telegram Gift Mini App</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    html, body {
-      touch-action: none;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Колесо Удачи</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="container">
-    <img id="startImage" src="GGuft.png" alt="Начальный подарок" />
-    <div id="giftAnimation"></div>
-    <img id="finalImage" src="IMG_2134.PNG" alt="Telegram Gift" />
-    <div id="animationContainer"></div> <!-- Изменили iceAnimation на animationContainer -->
-  </div>
+  <!-- Колесо -->
+  <img id="wheel" class="wheel" src="IMG_2598.PNG" alt="Колесо" />
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.1/lottie.min.js"></script>
+  <!-- Оверлей поверх колеса -->
+  <img class="overlay" src="IMG_2595.PNG" alt="Оверлей" />
+
+  <!-- Кнопка билетов -->
+  <img class="btn btn-bilets" id="btnBilets" src="IMG_2617.PNG" alt="Билеты" title="Билеты: 3" />
+
+  <!-- Кнопка крутить -->
+  <img class="btn btn-spin" id="btnSpin" src="IMG_2618.PNG" alt="Крутить" />
+
+  <!-- Кнопка назад -->
+  <img class="btn btn-back" id="btnBack" src="IMG_2623.PNG" alt="Назад" />
+
+  <!-- Сообщение -->
+  <div class="message" id="message"></div>
+
   <script src="script.js"></script>
 </body>
 </html>

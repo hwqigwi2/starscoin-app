@@ -1,63 +1,61 @@
- body {
+body {
   margin: 0;
-  height: 100vh;
-  background-image: url('IMG_2126.JPG');
+  font-family: 'Lilita One', cursive;
+  overflow: hidden;
+  background: url('IMG_2601.PNG') no-repeat center center fixed;
   background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  touch-action: none;
 }
 
-#container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
-#startImage, #giftAnimation, #finalImage, #animationContainer {
+.wheel {
   position: absolute;
-  user-select: none;
-  pointer-events: auto;
-  width: 90vw;
-  height: auto;
-  max-height: 90vh;
+  top: 20%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  transform: translateX(-50%);
+  transition: transform 3s ease-out;
 }
 
-#giftAnimation, #finalImage, #animationContainer {
+.overlay {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.btn {
+  position: absolute;
+  bottom: 20px;
+  width: 100px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-bilets {
+  left: 20px;
+}
+
+.btn-spin {
+  left: calc(50% - 50px);
+}
+
+.btn-back {
+  right: 20px;
   display: none;
 }
 
-#animationContainer {
-  width: 150px;
-  height: 150px;
-  z-index: 2;
-}
-
-#finalImage {
-  top: 45%; 
+.message {
+  position: absolute;
+  top: 65%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-#giftAnimation {
-  position: absolute;
-  top: 40%;     /* Такое же значение, как у #startImage */
-  left: 50%;    /* Такое же значение, как у #startImage */
-  transform: translate(-50%, -50%);
-  width: 90vw;
-  height: auto;
-  max-height: 90vh;
-  display: none; /* Изначально скрыта */
-}
-
-#startImage {
-  top: 40%;    /* Очень низко */
-  left: 50%;   /* Очень право */
-  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 22px;
+  text-align: center;
+  text-shadow: 0 0 5px black;
+  user-select: none;
+  min-width: 200px;
 }
