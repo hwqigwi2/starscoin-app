@@ -45,10 +45,10 @@ html, body {
 /* Оверлей */
 .overlay {
   position: absolute;
-  top: 9.5%;
+  top: 12%;
   left: 50%;
-  width: 280px; /* оставил 280 чтобы не выходил за колесо */
-  height: 280px;
+  width: 330px; /* оставил 280 чтобы не выходил за колесо */
+  height: 330px;
   pointer-events: none;
   transform: translateX(-50%);
   user-select: none;
