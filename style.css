@@ -18,65 +18,21 @@ html, body {
   position: relative;
   width: 100vw;
   height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 24px;
 }
 
-/* Кнопка Крутить сверху */
-.btn-spin-wrapper {
-  width: 600px;
-  height: 360px;
-  margin-bottom: 8px; /* Отступ снизу для кнопки */
-}
-
-.btn-spin {
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  object-fit: contain;
-  display: block;
-}
-
-/* Колесо и оверлей */
-.wheel, .overlay {
-  width: 330px;
-  height: 330px;
-  object-fit: contain;
-  user-select: none;
-  pointer-events: none;
-  -webkit-user-drag: none;
-  border-radius: 50%;
-  position: relative;
-  transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
-}
-
-/* Оверлей */
-.overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 330px;
-  height: 330px;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  border-radius: 50%;
-  z-index: 10;
-}
-
-/* Контейнер билетов снизу */
+/* Баланс билетов — выше колеса */
 .btn-bilets-wrapper {
   width: 600px;
   height: 360px;
-  margin-top: 8px; /* Отступ сверху */
   position: relative;
-  user-select: none;
   cursor: default;
+  user-select: none;
 }
 
 .btn-bilets {
@@ -87,7 +43,6 @@ html, body {
   -webkit-user-drag: none;
 }
 
-/* Счётчик билетов */
 .ticket-count {
   position: absolute;
   top: 50%;
@@ -100,4 +55,56 @@ html, body {
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
+}
+
+/* Обертка для колеса и оверлея */
+.wheel-wrapper {
+  position: relative;
+  width: 330px;
+  height: 330px;
+}
+
+/* Колесо */
+.wheel {
+  width: 330px;
+  height: 330px;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  border-radius: 50%;
+  transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 50% 50%;
+}
+
+/* Оверлей — всегда над колесом, не смещается */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 330px;
+  height: 330px;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+/* Кнопка Крутить — ниже колеса */
+.btn-spin-wrapper {
+  width: 600px;
+  height: 360px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.btn-spin {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }

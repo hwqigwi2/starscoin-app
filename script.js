@@ -2,9 +2,9 @@ let tickets = 3;
 let spinning = false;
 
 const wheel = document.getElementById('wheel');
+const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
-const overlay = document.getElementById('overlay');
 
 const IMG_SPIN_NORMAL = "IMG_2618.PNG";
 const IMG_SPIN_SPINNING = "IMG_2620.PNG";
@@ -26,8 +26,9 @@ btnSpin.addEventListener('click', () => {
   const randomAngle = Math.floor(Math.random() * 360);
   const newRotation = currentRotation + spins * 360 + randomAngle;
 
+  // Вращаем только колесо, без смещений
   wheel.style.transform = `rotate(${newRotation}deg)`;
-  overlay.style.transform = `rotate(${newRotation}deg)`;
+  overlay.style.transform = `rotate(0deg)`; // оверлей не крутится, всегда статично
   wheel.dataset.rotation = newRotation;
 
   setTimeout(() => {
