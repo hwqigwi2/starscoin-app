@@ -1,65 +1,68 @@
-let tickets = 3;
-let spinning = false;
-
-const wheel = document.getElementById('wheel');
-const btnSpin = document.getElementById('btnSpin');
-const ticketCount = document.getElementById('ticketCount');
-const message = document.getElementById('message');
-
-const IMG_SPIN_NORMAL = "IMG_2618.PNG";
-const IMG_SPIN_SPINNING = "IMG_2620.PNG";
-const IMG_SPIN_DISABLED = "IMG_2619.PNG";
-
-updateUI();
-
-btnSpin.addEventListener('click', () => {
-  if (spinning || tickets <= 0) return;
-
-  spinning = true;
-  tickets--;
-  updateUI();
-
-  btnSpin.src = IMG_SPIN_SPINNING;
-  message.classList.remove('visible');
-
-  let currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
-  const spins = 3;
-  const randomAngle = Math.floor(Math.random() * 360);
-  const newRotation = currentRotation + spins * 360 + randomAngle;
-
-  wheel.style.transform = `translateX(-50%) rotate(${newRotation}deg)`;
-  wheel.dataset.rotation = newRotation;
-
-  setTimeout(() => {
-    spinning = false;
-    const won = Math.random() < 0.4;
-
-    if (won) {
-      tickets++;
-      showMessage("🎉 Вы получили 1 билет!");
+document.addEventListener('DOMContentLoaded', function() {
+  // Элементы
+  const wheel = document.getElementById('wheel');
+  const spinBtn = document.getElementById('spin-btn');
+  const ticketCount = document.getElementById('ticket-count');
+  const message = document.getElementById('message');
+  
+  // Переменные состояния
+  let tickets = 3;
+  let isSpinning = false;
+  
+  // Обновление отображения билетов
+  function updateTickets() {
+    ticketCount.textContent = tickets;
+    
+    if (tickets <= 0) {
+      spinBtn.classList.add('disabled');
     } else {
-      showMessage("В следующий раз повезёт 😔");
+      spinBtn.classList.remove('disabled');
     }
-
-    btnSpin.src = tickets > 0 ? IMG_SPIN_NORMAL : IMG_SPIN_DISABLED;
-    updateUI();
-  }, 3000);
-});
-
-function updateUI() {
-  ticketCount.textContent = tickets;
-  btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
-  if (tickets <= 0 && !spinning) {
-    btnSpin.src = IMG_SPIN_DISABLED;
-  } else if (!spinning) {
-    btnSpin.src = IMG_SPIN_NORMAL;
   }
-}
-
-function showMessage(text) {
-  message.textContent = text;
-  message.classList.add('visible');
-  setTimeout(() => {
-    message.classList.remove('visible');
-  }, 3000);
-}
+  
+  // Функция вращения колеса
+  function spinWheel() {
+    if (isSpinning || tickets <= 0) return;
+    
+    isSpinning = true;
+    tickets--;
+    updateTickets();
+    
+    spinBtn.classList.add('spinning');
+    
+    // Генерируем случайный угол (5-10 полных оборотов + случайный сектор)
+    const sectors = 8;
+    const fullRotations = 5 + Math.floor(Math.random() * 6);
+    const sectorAngle = 360 / sectors;
+    const winningSector = Math.floor(Math.random() * sectors);
+    const finalAngle = fullRotations * 360 + (winningSector * sectorAngle) + (sectorAngle / 2);
+    
+    // Вращаем колесо
+    wheel.style.transform = `translateX(-50%) rotate(${-finalAngle}deg)`;
+    
+    // Показываем результат через 3 секунды
+    setTimeout(() => {
+      isSpinning = false;
+      spinBtn.classList.remove('spinning');
+      
+      // Показываем сообщение
+      message.classList.add('visible');
+      
+      // Скрываем сообщение через 2 секунды
+      setTimeout(() => {
+        message.classList.remove('visible');
+      }, 2000);
+    }, 3000);
+  }
+  
+  // Обработчик клика на кнопку вращения
+  spinBtn.addEventListener('click', spinWheel);
+  
+  // Запрет масштабирования при двойном тапе
+  document.addEventListener('dblclick', function(e) {
+    e.preventDefault();
+  });
+  
+  // Инициализация
+  updateTickets();
+});
