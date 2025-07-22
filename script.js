@@ -26,8 +26,9 @@ btnSpin.addEventListener('click', () => {
   const randomAngle = Math.floor(Math.random() * 360);
   const newRotation = currentRotation + spins * 360 + randomAngle;
 
+  // Вращаем только колесо, без смещений
   wheel.style.transform = `rotate(${newRotation}deg)`;
-  overlay.style.transform = `rotate(0deg)`;
+  overlay.style.transform = `rotate(0deg)`; // оверлей не крутится, всегда статично
   wheel.dataset.rotation = newRotation;
 
   setTimeout(() => {
