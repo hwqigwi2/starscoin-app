@@ -72,8 +72,8 @@ html, body {
 
 .btn-bilets-wrapper,
 .btn-spin-wrapper {
-  width: 280px;  /* уменьшено в 2 раза */
-  height: 180px; /* уменьшено в 2 раза */
+  width: 420px;  /* уменьшено в 2 раза */
+  height: 270px; /* уменьшено в 2 раза */
   position: relative;
 }
 
