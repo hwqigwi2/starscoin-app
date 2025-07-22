@@ -53,7 +53,6 @@ function showTelegramAlert(text) {
   if (window.Telegram && Telegram.WebApp && Telegram.WebApp.showAlert) {
     Telegram.WebApp.showAlert(text);
   } else {
-    // fallback на стандартное окно alert если не в Telegram WebApp
     alert(text);
   }
 }
