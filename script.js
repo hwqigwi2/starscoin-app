@@ -20,14 +20,14 @@ function spinWheel() {
   updateUI();
   btnSpin.src = IMG_SPIN_SPINNING;
 
-  // 80% шанс на 0, 20% на билет
+  // 70% шанс на 0, 30% на билет
   const rand = Math.random();
   const spins = 5;
 
   // Углы:
   // Билет (в центре): 0
-  // Ноль — левее: -65
-  const targetAngle = rand < 0.8 ? -65 : 0;
+  // Ноль — левее: -75
+  const targetAngle = rand < 0.8 ? -75 : 0;
 
   const rotation = spins * 360 + targetAngle;
 
