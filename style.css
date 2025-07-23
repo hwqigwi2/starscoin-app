@@ -23,12 +23,12 @@ html, body {
   align-items: center;
 }
 
-/* Колесо и оверлей - выше центра, по центру */
+/* Колесо и оверлей */
 .wheel-wrapper {
   position: relative;
   width: 350px;
-  height: 350px; /* увеличили на 10px высоту для оверлея */
-  margin-top: 10vh; /* отступ сверху для поднятия выше центра */
+  height: 350px;
+  margin-top: 10vh;
   margin-bottom: 20px;
 }
 
@@ -36,7 +36,7 @@ html, body {
   width: 350px;
   height: 350px;
   position: absolute;
-  top: 10px; /* сдвинули колесо чуть ниже, чтобы оверлей был выше */
+  top: 10px;
   left: 1;
   border-radius: 50%;
   object-fit: contain;
@@ -45,11 +45,11 @@ html, body {
 }
 
 .overlay {
-  width: 370px; /* на 10px шире */
-  height: 370px; /* на 10px выше */
+  width: 375px; /* было 370px */
+  height: 375px; /* было 370px */
   position: absolute;
-  top: 13px; /* подняли выше колеса */
-  left: 0; /* сдвинули влево, чтобы центр совпадал */
+  top: 3%; /* подняли на 3% */
+  left: -3%; /* сдвинули влево на 3% */
   border-radius: 50%;
   object-fit: contain;
   pointer-events: none;
@@ -58,13 +58,13 @@ html, body {
   z-index: 10;
 }
 
-/* Кнопка билеты под колесом — поднята выше */
+/* Кнопка билеты */
 .btn-bilets-wrapper {
   width: 350px;
   height: 105px;
   position: relative;
   margin-bottom: 1px;
-  margin-top: 25px; /* уменьшен отступ сверху — подняли */
+  margin-top: 25px;
   user-select: none;
 }
 
@@ -93,12 +93,12 @@ html, body {
   font-family: 'Lilita One', cursive;
 }
 
-/* Кнопка крутить под кнопкой билеты — тоже поднята */
+/* Кнопка крутить — подняли на 5px */
 .btn-spin-wrapper {
   width: 350px;
   height: 90px;
   user-select: none;
-  margin-top: 20px; /* добавлен небольшой отступ сверху */
+  margin-top: 15px; /* было 20px */
 }
 
 .btn-spin {
