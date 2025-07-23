@@ -23,6 +23,72 @@ html, body {
   align-items: center;
 }
 
+/* PNG полоска сверху */
+.png-strip-container {
+  position: fixed;
+  top: 0.5vh;
+  left: 0.5vw;
+  width: 99vw;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.5); /* полупрозрачный фон */
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+  z-index: 1000;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Фиксированное левое PNG */
+.png-strip-left {
+  height: 45px;
+  aspect-ratio: auto 1 / 1;
+  user-select: none;
+  -webkit-user-drag: none;
+  flex-shrink: 0;
+  margin-right: 10px;
+  border-radius: 15px;
+}
+
+/* Контейнер полосы JPG */
+.jpg-strip {
+  position: relative;
+  width: calc(45px * 6 + 10px * 5); /* ширина под 6 иконок с gap */
+  height: 45px;
+  overflow: hidden;
+  user-select: none;
+  border-radius: 15px; /* скругление краёв контейнера */
+  background-color: #00000080; /* затемненный фон полосы */
+}
+
+.jpg-strip img {
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  transition: left 1s ease, opacity 1s ease;
+  opacity: 1;
+  top: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+  background-color: #222;
+  box-sizing: border-box;
+  border-radius: 15px; /* все иконки со скруглением */
+}
+
+.jpg-strip img.leaving {
+  opacity: 0;
+  left: 3px !important;
+}
+
+.jpg-strip img.entering {
+  opacity: 0;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
 /* Колесо и оверлей */
 .wheel-wrapper {
   position: relative;
@@ -108,69 +174,4 @@ html, body {
   display: block;
   -webkit-user-drag: none;
   cursor: pointer;
-}
-
-/* === Новая полоска с PNG вверху === */
-}.png-strip-container {
-  position: fixed;
-  top: 0.5vh;
-  left: 0.5vw;
-  width: 99vw;
-  height: 50px;
-  background-color: rgba(0, 0, 0, 0.85);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  gap: 10px;
-  z-index: 1000;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-
-
-/* Фиксированное левое PNG */
-.png-strip-left {
-  height: 45px;
-  aspect-ratio: auto 1 / 1;
-  user-select: none;
-  -webkit-user-drag: none;
-  flex-shrink: 0;
-  margin-right: 10px;
-}
-
-/* Контейнер полосы JPG */
-.jpg-strip {
-  position: relative;
-  width: calc(45px * 6 + 10px * 5); /* ширина под 6 иконок с gap */
-  height: 45px;
-  overflow: hidden;
-  user-select: none;
-  border-radius: 15px; /* скругление краёв контейнера */
-  background-color: #00000080; /* можно чуть затемнить фон полосы */
-}
-
-.jpg-strip img {
-  position: absolute;
-  width: 45px;
-  height: 45px;
-  object-fit: cover;
-  transition: left 1s ease, opacity 1s ease;
-  opacity: 1;
-  top: 0;
-  user-select: none;
-  -webkit-user-drag: none;
-  background-color: #222;
-  box-sizing: border-box;
-  border-radius: 15px; /* ВСЕ иконки со скруглением */
-}
-
-.jpg-strip img.leaving {
-  opacity: 0;
-  left: 3px !important;
-}
-
-.jpg-strip img.entering {
-  opacity: 0;
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
 }

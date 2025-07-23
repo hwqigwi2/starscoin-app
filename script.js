@@ -1,3 +1,4 @@
+// Переменные колеса
 let tickets = 3;
 let spinning = false;
 
@@ -76,11 +77,14 @@ const gap = 10;
 const visibleCount = 6;
 const stripWidth = imgWidth * visibleCount + gap * (visibleCount - 1);
 
-const jpgOrder = [
+const jpgOrderRaw = [
   2685, 2685, 2680, 2685, 2680, 2680, 2681, 2680, 2685, 2680,
   2683, 2685, 2685, 2685, 2685, 2680, 2681, 2685, 2680, 2680,
   2684, 2680, 2680, 2681, 2685, 2680, 2685, 2685, 2681
 ];
+
+// Убираем 2684 из массива
+const jpgOrder = jpgOrderRaw.filter(num => num !== 2684);
 
 const jpgPrefix = "IMG_";
 const jpgSuffix = ".JPG";
@@ -121,7 +125,6 @@ function positionImgs() {
     imgs[i].style.opacity = "1";
     imgs[i].classList.remove("leaving");
     imgs[i].classList.remove("entering");
-    // Скругление всегда остаётся — не сбрасываем!
   }
 }
 
@@ -153,17 +156,14 @@ function initJpgStrip() {
 function slideNext() {
   if (imgs.length === 0) return;
 
-  // Левая уходит — сдвиг только на 3px и исчезает
   imgs[0].classList.add("leaving");
   imgs[0].style.left = "3px";
 
-  // Остальные сдвигаются влево на ширину + gap
   for (let i = 1; i < imgs.length; i++) {
     const targetLeft = (i - 1) * (imgWidth + gap);
     imgs[i].style.left = targetLeft + "px";
   }
 
-  // Новая картинка — справа за контейнером, с закруглённым правым краем
   const newImg = document.createElement('img');
   newImg.src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
   newImg.alt = `IMG_${jpgOrder[currentIndex]}`;
@@ -174,7 +174,6 @@ function slideNext() {
   jpgStrip.appendChild(newImg);
   imgs.push(newImg);
 
-  // Плавно выезжает на позицию последней картинки
   requestAnimationFrame(() => {
     newImg.style.left = ((visibleCount - 1) * (imgWidth + gap)) + "px";
     newImg.style.opacity = "1";
@@ -183,17 +182,13 @@ function slideNext() {
   currentIndex = (currentIndex + 1) % jpgOrder.length;
 
   setTimeout(() => {
-    // Удаляем ушедшую картинку
     const leavingImg = imgs.shift();
     jpgStrip.removeChild(leavingImg);
 
-    // Снимаем класс entering у новой
     newImg.classList.remove("entering");
 
-    // Фиксируем позиции всех
     positionImgs();
 
-    // Сохраняем прогресс
     const currentImgs = imgs.map(img => {
       const match = img.src.match(/IMG_(\d+)\.JPG$/i);
       return match ? Number(match[1]) : null;
