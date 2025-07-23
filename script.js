@@ -6,9 +6,9 @@ const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
-const IMG_SPIN_NORMAL = "IMG_2637.PNG";     // кнопка крутить (активна)
-const IMG_SPIN_SPINNING = "IMG_2639.PNG";   // кнопка во время кручения
-const IMG_SPIN_DISABLED = "IMG_2638.PNG";   // кнопка когда нет билетов
+const IMG_SPIN_NORMAL = "IMG_2665.PNG";     // кнопка крутить (активна)
+const IMG_SPIN_SPINNING = "IMG_2667.PNG";   // кнопка во время кручения
+const IMG_SPIN_DISABLED = "IMG_2666.PNG";   // кнопка когда нет билетов
 
 updateUI();
 
