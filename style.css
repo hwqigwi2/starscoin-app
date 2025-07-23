@@ -45,8 +45,8 @@ html, body {
 }
 
 .overlay {
-  width: 385px; /* было 370px */
-  height: 385px; /* было 370px */
+  width: 500px; /* было 370px */
+  height: 500px; /* было 370px */
   position: absolute;
   top: 1%; /* подняли на 3% */
   left: -3.5%; /* сдвинули влево на 3% */
