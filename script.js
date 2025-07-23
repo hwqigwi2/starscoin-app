@@ -13,10 +13,10 @@ const IMG_SPIN_DISABLED = "IMG_2666.PNG";
 // Углы секторов (ты сам их выбрал)
 const sectors = [
   { type: "билет", angle: 90 },
-  { type: "0", angle: 30 },
-  { type: "0", angle: 300 },
-  { type: "билет", angle: 240 },
-  { type: "билет", angle: 150 },
+  { type: "0", angle: 23 },
+  { type: "0", angle: 305 },
+  { type: "билет", angle: 235 },
+  { type: "билет", angle: 165 },
   { type: "0", angle: 130 },
 ];
 
