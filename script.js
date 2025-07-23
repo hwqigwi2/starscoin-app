@@ -88,7 +88,7 @@ const jpgSuffix = ".JPG";
 const jpgStrip = document.getElementById('jpgStrip');
 
 let currentIndex = 0;
-let imgs = []; // массив img DOM
+let imgs = [];
 
 const STORAGE_KEY = "jpgStripState";
 
@@ -114,7 +114,6 @@ function saveState(currentImgs) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
 }
 
-// Установка позиций картинок
 function positionImgs() {
   for (let i = 0; i < imgs.length; i++) {
     imgs[i].style.left = (i * (imgWidth + gap)) + "px";
@@ -122,6 +121,7 @@ function positionImgs() {
     imgs[i].style.opacity = "1";
     imgs[i].classList.remove("leaving");
     imgs[i].classList.remove("entering");
+    // Скругление всегда остаётся — не сбрасываем!
   }
 }
 
@@ -138,7 +138,6 @@ function initJpgStrip() {
 
   imgs = [];
 
-  // Инициализируем 6 картинок (visibleCount)
   for (let i = 0; i < visibleCount; i++) {
     const img = document.createElement('img');
     img.src = `${jpgPrefix}${initialImgs[i]}${jpgSuffix}`;
@@ -151,53 +150,50 @@ function initJpgStrip() {
   saveState(initialImgs);
 }
 
-// Анимация сдвига и смены картинок
 function slideNext() {
   if (imgs.length === 0) return;
 
-  // Левая картинка начинает уезжать влево на 3px и исчезать
+  // Левая уходит — сдвиг только на 3px и исчезает
   imgs[0].classList.add("leaving");
   imgs[0].style.left = "3px";
 
-  // Все остальные картинки сдвигаем влево на (imgWidth + gap) пикселей
+  // Остальные сдвигаются влево на ширину + gap
   for (let i = 1; i < imgs.length; i++) {
     const targetLeft = (i - 1) * (imgWidth + gap);
     imgs[i].style.left = targetLeft + "px";
   }
 
-  // Новая картинка создается сразу справа за пределами контейнера
+  // Новая картинка — справа за контейнером, с закруглённым правым краем
   const newImg = document.createElement('img');
   newImg.src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
   newImg.alt = `IMG_${jpgOrder[currentIndex]}`;
   newImg.style.opacity = "0";
-  newImg.style.left = stripWidth + "px"; // справа за пределами
+  newImg.style.left = stripWidth + "px";
+  newImg.classList.add("entering");
+
   jpgStrip.appendChild(newImg);
   imgs.push(newImg);
 
-  // Плавно выезжает внутрь (сдвигается в позицию последней картинки)
-  // с opacity 0 -> 1
+  // Плавно выезжает на позицию последней картинки
   requestAnimationFrame(() => {
-    newImg.classList.add("entering");
     newImg.style.left = ((visibleCount - 1) * (imgWidth + gap)) + "px";
     newImg.style.opacity = "1";
   });
 
   currentIndex = (currentIndex + 1) % jpgOrder.length;
 
-  // По окончании анимации через 1000ms удаляем левую картинку и обновляем массив
   setTimeout(() => {
-    // Удаляем левый img из DOM и из массива
+    // Удаляем ушедшую картинку
     const leavingImg = imgs.shift();
     jpgStrip.removeChild(leavingImg);
 
-    // Убираем классы у нового img
+    // Снимаем класс entering у новой
     newImg.classList.remove("entering");
-    newImg.style.opacity = "1";
 
-    // Обновляем позиции картинок для точности
+    // Фиксируем позиции всех
     positionImgs();
 
-    // Сохраняем состояние текущих картинок (по src)
+    // Сохраняем прогресс
     const currentImgs = imgs.map(img => {
       const match = img.src.match(/IMG_(\d+)\.JPG$/i);
       return match ? Number(match[1]) : null;
