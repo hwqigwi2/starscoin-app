@@ -10,14 +10,14 @@ const IMG_SPIN_NORMAL = "IMG_2665.PNG";
 const IMG_SPIN_SPINNING = "IMG_2667.PNG";
 const IMG_SPIN_DISABLED = "IMG_2666.PNG";
 
-// Только допустимые сектора (углы, где визуально расположены нужные сектора)
+// Твои сектора с центрами по среднему углу
 const sectors = [
-  { type: "билет", angle: 90 },
-  { type: "0", angle: 30 },
-  { type: "0", angle: 300 },
-  { type: "билет", angle: 240 },
-  { type: "билет", angle: 150 },
-  { type: "0", angle: 130 },
+  { type: "билет", angle: 87.5 },
+  { type: "0", angle: 17.5 },
+  { type: "0", angle: 57 },
+  { type: "билет", angle: 120 },
+  { type: "билет", angle: 162.5 },
+  { type: "0", angle: 129 },
 ];
 
 updateUI();
@@ -31,28 +31,28 @@ btnSpin.addEventListener('click', () => {
   btnSpin.src = IMG_SPIN_SPINNING;
 
   let currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
-  const spins = 5; // обороты
+  const spins = 5; // Число полных оборотов
 
-  // 1. Выбираем тип сектора: "0" (75%) или "билет" (25%)
+  // Выбираем тип приза с шансом: билет - 25%, ноль - 75%
   const prizeType = Math.random() < 0.25 ? "билет" : "0";
 
-  // 2. Получаем список секторов данного типа
+  // Фильтруем возможные секторы по типу
   const possibleSectors = sectors.filter(s => s.type === prizeType);
 
-  // 3. Случайно выбираем один из подходящих углов
+  // Случайный выбор сектора из подходящих
   const selected = possibleSectors[Math.floor(Math.random() * possibleSectors.length)];
 
-  // 4. Вычисляем угол вращения: хотим, чтобы выбранный угол оказался под стрелкой (на 90°)
+  // Вычисляем угол для вращения: чтобы выбранный сектор оказался под стрелкой (90°)
   const correctedAngle = 90 - selected.angle;
   const newRotation = currentRotation + spins * 360 + correctedAngle;
 
-  // 5. Вращаем колесо
+  // Запускаем анимацию вращения
   wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
   wheel.style.transform = `rotate(${newRotation}deg)`;
   overlay.style.transform = `rotate(0deg)`;
   wheel.dataset.rotation = newRotation;
 
-  // 6. По завершении
+  // По окончании вращения
   setTimeout(() => {
     spinning = false;
 
