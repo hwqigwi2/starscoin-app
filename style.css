@@ -114,11 +114,11 @@ html, body {
 .png-strip-container {
   position: fixed;
   top: 0.5vh;
-  left: 2vw;
+  left: 0vw;
   width: 98vw;
-  height: 60px;
+  height: 50px;
   background-color: rgba(0, 0, 0, 0.85);
-  border-radius: 15px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   padding: 0 20px;
