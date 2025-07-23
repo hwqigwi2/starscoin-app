@@ -6,10 +6,6 @@ const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
-const IMG_SPIN_NORMAL = "IMG_2665.PNG";
-const IMG_SPIN_SPINNING = "IMG_2667.PNG";
-const IMG_SPIN_DISABLED = "IMG_2666.PNG";
-
 updateUI();
 
 function spinWheel() {
@@ -18,24 +14,18 @@ function spinWheel() {
   spinning = true;
   tickets--;
   updateUI();
-  btnSpin.src = IMG_SPIN_SPINNING;
+  btnSpin.src = "IMG_2667.PNG";
 
-  // 70% шанс на 0, 30% на билет
   const rand = Math.random();
   const spins = 5;
 
-  // Углы:
-  // Билет (в центре): 0
-  // Ноль — левее: -75
   const targetAngle = rand < 0.8 ? -75 : 0;
 
   const rotation = spins * 360 + targetAngle;
 
-  // сброс предыдущего вращения
   wheel.style.transition = 'none';
   wheel.style.transform = `rotate(0deg)`;
 
-  // задержка перед новым вращением, чтобы сброс отработал
   setTimeout(() => {
     wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
     wheel.style.transform = `rotate(${rotation}deg)`;
@@ -65,9 +55,9 @@ function updateUI() {
   btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
 
   if (tickets <= 0 && !spinning) {
-    btnSpin.src = IMG_SPIN_DISABLED;
+    btnSpin.src = "IMG_2666.PNG";
   } else if (!spinning) {
-    btnSpin.src = IMG_SPIN_NORMAL;
+    btnSpin.src = "IMG_2665.PNG";
   }
 }
 
@@ -78,3 +68,71 @@ function showTelegramAlert(text) {
     alert(text);
   }
 }
+
+// === Новый код для полоски JPG ===
+
+const jpgOrder = [
+  2685, 2685, 2680, 2685, 2680, 2680, 2681, 2680, 2685, 2680,
+  2683, 2685, 2685, 2685, 2685, 2680, 2681, 2685, 2680, 2680,
+  2684, 2680, 2680, 2681, 2685, 2680, 2685, 2685, 2681
+];
+
+const jpgPrefix = "IMG_";
+const jpgSuffix = ".JPG";
+
+const jpgStrip = document.getElementById('jpgStrip');
+const visibleCount = 5; // сколько показываем одновременно
+
+let currentIndex = 0;
+let isAnimating = false;
+
+// Инициализация: вставим первые 5 картинок
+function initJpgStrip() {
+  for (let i = 0; i < visibleCount; i++) {
+    const img = document.createElement('img');
+    const num = jpgOrder[(currentIndex + i) % jpgOrder.length];
+    img.src = `${jpgPrefix}${num}${jpgSuffix}`;
+    img.alt = `IMG_${num}`;
+    jpgStrip.appendChild(img);
+  }
+  currentIndex = (currentIndex + visibleCount) % jpgOrder.length;
+}
+
+function slideNext() {
+  if (isAnimating) return;
+  isAnimating = true;
+
+  const firstImg = jpgStrip.querySelector('img');
+  const imgWidth = firstImg.offsetWidth + 10; // ширина + gap
+
+  // Анимация сдвига через translateX
+  jpgStrip.style.transition = 'transform 1s ease';
+  jpgStrip.style.transform = `translateX(-${imgWidth}px)`;
+
+  // По окончании анимации:
+  jpgStrip.addEventListener('transitionend', onTransitionEnd);
+
+  function onTransitionEnd() {
+    jpgStrip.style.transition = 'none';
+    jpgStrip.style.transform = 'translateX(0)';
+
+    // Удаляем первый элемент
+    jpgStrip.removeChild(firstImg);
+
+    // Добавляем новую картинку справа
+    const newImg = document.createElement('img');
+    const num = jpgOrder[currentIndex];
+    newImg.src = `${jpgPrefix}${num}${jpgSuffix}`;
+    newImg.alt = `IMG_${num}`;
+    jpgStrip.appendChild(newImg);
+
+    currentIndex = (currentIndex + 1) % jpgOrder.length;
+
+    jpgStrip.removeEventListener('transitionend', onTransitionEnd);
+    isAnimating = false;
+  }
+}
+
+initJpgStrip();
+
+setInterval(slideNext, 5000);
