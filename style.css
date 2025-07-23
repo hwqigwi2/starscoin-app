@@ -135,6 +135,7 @@ html, body {
   user-select: none;
   -webkit-user-drag: none;
   flex-shrink: 0;
+  margin-right: 10px;
 }
 
 /* Контейнер с JPG картинками */
@@ -142,23 +143,30 @@ html, body {
   display: flex;
   align-items: center;
   gap: 10px;
-  overflow: visible;
   flex-shrink: 0;
   position: relative;
   height: 45px;
-  width: calc(45px * 5 + 10px * 4); /* покажем 5 штук одновременно, с gap */
+  width: calc(45px * 6 + 10px * 5); /* 6 штук одновременно с gap */
 }
 
 /* Каждый JPG */
 .jpg-strip img {
   width: 45px;
   height: 45px;
-  border-radius: 20px;
-  border: 3px solid white; /* рамка ~20px слишком много, 3px смотрится лучше */
+  border-radius: 15px;
   object-fit: cover;
   user-select: none;
   -webkit-user-drag: none;
   flex-shrink: 0;
   background-color: #222;
   box-sizing: border-box;
+  opacity: 1;
+  transition: opacity 1s ease;
+  position: relative;
+}
+.jpg-strip img.fading-out {
+  opacity: 0;
+}
+.jpg-strip img.fading-in {
+  opacity: 1;
 }

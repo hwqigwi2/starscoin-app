@@ -69,7 +69,7 @@ function showTelegramAlert(text) {
   }
 }
 
-// === Новый код для полоски JPG ===
+// === Новый код для полоски JPG с сохранением прогресса и плавной анимацией ===
 
 const jpgOrder = [
   2685, 2685, 2680, 2685, 2680, 2680, 2681, 2680, 2685, 2680,
@@ -81,58 +81,96 @@ const jpgPrefix = "IMG_";
 const jpgSuffix = ".JPG";
 
 const jpgStrip = document.getElementById('jpgStrip');
-const visibleCount = 5; // сколько показываем одновременно
+const visibleCount = 6; // показываем 6 штук одновременно
 
-let currentIndex = 0;
-let isAnimating = false;
+let currentIndex = 0;  // индекс следующей картинки из массива
+let imgs = []; // массив DOM элементов картинок
 
-// Инициализация: вставим первые 5 картинок
+// Ключ для localStorage
+const STORAGE_KEY = "jpgStripState";
+
+function loadState() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const obj = JSON.parse(saved);
+      if (obj && typeof obj.currentIndex === "number" && Array.isArray(obj.currentImgs)) {
+        currentIndex = obj.currentIndex;
+        return obj.currentImgs;
+      }
+    } catch { }
+  }
+  return null;
+}
+
+function saveState(currentImgs) {
+  const obj = {
+    currentIndex,
+    currentImgs
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+}
+
+// Инициализация полосы с картинками, либо из localStorage либо новые
 function initJpgStrip() {
+  jpgStrip.innerHTML = "";
+  let initialImgs = loadState();
+  if (!initialImgs) {
+    // Если нет сохранения, то просто первые visibleCount из массива по порядку
+    initialImgs = [];
+    for (let i = 0; i < visibleCount; i++) {
+      initialImgs.push(jpgOrder[i]);
+    }
+    currentIndex = visibleCount % jpgOrder.length;
+  }
+
+  imgs = [];
   for (let i = 0; i < visibleCount; i++) {
     const img = document.createElement('img');
-    const num = jpgOrder[(currentIndex + i) % jpgOrder.length];
-    img.src = `${jpgPrefix}${num}${jpgSuffix}`;
-    img.alt = `IMG_${num}`;
+    img.src = `${jpgPrefix}${initialImgs[i]}${jpgSuffix}`;
+    img.alt = `IMG_${initialImgs[i]}`;
+    img.style.opacity = "1";
     jpgStrip.appendChild(img);
+    imgs.push(img);
   }
-  currentIndex = (currentIndex + visibleCount) % jpgOrder.length;
+  saveState(initialImgs);
 }
 
 function slideNext() {
-  if (isAnimating) return;
-  isAnimating = true;
+  // Начинаем исчезать первую картинку
+  imgs[0].classList.add('fading-out');
 
-  const firstImg = jpgStrip.querySelector('img');
-  const imgWidth = firstImg.offsetWidth + 10; // ширина + gap
-
-  // Анимация сдвига через translateX
-  jpgStrip.style.transition = 'transform 1s ease';
-  jpgStrip.style.transform = `translateX(-${imgWidth}px)`;
-
-  // По окончании анимации:
-  jpgStrip.addEventListener('transitionend', onTransitionEnd);
-
-  function onTransitionEnd() {
-    jpgStrip.style.transition = 'none';
-    jpgStrip.style.transform = 'translateX(0)';
-
-    // Удаляем первый элемент
-    jpgStrip.removeChild(firstImg);
-
-    // Добавляем новую картинку справа
-    const newImg = document.createElement('img');
-    const num = jpgOrder[currentIndex];
-    newImg.src = `${jpgPrefix}${num}${jpgSuffix}`;
-    newImg.alt = `IMG_${num}`;
-    jpgStrip.appendChild(newImg);
-
+  // Через 1 сек (анимация исчезновения), меняем src, убираем первый элемент и сдвигаем массив
+  setTimeout(() => {
+    imgs[0].classList.remove('fading-out');
+    // Заменяем src у первой картинки на следующую в списке
+    imgs[0].style.opacity = "0";
+    imgs[0].src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
+    imgs[0].alt = `IMG_${jpgOrder[currentIndex]}`;
     currentIndex = (currentIndex + 1) % jpgOrder.length;
 
-    jpgStrip.removeEventListener('transitionend', onTransitionEnd);
-    isAnimating = false;
-  }
+    // Плавно показываем новую картинку
+    imgs[0].classList.add('fading-in');
+    imgs[0].style.opacity = "1";
+
+    // Циклично сдвигаем массив так, чтобы порядок был как сдвиг влево
+    // imgs[0] переходит в конец
+    imgs.push(imgs.shift());
+
+    // Обновляем localStorage с текущими src в порядке
+    const currentImgs = imgs.map(img => {
+      // Вычислим число из src, пример: IMG_2680.JPG
+      const match = img.src.match(/IMG_(\d+)\.JPG$/i);
+      return match ? Number(match[1]) : null;
+    });
+    saveState(currentImgs);
+
+    // Убираем класс fading-in через 1s для готовности к следующему циклу
+    setTimeout(() => {
+      imgs[imgs.length - 1].classList.remove('fading-in');
+    }, 1000);
+  }, 1000);
 }
 
 initJpgStrip();
-
 setInterval(slideNext, 5000);
