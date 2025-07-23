@@ -81,12 +81,11 @@ const jpgPrefix = "IMG_";
 const jpgSuffix = ".JPG";
 
 const jpgStrip = document.getElementById('jpgStrip');
-const visibleCount = 6; // показываем 6 штук одновременно
+const visibleCount = 6; // 6 видимых
 
-let currentIndex = 0;  // индекс следующей картинки из массива
+let currentIndex = 0;
 let imgs = []; // массив DOM элементов картинок
 
-// Ключ для localStorage
 const STORAGE_KEY = "jpgStripState";
 
 function loadState() {
@@ -111,12 +110,10 @@ function saveState(currentImgs) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
 }
 
-// Инициализация полосы с картинками, либо из localStorage либо новые
 function initJpgStrip() {
   jpgStrip.innerHTML = "";
   let initialImgs = loadState();
   if (!initialImgs) {
-    // Если нет сохранения, то просто первые visibleCount из массива по порядку
     initialImgs = [];
     for (let i = 0; i < visibleCount; i++) {
       initialImgs.push(jpgOrder[i]);
@@ -125,10 +122,18 @@ function initJpgStrip() {
   }
 
   imgs = [];
-  for (let i = 0; i < visibleCount; i++) {
+  // Добавляем на 1 картинку больше — 7 штук
+  for (let i = 0; i < visibleCount + 1; i++) {
     const img = document.createElement('img');
-    img.src = `${jpgPrefix}${initialImgs[i]}${jpgSuffix}`;
-    img.alt = `IMG_${initialImgs[i]}`;
+    let imgNum;
+    if (i < initialImgs.length) {
+      imgNum = initialImgs[i];
+    } else {
+      imgNum = jpgOrder[currentIndex];
+      currentIndex = (currentIndex + 1) % jpgOrder.length;
+    }
+    img.src = `${jpgPrefix}${imgNum}${jpgSuffix}`;
+    img.alt = `IMG_${imgNum}`;
     img.style.opacity = "1";
     jpgStrip.appendChild(img);
     imgs.push(img);
@@ -136,40 +141,57 @@ function initJpgStrip() {
   saveState(initialImgs);
 }
 
+// Функция анимации сдвига влево
 function slideNext() {
-  // Начинаем исчезать первую картинку
-  imgs[0].classList.add('fading-out');
+  // ширина картинки + gap
+  const imgWidth = imgs[0].offsetWidth + 10; 
 
-  // Через 1 сек (анимация исчезновения), меняем src, убираем первый элемент и сдвигаем массив
-  setTimeout(() => {
-    imgs[0].classList.remove('fading-out');
-    // Заменяем src у первой картинки на следующую в списке
-    imgs[0].style.opacity = "0";
-    imgs[0].src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
-    imgs[0].alt = `IMG_${jpgOrder[currentIndex]}`;
+  // Устанавливаем transition и сдвигаем контейнер
+  jpgStrip.style.transition = 'transform 1s ease';
+  jpgStrip.style.transform = `translateX(-${imgWidth}px)`;
+
+  // Первая (левая) картинка начинает исчезать
+  imgs[0].classList.add('leaving');
+
+  jpgStrip.addEventListener('transitionend', onTransitionEnd);
+
+  function onTransitionEnd() {
+    jpgStrip.style.transition = 'none';
+    jpgStrip.style.transform = 'translateX(0)';
+
+    // Убираем класс ухода у первой картинки
+    imgs[0].classList.remove('leaving');
+
+    // Удаляем первый img из DOM и из массива
+    const leavingImg = imgs.shift();
+    jpgStrip.removeChild(leavingImg);
+
+    // Добавляем новую картинку справа с opacity 0 и классом entering
+    const newImg = document.createElement('img');
+    newImg.src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
+    newImg.alt = `IMG_${jpgOrder[currentIndex]}`;
+    newImg.style.opacity = '0';
+    newImg.classList.add('entering');
+    jpgStrip.appendChild(newImg);
+    imgs.push(newImg);
+
     currentIndex = (currentIndex + 1) % jpgOrder.length;
 
-    // Плавно показываем новую картинку
-    imgs[0].classList.add('fading-in');
-    imgs[0].style.opacity = "1";
+    // После окончания анимации появления убираем класс entering
+    newImg.addEventListener('animationend', () => {
+      newImg.classList.remove('entering');
+      newImg.style.opacity = '1';
 
-    // Циклично сдвигаем массив так, чтобы порядок был как сдвиг влево
-    // imgs[0] переходит в конец
-    imgs.push(imgs.shift());
+      // Сохраняем состояние: текущие изображения (по src)
+      const currentImgs = imgs.slice(0, visibleCount).map(img => {
+        const match = img.src.match(/IMG_(\d+)\.JPG$/i);
+        return match ? Number(match[1]) : null;
+      });
+      saveState(currentImgs);
+    }, { once: true });
 
-    // Обновляем localStorage с текущими src в порядке
-    const currentImgs = imgs.map(img => {
-      // Вычислим число из src, пример: IMG_2680.JPG
-      const match = img.src.match(/IMG_(\d+)\.JPG$/i);
-      return match ? Number(match[1]) : null;
-    });
-    saveState(currentImgs);
-
-    // Убираем класс fading-in через 1s для готовности к следующему циклу
-    setTimeout(() => {
-      imgs[imgs.length - 1].classList.remove('fading-in');
-    }, 1000);
-  }, 1000);
+    jpgStrip.removeEventListener('transitionend', onTransitionEnd);
+  }
 }
 
 initJpgStrip();
