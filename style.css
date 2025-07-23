@@ -111,13 +111,13 @@ html, body {
 }
 
 /* === Новая полоска с PNG вверху === */
-.png-strip-container {
+}.png-strip-container {
   position: fixed;
   top: 0.5vh;
   left: 0.5vw;
   width: 99vw;
   height: 50px;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: rgba(0, 0, 0, 0.25);
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -126,7 +126,7 @@ html, body {
   z-index: 1000;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
+
 
 /* Фиксированное левое PNG */
 .png-strip-left {
