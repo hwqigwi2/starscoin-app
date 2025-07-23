@@ -48,8 +48,8 @@ html, body {
   width: 385px; /* было 370px */
   height: 385px; /* было 370px */
   position: absolute;
-  top: 3%; /* подняли на 3% */
-  left: -4%; /* сдвинули влево на 3% */
+  top: 10%; /* подняли на 3% */
+  left: -5%; /* сдвинули влево на 3% */
   border-radius: 50%;
   object-fit: contain;
   pointer-events: none;
