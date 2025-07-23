@@ -30,7 +30,7 @@ html, body {
   left: 0.5vw;
   width: 99vw;
   height: 50px;
-  background-color: rgba(0, 0, 0, 0.5); /* полупрозрачный фон */
+  background-color: rgba(0, 0, 0, 0.2); /* полупрозрачный фон */
   border-radius: 20px;
   display: flex;
   align-items: center;
