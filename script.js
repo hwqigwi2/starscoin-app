@@ -11,7 +11,7 @@ const IMG_SPIN_SPINNING = "IMG_2667.PNG";
 const IMG_SPIN_DISABLED = "IMG_2666.PNG";
 
 const sectors = [
-  { type: "билет", start: 70, end: 105 },   // билет у нас именно этот сектор с центром около 87.5°
+  { type: "билет", start: 70, end: 105 },
   { type: "0", start: 0, end: 35 },
   { type: "0", start: 38, end: 76 },
   { type: "билет", start: 100, end: 140 },
@@ -19,7 +19,7 @@ const sectors = [
   { type: "0", start: 113, end: 145 },
 ];
 
-// Рассчитаем size и center для секторов
+// Добавим size и center
 sectors.forEach(s => {
   if (s.end < s.start) {
     s.size = (360 - s.start) + s.end;
@@ -40,31 +40,26 @@ function spinWheel() {
   updateUI();
   btnSpin.src = IMG_SPIN_SPINNING;
 
-  let currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
+  const currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
   const spins = 5;
 
-  // Жёстко выбираем билет с центром около 90°
-  const ticketSector = sectors.find(s => s.type === "билет" && Math.abs(s.center - 90) < 20);
-  if (!ticketSector) {
-    alert("Ошибка: сектор билета около 90° не найден!");
-    spinning = false;
-    tickets++;
-    updateUI();
-    return;
-  }
+  // Угол, который сейчас находится под стрелкой (90°)
+  const visibleAngle = (360 - (currentRotation % 360) + 90) % 360;
 
-  // Случайный угол в секторе билета (для небольшого разброса, можно убрать, если не нужно)
-  let randomAngleInSector;
-  if (ticketSector.end < ticketSector.start) {
-    const randInPart = Math.random() * ticketSector.size;
-    randomAngleInSector = (ticketSector.start + randInPart) % 360;
-  } else {
-    randomAngleInSector = ticketSector.start + Math.random() * ticketSector.size;
-  }
+  // Найдём сектор, в котором находится этот угол
+  const sector = sectors.find(s => {
+    if (s.start <= s.end) {
+      return visibleAngle >= s.start && visibleAngle < s.end;
+    } else {
+      return visibleAngle >= s.start || visibleAngle < s.end;
+    }
+  });
 
-  // Вычисляем угол для вращения так, чтобы выбранный угол оказался под стрелкой (90°)
-  const correctedAngle = 90 - randomAngleInSector;
-  const newRotation = currentRotation + spins * 360 + correctedAngle;
+  // Рассчитаем центр этого сектора
+  const angleToCenter = 90 - sector.center;
+
+  // Новый угол, чтобы тот же сектор остался под стрелкой
+  const newRotation = currentRotation + spins * 360 + angleToCenter;
 
   wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
   wheel.style.transform = `rotate(${newRotation}deg)`;
@@ -74,8 +69,12 @@ function spinWheel() {
   setTimeout(() => {
     spinning = false;
 
-    tickets++;  // так как билет всегда падает, возвращаем билет обратно
-    showTelegramAlert("🎉 Вы получили 1 билет!");
+    if (sector.type === "билет") {
+      tickets++;
+      showTelegramAlert("🎉 Вы получили 1 билет!");
+    } else {
+      showTelegramAlert("😔 В следующий раз повезёт");
+    }
 
     btnSpin.src = tickets > 0 ? IMG_SPIN_NORMAL : IMG_SPIN_DISABLED;
     updateUI();
