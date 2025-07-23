@@ -23,8 +23,14 @@ btnSpin.addEventListener('click', () => {
 
   let currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
   const spins = 3;
-  const randomAngle = Math.floor(Math.random() * 360);
-  const newRotation = currentRotation + spins * 360 + randomAngle;
+
+  // Выбор одного из двух углов
+  const angleLose = 90;    // сектор "не повезло"
+  const angleWin = 270;    // сектор с 1 билетом
+  const random = Math.random();
+  const targetAngle = random < 0.75 ? angleLose : angleWin;
+
+  const newRotation = currentRotation + spins * 360 + targetAngle;
 
   wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
   wheel.style.transform = `rotate(${newRotation}deg)`;
@@ -34,9 +40,10 @@ btnSpin.addEventListener('click', () => {
   setTimeout(() => {
     spinning = false;
 
-    const won = Math.random() < 0.4;
+    // Проверка по углу, что выпало
+    const finalAngle = targetAngle % 360;
 
-    if (won) {
+    if (finalAngle === angleWin) {
       tickets++;
       showTelegramAlert("🎉 Вы получили 1 билет!");
     } else {
