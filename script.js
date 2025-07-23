@@ -26,8 +26,8 @@ function spinWheel() {
 
   // Углы:
   // Билет (в центре): 0
-  // Ноль — левее: -35
-  const targetAngle = rand < 0.8 ? -35 : 0;
+  // Ноль — левее: -15
+  const targetAngle = rand < 0.8 ? -15 : 0;
 
   const rotation = spins * 360 + targetAngle;
 
