@@ -10,13 +10,13 @@ const IMG_SPIN_NORMAL = "IMG_2665.PNG";
 const IMG_SPIN_SPINNING = "IMG_2667.PNG";
 const IMG_SPIN_DISABLED = "IMG_2666.PNG";
 
-// Углы секторов (ты сам их выбрал)
+// Только допустимые сектора (углы, где визуально расположены нужные сектора)
 const sectors = [
   { type: "билет", angle: 90 },
-  { type: "0", angle: 23 },
-  { type: "0", angle: 305 },
-  { type: "билет", angle: 235 },
-  { type: "билет", angle: 165 },
+  { type: "0", angle: 30 },
+  { type: "0", angle: 300 },
+  { type: "билет", angle: 240 },
+  { type: "билет", angle: 150 },
   { type: "0", angle: 130 },
 ];
 
@@ -28,25 +28,31 @@ btnSpin.addEventListener('click', () => {
   spinning = true;
   tickets--;
   updateUI();
-
   btnSpin.src = IMG_SPIN_SPINNING;
 
   let currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
-  const spins = 5; // Больше оборотов для красоты
+  const spins = 5; // обороты
 
-  // Выбор "0" или "билет" по шансу
+  // 1. Выбираем тип сектора: "0" (75%) или "билет" (25%)
   const prizeType = Math.random() < 0.25 ? "билет" : "0";
+
+  // 2. Получаем список секторов данного типа
   const possibleSectors = sectors.filter(s => s.type === prizeType);
+
+  // 3. Случайно выбираем один из подходящих углов
   const selected = possibleSectors[Math.floor(Math.random() * possibleSectors.length)];
-  const targetAngle = selected.angle;
 
-  const newRotation = currentRotation + spins * 360 + (360 + targetAngle - 90) % 360;
+  // 4. Вычисляем угол вращения: хотим, чтобы выбранный угол оказался под стрелкой (на 90°)
+  const correctedAngle = 90 - selected.angle;
+  const newRotation = currentRotation + spins * 360 + correctedAngle;
 
+  // 5. Вращаем колесо
   wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
   wheel.style.transform = `rotate(${newRotation}deg)`;
   overlay.style.transform = `rotate(0deg)`;
   wheel.dataset.rotation = newRotation;
 
+  // 6. По завершении
   setTimeout(() => {
     spinning = false;
 
@@ -65,6 +71,7 @@ btnSpin.addEventListener('click', () => {
 function updateUI() {
   ticketCount.textContent = tickets;
   btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
+
   if (tickets <= 0 && !spinning) {
     btnSpin.src = IMG_SPIN_DISABLED;
   } else if (!spinning) {
