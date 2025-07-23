@@ -10,18 +10,6 @@ const IMG_SPIN_NORMAL = "IMG_2665.PNG";
 const IMG_SPIN_SPINNING = "IMG_2667.PNG";
 const IMG_SPIN_DISABLED = "IMG_2666.PNG";
 
-// Чётко определённые секторы
-const sectors = {
-  zero: {
-    type: "0",
-    center: 125
-  },
-  ticket: {
-    type: "билет",
-    center: 90
-  }
-};
-
 updateUI();
 
 function spinWheel() {
@@ -32,33 +20,42 @@ function spinWheel() {
   updateUI();
   btnSpin.src = IMG_SPIN_SPINNING;
 
+  // 80% шанс на 0, 20% на билет
+  const rand = Math.random();
   const spins = 5;
 
-  // Выбор сектора строго по шансу 80/20
-  const rand = Math.random();
-  const selected = rand < 0.8 ? sectors.zero : sectors.ticket;
+  // Углы:
+  // Билет (в центре): 0
+  // Ноль — левее: -35
+  const targetAngle = rand < 0.8 ? -35 : 0;
 
-  // Угол для поворота: ровно чтобы нужный сектор встал под стрелку (на 90°)
-  const angleToCenter = 90 - selected.center;
-  const rotation = spins * 360 + angleToCenter;
+  const rotation = spins * 360 + targetAngle;
 
-  wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-  wheel.style.transform = `rotate(${rotation}deg)`;
-  overlay.style.transform = `rotate(0deg)`;
+  // сброс предыдущего вращения
+  wheel.style.transition = 'none';
+  wheel.style.transform = `rotate(0deg)`;
+
+  // задержка перед новым вращением, чтобы сброс отработал
+  setTimeout(() => {
+    wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
+    wheel.style.transform = `rotate(${rotation}deg)`;
+    overlay.style.transform = `rotate(0deg)`;
+  }, 50);
 
   setTimeout(() => {
     spinning = false;
 
-    if (selected.type === "билет") {
+    const result = targetAngle === 0 ? "билет" : "ноль";
+
+    if (result === "билет") {
       tickets++;
       showTelegramAlert("🎉 Вы получили 1 билет!");
     } else {
       showTelegramAlert("😔 В следующий раз повезёт");
     }
 
-    btnSpin.src = tickets > 0 ? IMG_SPIN_NORMAL : IMG_SPIN_DISABLED;
     updateUI();
-  }, 3000);
+  }, 3050);
 }
 
 btnSpin.addEventListener('click', spinWheel);
