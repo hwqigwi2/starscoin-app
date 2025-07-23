@@ -10,24 +10,15 @@ const IMG_SPIN_NORMAL = "IMG_2665.PNG";
 const IMG_SPIN_SPINNING = "IMG_2667.PNG";
 const IMG_SPIN_DISABLED = "IMG_2666.PNG";
 
+// Строго фиксированные сектора
 const sectors = [
   { type: "билет", start: 70, end: 105 },
-  { type: "0", start: 0, end: 35 },
-  { type: "0", start: 38, end: 76 },
-  { type: "билет", start: 100, end: 140 },
-  { type: "билет", start: 145, end: 180 },
-  { type: "0", start: 113, end: 145 },
+  { type: "0", start: 38, end: 68 },
 ];
 
-// Добавим size и center
 sectors.forEach(s => {
-  if (s.end < s.start) {
-    s.size = (360 - s.start) + s.end;
-    s.center = (s.start + s.size / 2) % 360;
-  } else {
-    s.size = s.end - s.start;
-    s.center = s.start + s.size / 2;
-  }
+  s.size = s.end - s.start;
+  s.center = s.start + s.size / 2;
 });
 
 updateUI();
@@ -40,26 +31,23 @@ function spinWheel() {
   updateUI();
   btnSpin.src = IMG_SPIN_SPINNING;
 
-  const currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
   const spins = 5;
 
-  // Угол, который сейчас находится под стрелкой (90°)
-  const visibleAngle = (360 - (currentRotation % 360) + 90) % 360;
+  // Рандомно: 80% — сектор 0 (угол 125), 20% — сектор билет (угол 90)
+  const rand = Math.random();
+  let selectedSector = null;
 
-  // Найдём сектор, в котором находится этот угол
-  const sector = sectors.find(s => {
-    if (s.start <= s.end) {
-      return visibleAngle >= s.start && visibleAngle < s.end;
-    } else {
-      return visibleAngle >= s.start || visibleAngle < s.end;
-    }
-  });
+  if (rand < 0.8) {
+    selectedSector = sectors.find(s => s.type === "0");
+  } else {
+    selectedSector = sectors.find(s => s.type === "билет");
+  }
 
-  // Рассчитаем центр этого сектора
-  const angleToCenter = 90 - sector.center;
+  // Чтобы центр сектора оказался строго под 90°
+  const angleToCenter = 90 - selectedSector.center;
 
-  // Новый угол, чтобы тот же сектор остался под стрелкой
-  const newRotation = currentRotation + spins * 360 + angleToCenter;
+  // Вращаем от НУЛЯ, а не от предыдущего угла
+  const newRotation = spins * 360 + angleToCenter;
 
   wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
   wheel.style.transform = `rotate(${newRotation}deg)`;
@@ -69,7 +57,7 @@ function spinWheel() {
   setTimeout(() => {
     spinning = false;
 
-    if (sector.type === "билет") {
+    if (selectedSector.type === "билет") {
       tickets++;
       showTelegramAlert("🎉 Вы получили 1 билет!");
     } else {
