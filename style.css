@@ -45,11 +45,11 @@ html, body {
 }
 
 .overlay {
-  width: 360px; /* на 10px шире */
-  height: 360px; /* на 10px выше */
+  width: 370px; /* на 10px шире */
+  height: 370px; /* на 10px выше */
   position: absolute;
   top: 10px; /* подняли выше колеса */
-  left: 0; /* сдвинули влево, чтобы центр совпадал */
+  left: 2; /* сдвинули влево, чтобы центр совпадал */
   border-radius: 50%;
   object-fit: contain;
   pointer-events: none;
@@ -61,10 +61,10 @@ html, body {
 /* Кнопка билеты под колесом — поднята выше */
 .btn-bilets-wrapper {
   width: 350px;
-  height: 115px;
+  height: 105px;
   position: relative;
-  margin-bottom: 8px;
-  margin-top: 40px; /* уменьшен отступ сверху — подняли */
+  margin-bottom: 3px;
+  margin-top: 30px; /* уменьшен отступ сверху — подняли */
   user-select: none;
 }
 
@@ -96,9 +96,9 @@ html, body {
 /* Кнопка крутить под кнопкой билеты — тоже поднята */
 .btn-spin-wrapper {
   width: 350px;
-  height: 105px;
+  height: 90px;
   user-select: none;
-  margin-top: 10px; /* добавлен небольшой отступ сверху */
+  margin-top: 25px; /* добавлен небольшой отступ сверху */
 }
 
 .btn-spin {
