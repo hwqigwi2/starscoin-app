@@ -81,13 +81,13 @@ html, body {
 /* Счетчик билетов */
 .ticket-count {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 52%;
+  left: 52%;
   transform: translate(-50%, -50%);
   font-size: 25px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 5px black;
+  text-shadow: 0 0 1px black;
   pointer-events: none;
   user-select: none;
   font-family: 'Lilita One', cursive;
@@ -98,7 +98,7 @@ html, body {
   width: 350px;
   height: 90px;
   user-select: none;
-  margin-top: 1px; /* было 20px */
+  margin-top: 0.5px; /* было 20px */
 }
 
 .btn-spin {
