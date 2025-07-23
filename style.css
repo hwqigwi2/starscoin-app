@@ -27,7 +27,7 @@ html, body {
 .wheel-wrapper {
   position: relative;
   width: 350px;
-  height: 360px; /* увеличили на 10px высоту для оверлея */
+  height: 350px; /* увеличили на 10px высоту для оверлея */
   margin-top: 10vh; /* отступ сверху для поднятия выше центра */
   margin-bottom: 20px;
 }
@@ -48,8 +48,8 @@ html, body {
   width: 360px; /* на 10px шире */
   height: 360px; /* на 10px выше */
   position: absolute;
-  top: 0; /* подняли выше колеса */
-  left: -5px; /* сдвинули влево, чтобы центр совпадал */
+  top: 10px; /* подняли выше колеса */
+  left: 0; /* сдвинули влево, чтобы центр совпадал */
   border-radius: 50%;
   object-fit: contain;
   pointer-events: none;
@@ -61,7 +61,7 @@ html, body {
 /* Кнопка билеты под колесом — поднята выше */
 .btn-bilets-wrapper {
   width: 350px;
-  height: 105px;
+  height: 115px;
   position: relative;
   margin-bottom: 8px;
   margin-top: 40px; /* уменьшен отступ сверху — подняли */
@@ -96,9 +96,9 @@ html, body {
 /* Кнопка крутить под кнопкой билеты — тоже поднята */
 .btn-spin-wrapper {
   width: 350px;
-  height: 90px;
+  height: 105px;
   user-select: none;
-  margin-top: 20px; /* добавлен небольшой отступ сверху */
+  margin-top: 10px; /* добавлен небольшой отступ сверху */
 }
 
 .btn-spin {
