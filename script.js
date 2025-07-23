@@ -6,9 +6,19 @@ const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
-const IMG_SPIN_NORMAL = "IMG_2665.PNG";     // кнопка крутить (активна)
-const IMG_SPIN_SPINNING = "IMG_2667.PNG";   // кнопка во время кручения
-const IMG_SPIN_DISABLED = "IMG_2666.PNG";   // кнопка когда нет билетов
+const IMG_SPIN_NORMAL = "IMG_2665.PNG";
+const IMG_SPIN_SPINNING = "IMG_2667.PNG";
+const IMG_SPIN_DISABLED = "IMG_2666.PNG";
+
+// Углы секторов (ты сам их выбрал)
+const sectors = [
+  { type: "билет", angle: 90 },
+  { type: "0", angle: 30 },
+  { type: "0", angle: 300 },
+  { type: "билет", angle: 240 },
+  { type: "билет", angle: 150 },
+  { type: "0", angle: 130 },
+];
 
 updateUI();
 
@@ -22,15 +32,15 @@ btnSpin.addEventListener('click', () => {
   btnSpin.src = IMG_SPIN_SPINNING;
 
   let currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
-  const spins = 3;
+  const spins = 5; // Больше оборотов для красоты
 
-  // Выбор одного из двух углов
-  const angleLose = 90;    // сектор "не повезло"
-  const angleWin = 270;    // сектор с 1 билетом
-  const random = Math.random();
-  const targetAngle = random < 0.75 ? angleLose : angleWin;
+  // Выбор "0" или "билет" по шансу
+  const prizeType = Math.random() < 0.25 ? "билет" : "0";
+  const possibleSectors = sectors.filter(s => s.type === prizeType);
+  const selected = possibleSectors[Math.floor(Math.random() * possibleSectors.length)];
+  const targetAngle = selected.angle;
 
-  const newRotation = currentRotation + spins * 360 + targetAngle;
+  const newRotation = currentRotation + spins * 360 + (360 + targetAngle - 90) % 360;
 
   wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
   wheel.style.transform = `rotate(${newRotation}deg)`;
@@ -40,10 +50,7 @@ btnSpin.addEventListener('click', () => {
   setTimeout(() => {
     spinning = false;
 
-    // Проверка по углу, что выпало
-    const finalAngle = targetAngle % 360;
-
-    if (finalAngle === angleWin) {
+    if (prizeType === "билет") {
       tickets++;
       showTelegramAlert("🎉 Вы получили 1 билет!");
     } else {
