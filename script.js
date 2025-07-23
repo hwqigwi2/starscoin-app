@@ -10,19 +10,29 @@ const IMG_SPIN_NORMAL = "IMG_2665.PNG";
 const IMG_SPIN_SPINNING = "IMG_2667.PNG";
 const IMG_SPIN_DISABLED = "IMG_2666.PNG";
 
-// Твои сектора с центрами по среднему углу
 const sectors = [
-  { type: "билет", angle: 87.5 },
-  { type: "0", angle: 17.5 },
-  { type: "0", angle: 57 },
-  { type: "билет", angle: 120 },
-  { type: "билет", angle: 162.5 },
-  { type: "0", angle: 129 },
+  { type: "билет", start: 70, end: 105 },
+  { type: "0", start: 0, end: 35 },
+  { type: "0", start: 38, end: 76 },
+  { type: "билет", start: 100, end: 140 },
+  { type: "билет", start: 145, end: 180 },
+  { type: "0", start: 113, end: 145 },
 ];
+
+// Добавим size и center
+sectors.forEach(s => {
+  if (s.end < s.start) {
+    s.size = (360 - s.start) + s.end;
+    s.center = (s.start + s.size / 2) % 360;
+  } else {
+    s.size = s.end - s.start;
+    s.center = s.start + s.size / 2;
+  }
+});
 
 updateUI();
 
-btnSpin.addEventListener('click', () => {
+function spinWheel() {
   if (spinning || tickets <= 0) return;
 
   spinning = true;
@@ -31,28 +41,29 @@ btnSpin.addEventListener('click', () => {
   btnSpin.src = IMG_SPIN_SPINNING;
 
   let currentRotation = wheel.dataset.rotation ? parseFloat(wheel.dataset.rotation) : 0;
-  const spins = 5; // Число полных оборотов
+  const spins = 5;
 
-  // Выбираем тип приза с шансом: билет - 25%, ноль - 75%
   const prizeType = Math.random() < 0.25 ? "билет" : "0";
 
-  // Фильтруем возможные секторы по типу
-  const possibleSectors = sectors.filter(s => s.type === prizeType);
+  const filteredSectors = sectors.filter(s => s.type === prizeType);
+  const sector = filteredSectors[Math.floor(Math.random() * filteredSectors.length)];
 
-  // Случайный выбор сектора из подходящих
-  const selected = possibleSectors[Math.floor(Math.random() * possibleSectors.length)];
+  let randomAngleInSector;
+  if (sector.end < sector.start) {
+    const randInPart = Math.random() * sector.size;
+    randomAngleInSector = (sector.start + randInPart) % 360;
+  } else {
+    randomAngleInSector = sector.start + Math.random() * sector.size;
+  }
 
-  // Вычисляем угол для вращения: чтобы выбранный сектор оказался под стрелкой (90°)
-  const correctedAngle = 90 - selected.angle;
+  const correctedAngle = 90 - randomAngleInSector;
   const newRotation = currentRotation + spins * 360 + correctedAngle;
 
-  // Запускаем анимацию вращения
   wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
   wheel.style.transform = `rotate(${newRotation}deg)`;
   overlay.style.transform = `rotate(0deg)`;
   wheel.dataset.rotation = newRotation;
 
-  // По окончании вращения
   setTimeout(() => {
     spinning = false;
 
@@ -66,7 +77,9 @@ btnSpin.addEventListener('click', () => {
     btnSpin.src = tickets > 0 ? IMG_SPIN_NORMAL : IMG_SPIN_DISABLED;
     updateUI();
   }, 3000);
-});
+}
+
+btnSpin.addEventListener('click', spinWheel);
 
 function updateUI() {
   ticketCount.textContent = tickets;
