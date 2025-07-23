@@ -37,7 +37,7 @@ html, body {
   height: 350px;
   position: absolute;
   top: 10px; /* сдвинули колесо чуть ниже, чтобы оверлей был выше */
-  left: 0;
+  left: 1;
   border-radius: 50%;
   object-fit: contain;
   -webkit-user-drag: none;
@@ -48,8 +48,8 @@ html, body {
   width: 370px; /* на 10px шире */
   height: 370px; /* на 10px выше */
   position: absolute;
-  top: 10px; /* подняли выше колеса */
-  left: 2; /* сдвинули влево, чтобы центр совпадал */
+  top: 13px; /* подняли выше колеса */
+  left: 0; /* сдвинули влево, чтобы центр совпадал */
   border-radius: 50%;
   object-fit: contain;
   pointer-events: none;
@@ -63,8 +63,8 @@ html, body {
   width: 350px;
   height: 105px;
   position: relative;
-  margin-bottom: 3px;
-  margin-top: 30px; /* уменьшен отступ сверху — подняли */
+  margin-bottom: 1px;
+  margin-top: 25px; /* уменьшен отступ сверху — подняли */
   user-select: none;
 }
 
@@ -98,7 +98,7 @@ html, body {
   width: 350px;
   height: 90px;
   user-select: none;
-  margin-top: 25px; /* добавлен небольшой отступ сверху */
+  margin-top: 20px; /* добавлен небольшой отступ сверху */
 }
 
 .btn-spin {
