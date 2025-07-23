@@ -140,44 +140,35 @@ html, body {
 
 /* Контейнер полосы JPG */
 .jpg-strip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
   position: relative;
+  width: calc(45px * 6 + 10px * 5); /* 6 картинок с gap */
   height: 45px;
-  width: calc(45px * 6 + 10px * 5); /* 6 видимых */
   overflow: hidden;
-  /* Чтобы скрыть выезжающие картинки */
+  user-select: none;
 }
 
-/* Каждый JPG */
 .jpg-strip img {
+  position: absolute;
   width: 45px;
   height: 45px;
   border-radius: 15px;
   object-fit: cover;
+  transition: left 1s ease, opacity 1s ease;
+  opacity: 1;
+  top: 0;
   user-select: none;
   -webkit-user-drag: none;
-  flex-shrink: 0;
   background-color: #222;
   box-sizing: border-box;
-  transition: opacity 0.8s ease;
-  opacity: 1;
-  position: relative;
 }
 
-/* Уходящая картинка при сдвиге */
+/* Левая картинка исчезает и сдвигается на 3px */
 .jpg-strip img.leaving {
   opacity: 0;
+  left: 3px !important;
 }
 
-/* Новая картинка при появлении */
+/* Новая картинка справа, изначально за пределами (opacity 0), потом выезжает */
 .jpg-strip img.entering {
   opacity: 0;
-  animation: fadeIn 0.8s forwards;
-}
-
-@keyframes fadeIn {
-  to { opacity: 1; }
 }
