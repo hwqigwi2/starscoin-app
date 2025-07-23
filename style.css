@@ -113,12 +113,12 @@ html, body {
 /* === Новая полоска с PNG вверху === */
 .png-strip-container {
   position: fixed;
-  top: 5vh;
+  top: 0.5vh;
   left: 2vw;
-  width: 96vw;
+  width: 98vw;
   height: 60px;
   background-color: rgba(0, 0, 0, 0.85);
-  border-radius: 30px;
+  border-radius: 15px;
   display: flex;
   align-items: center;
   padding: 0 20px;
