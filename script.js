@@ -10,16 +10,17 @@ const IMG_SPIN_NORMAL = "IMG_2665.PNG";
 const IMG_SPIN_SPINNING = "IMG_2667.PNG";
 const IMG_SPIN_DISABLED = "IMG_2666.PNG";
 
-// Строго фиксированные сектора
-const sectors = [
-  { type: "билет", start: 70, end: 105 },
-  { type: "0", start: 38, end: 68 },
-];
-
-sectors.forEach(s => {
-  s.size = s.end - s.start;
-  s.center = s.start + s.size / 2;
-});
+// Чётко определённые секторы
+const sectors = {
+  zero: {
+    type: "0",
+    center: 125
+  },
+  ticket: {
+    type: "билет",
+    center: 90
+  }
+};
 
 updateUI();
 
@@ -33,31 +34,22 @@ function spinWheel() {
 
   const spins = 5;
 
-  // Рандомно: 80% — сектор 0 (угол 125), 20% — сектор билет (угол 90)
+  // Выбор сектора строго по шансу 80/20
   const rand = Math.random();
-  let selectedSector = null;
+  const selected = rand < 0.8 ? sectors.zero : sectors.ticket;
 
-  if (rand < 0.8) {
-    selectedSector = sectors.find(s => s.type === "0");
-  } else {
-    selectedSector = sectors.find(s => s.type === "билет");
-  }
-
-  // Чтобы центр сектора оказался строго под 90°
-  const angleToCenter = 90 - selectedSector.center;
-
-  // Вращаем от НУЛЯ, а не от предыдущего угла
-  const newRotation = spins * 360 + angleToCenter;
+  // Угол для поворота: ровно чтобы нужный сектор встал под стрелку (на 90°)
+  const angleToCenter = 90 - selected.center;
+  const rotation = spins * 360 + angleToCenter;
 
   wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-  wheel.style.transform = `rotate(${newRotation}deg)`;
+  wheel.style.transform = `rotate(${rotation}deg)`;
   overlay.style.transform = `rotate(0deg)`;
-  wheel.dataset.rotation = newRotation;
 
   setTimeout(() => {
     spinning = false;
 
-    if (selectedSector.type === "билет") {
+    if (selected.type === "билет") {
       tickets++;
       showTelegramAlert("🎉 Вы получили 1 билет!");
     } else {
