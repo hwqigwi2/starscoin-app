@@ -114,8 +114,8 @@ html, body {
 .png-strip-container {
   position: fixed;
   top: 0.5vh;
-  left: 1vw;
-  width: 100vw;
+  left: 1.5vw;
+  width: 99vw;
   height: 50px;
   background-color: rgba(0, 0, 0, 0.85);
   border-radius: 20px;
