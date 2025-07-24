@@ -89,10 +89,10 @@ html, body {
 
 .center-icon {
   position: absolute;
-  width: 100px;
-  height: 100px;
-  top: 30%;   /* центр по вертикали */
-  left: 50%;  /* центр по горизонтали */
+  width: 80px;
+  height: 80px;
+  top: 33%;   /* центр по вертикали */
+  left: 49%;  /* центр по горизонтали */
   transform: translate(-50%, -50%); /* сместить назад на половину ширины и высоты */
   pointer-events: none;
   z-index: 10;
@@ -175,7 +175,7 @@ html, body {
 
 .ticket-count {
   position: absolute;
-  top: 60%;
+  top: 63%;
   left: 45%;
   transform: translate(-50%, -50%);
   font-size: 25px;
