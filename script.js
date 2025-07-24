@@ -224,3 +224,52 @@ squares.forEach((square, index) => {
     updateActiveSquare(index);
   });
 });
+
+const inviteMenu = document.getElementById('inviteMenu');
+const shareBtn = document.getElementById('shareInviteBtn');
+const inviteCount = document.getElementById('inviteCount');
+const inviteList = document.getElementById('inviteList');
+
+const invitedUsers = []; // заглушка, список приглашённых
+
+// Показ меню по клику на центральный квадрат
+squares[1].addEventListener('click', () => {
+  updateActiveSquare(1);
+  inviteMenu.style.display = 'flex';
+});
+
+// Поделиться ссылкой
+shareBtn.addEventListener('click', () => {
+  const shareText = `Крути рулетку и получай звёзды! ⭐ За каждого друга — билет 🎟️`;
+  const shareUrl = Telegram?.WebApp?.initDataUnsafe?.start_param 
+                   ? `https://t.me/XStarsCoin_bot?start=${Telegram.WebApp.initDataUnsafe.start_param}` 
+                   : "https://t.me/XStarsCoin_bot";
+
+  if (navigator.share) {
+    navigator.share({
+      title: "Подарок за приглашение!",
+      text: shareText,
+      url: shareUrl
+    });
+  } else if (Telegram?.WebApp?.shareLink) {
+    Telegram.WebApp.shareLink(shareUrl, shareText);
+  } else {
+    showTelegramAlert("Скопируй ссылку и поделись:\n" + shareUrl);
+  }
+});
+
+// Обновление количества и списка приглашенных
+function updateInviteList() {
+  inviteCount.textContent = invitedUsers.length;
+
+  inviteList.innerHTML = '';
+  invitedUsers.forEach((name, i) => {
+    const div = document.createElement('div');
+    div.textContent = `${i + 1}. ${name}`;
+    inviteList.appendChild(div);
+  });
+}
+
+// Для демонстрации — добавим пользователей
+invitedUsers.push('Аня', 'Игорь', 'Саша');
+updateInviteList();
