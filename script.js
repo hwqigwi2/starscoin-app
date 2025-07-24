@@ -193,12 +193,42 @@ window.addEventListener('load', () => {
   }
 });
 
-// === Логика выделения квадратов и переключения видимости ===
+// Логика выделения квадратов с прозрачным белым оверлеем
 
 const squares = document.querySelectorAll('.square');
-const mainContent = document.querySelector('.main-content');
 
 let activeIndex = 0; // левый квадрат по умолчанию
+
+function updateActiveSquare(newIndex) {
+  // Снимаем класс с предыдущего активного квадрата
+  if (activeIndex !== null && squares[activeIndex]) {
+    squares[activeIndex].classList.remove('active');
+  }
+
+  // Обновляем индекс активного квадрата
+  activeIndex = newIndex;
+
+  // Добавляем класс новому активному квадрату
+  if (squares[activeIndex]) {
+    squares[activeIndex].classList.add('active');
+  }
+}
+
+// Инициализация — подсвечиваем левый квадрат сразу
+updateActiveSquare(activeIndex);
+
+// Назначаем обработчики клика на квадраты
+squares.forEach((square, index) => {
+  square.addEventListener('click', () => {
+    if (index === activeIndex) return; // если клик на активный, игнорируем
+    updateActiveSquare(index);
+  });
+});
+
+
+// --- Белая подсветка квадратов и логика скрытия
+const squares = document.querySelectorAll('.square');
+let activeIndex = 0;
 
 function updateActiveSquare(newIndex) {
   if (activeIndex !== null && squares[activeIndex]) {
@@ -211,21 +241,8 @@ function updateActiveSquare(newIndex) {
     squares[activeIndex].classList.add('active');
   }
 
-  // Управляем видимостью контента в зависимости от выбранного квадрата
-  if (activeIndex === 1) {
-    // Средний квадрат - скрываем основной контент, оставляем кнопки и фон
-    mainContent.style.display = 'none';
-  } else if (activeIndex === 0) {
-    // Левый квадрат - показываем основной контент
-    mainContent.style.display = '';
-  } else {
-    // Правый квадрат - ничего не меняем (можно добавить логику)
-    mainContent.style.display = '';
-  }
+  handleVisibilityLogic(newIndex);
 }
-
-// Инициализация — подсвечиваем левый квадрат и показываем контент
-updateActiveSquare(activeIndex);
 
 squares.forEach((square, index) => {
   square.addEventListener('click', () => {
@@ -233,3 +250,18 @@ squares.forEach((square, index) => {
     updateActiveSquare(index);
   });
 });
+
+// Показывать/скрывать все, кроме нижних квадратов
+function handleVisibilityLogic(index) {
+  const hideableElements = document.querySelectorAll('.hideable');
+
+  if (index === 1) {
+    hideableElements.forEach(el => el.classList.add('hidden'));
+  } else if (index === 0) {
+    hideableElements.forEach(el => el.classList.remove('hidden'));
+  }
+}
+
+// Подсветить изначально левый
+updateActiveSquare(0);
+
