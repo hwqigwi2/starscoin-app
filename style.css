@@ -243,7 +243,9 @@ html, body {
 .invite-screen {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: #000000cc; /* затемнение фона */
+  /* УБРАЛ затемнение, как просил */
+  /* background: #000000cc; */
+  background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -263,19 +265,7 @@ html, body {
   user-select: none;
 }
 
-.invite-rect {
-  width: 280px;
-  height: 350px;
-  background: rgba(0,0,0,0.15);
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Верхняя рамка с блюром и прозрачной рамкой */
+/* Размер в 2 раза меньше для IMG_2723 */
 .invite-top-bar {
   position: relative;
   height: 35px;
@@ -290,17 +280,18 @@ html, body {
   gap: 10px;
   padding: 0 10px;
   user-select: none;
+  width: 185px; /* в 2 раза уже */
+  margin: 0 auto;
 }
 
-/* Изображение в рамке - позиционируется поверх */
 .invite-top-bar-img {
-  width: 370px;
-  height: 75px;
+  width: 185px; /* в 2 раза уже */
+  height: 37.5px; /* в 2 раза меньше */
   object-fit: contain;
   pointer-events: none;
   user-select: none;
   position: absolute;
-  top: -20px;
+  top: -10px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
@@ -326,12 +317,13 @@ html, body {
   color: white;
   font-size: 18px;
   user-select: none;
+  max-height: 180px;
 }
 
-/* Кнопка поделиться */
+/* Кнопка поделиться - сделана меньше */
 .invite-share-btn {
-  width: 370px;
-  height: 75px;
+  width: 185px; /* в 2 раза уже */
+  height: 37.5px; /* в 2 раза меньше */
   margin-top: 1vh;
   cursor: pointer;
   user-select: none;
@@ -340,6 +332,7 @@ html, body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   transition: transform 0.2s ease;
   object-fit: contain;
+  align-self: center;
 }
 
 .invite-share-btn:hover {

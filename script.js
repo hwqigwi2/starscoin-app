@@ -62,7 +62,6 @@ function showTelegramAlert(text) {
 }
 
 // === Анимация JPG полосы ===
-
 const imgWidth = 45;
 const gap = 10;
 const visibleCount = 7;
@@ -170,6 +169,7 @@ function slideNext() {
 initJpgStrip();
 setInterval(slideNext, 5000);
 
+// Отображение info и позиционирование
 window.addEventListener('load', () => {
   const pngLeft = document.querySelector('.png-strip-left');
   const infoIcon = document.getElementById('infoBtn');
@@ -193,11 +193,10 @@ window.addEventListener('load', () => {
   }
 });
 
-// Логика выделения квадратов с прозрачным белым оверлеем
-
+// --- Квадраты снизу с оверлеем ---
 const squares = document.querySelectorAll('.square');
 
-let activeIndex = 0; // левый квадрат по умолчанию
+let activeIndex = 0; // левый квадрат выбран по умолчанию
 
 function updateActiveSquare(newIndex) {
   if (activeIndex !== null && squares[activeIndex]) {
@@ -211,7 +210,6 @@ function updateActiveSquare(newIndex) {
 
 updateActiveSquare(activeIndex);
 
-// Назначаем обработчики клика на квадраты
 squares.forEach((square, index) => {
   square.addEventListener('click', () => {
     if (index === activeIndex) return;
@@ -219,8 +217,7 @@ squares.forEach((square, index) => {
   });
 });
 
-// Переключение экранов по нижним кнопкам
-
+// --- Переключение между экранами (рулетка / приглашения) ---
 const squareButtons = document.querySelectorAll('.square');
 const elementsToToggle = [
   document.querySelector('.wheel-wrapper'),
@@ -236,69 +233,66 @@ const inviteScreen = document.getElementById('inviteScreen');
 
 let isAltScreen = false;
 
-// Кнопка "Средний квадрат" - показать экран приглашений
+// Средний квадрат — открыть экран приглашений
 squareButtons[1].addEventListener('click', () => {
   if (isAltScreen) return;
-
   elementsToToggle.forEach(el => el.style.display = 'none');
   inviteScreen.style.display = 'flex';
   isAltScreen = true;
 });
 
-// Кнопка "Левый квадрат" - вернуться на основной экран
+// Левый квадрат — вернуться к рулетке
 squareButtons[0].addEventListener('click', () => {
   if (!isAltScreen) return;
-
   elementsToToggle.forEach(el => el.style.display = '');
   inviteScreen.style.display = 'none';
   isAltScreen = false;
 });
 
-// ====== Логика приглашений ======
+// --- Логика приглашений ---
+// Здесь должен быть ID пользователя, чтобы проверять, приглашал ли он кого-то.
+// В реальном приложении это будет приходить с сервера/бота.
+const currentUserId = 123456; // пример текущего пользователя (замени на реальный id)
 
-// Пример списка приглашённых (имена или id)
-const invitedUsers = [
-  'user1',
-  'user2',
-  'user3',
-  'user4',
-  'user5',
-  'user6',
-  'user7',
-  'user8',
-  'user9',
-  'user10',
-];
+const invitedUsersById = {
+  123456: ['userA', 'userB'], // пример приглашённых для currentUserId
+  // Другие пользователи
+};
 
-// Заполнение списка в inviteList
+// Проверяем, есть ли у текущего пользователя приглашённые
+const invitedUsers = invitedUsersById[currentUserId] || [];
+
+// Элементы списка и счётчика
 const inviteListElem = document.getElementById('inviteList');
 const inviteCountElem = document.getElementById('inviteCount');
 
 function renderInviteList() {
-  inviteListElem.innerHTML = ''; // очистка
-
-  invitedUsers.forEach((user, index) => {
-    const div = document.createElement('div');
-    div.textContent = `${index + 1}. ${user}`;
-    div.style.padding = '5px 0';
-    div.style.borderBottom = '1px solid rgba(255,255,255,0.2)';
-    inviteListElem.appendChild(div);
-  });
-
-  inviteCountElem.textContent = invitedUsers.length;
+  inviteListElem.innerHTML = '';
+  if (invitedUsers.length === 0) {
+    inviteListElem.style.display = 'none';
+    inviteCountElem.textContent = '0';
+  } else {
+    inviteListElem.style.display = 'block';
+    invitedUsers.forEach((user, index) => {
+      const div = document.createElement('div');
+      div.textContent = `${index + 1}. ${user}`;
+      div.style.padding = '5px 0';
+      div.style.borderBottom = '1px solid rgba(255,255,255,0.2)';
+      inviteListElem.appendChild(div);
+    });
+    inviteCountElem.textContent = invitedUsers.length;
+  }
 }
 
 renderInviteList();
 
-// === Кнопка поделиться ===
-
+// --- Кнопка поделиться ---
 const inviteShareBtn = document.querySelector('.invite-share-btn');
 
 inviteShareBtn.addEventListener('click', () => {
   const text = `Крути рулетку и получай звезды! За каждого приглашенного человека дается 1 билет. Присоединяйся: https://t.me/XStarsCoin_bot`;
 
   if (Telegram?.WebApp?.shareData) {
-    // Telegram WebApp shareData
     Telegram.WebApp.shareData({
       type: 'text',
       text: text,
@@ -307,11 +301,13 @@ inviteShareBtn.addEventListener('click', () => {
     }).catch(() => {
       showTelegramAlert('Не удалось отправить ссылку');
     });
-  } else if (Telegram?.WebApp?.openChat) {
-    // Если есть метод открытия чата (редко бывает), можно попробовать
-    Telegram.WebApp.openChat(text);
+  } else if (navigator.share) {
+    navigator.share({
+      text: text,
+    }).catch(() => {
+      showTelegramAlert('Не удалось открыть меню поделиться');
+    });
   } else {
-    // fallback: обычный prompt для копирования
     window.prompt('Скопируйте текст приглашения:', text);
   }
 });
