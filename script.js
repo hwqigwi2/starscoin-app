@@ -173,16 +173,15 @@ setInterval(slideNext, 5000);
 window.addEventListener('load', () => {
   const pngLeft = document.querySelector('.png-strip-left');
   const infoIcon = document.getElementById('infoBtn');
+
   if (pngLeft && infoIcon) {
     const rect = pngLeft.getBoundingClientRect();
     infoIcon.style.left = rect.left + 'px';
-    infoIcon.style.top = (rect.bottom + 6) + 'px';
-    infoIcon.style.opacity = '1'; // показываем после установки позиции
-  }
-});
+    infoIcon.style.top = (rect.bottom + 10) + 'px';
+    infoIcon.style.opacity = '1';
 
-infoIcon.addEventListener('click', () => {
-  showTelegramAlert(`Шансы выпадения:
+    infoIcon.addEventListener('click', () => {
+      showTelegramAlert(`Шансы выпадения:
 
 0 – 70%
 🎟️ – 20%
@@ -190,5 +189,6 @@ infoIcon.addEventListener('click', () => {
 ⭐️100 – 3%
 ⭐️500 – 1.9%
 🏆Gold Heroic Helmet – 0.1%`);
+    });
+  }
 });
-

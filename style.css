@@ -64,20 +64,19 @@ html, body {
 }
 
 .info-icon {
-  position: fixed; /* фиксируем относительно окна */
-  width: 45px;
-  height: 45px;
+  position: fixed;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
   cursor: pointer;
-  /* нижеследующие отступы скорректируем через JS */
   top: 0;
   left: 0;
-  opacity: 0; /* спрячем изначально, пока JS не вычислит позицию */
+  opacity: 0;
   transition: opacity 0.3s ease;
+  pointer-events: auto; /* чтобы кнопка была кликабельной */
 }
-
 
 .jpg-strip {
   position: relative;
