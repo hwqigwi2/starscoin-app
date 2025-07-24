@@ -1,4 +1,4 @@
-  let tickets = 3;
+let tickets = 3;
 let spinning = false;
 
 const wheel = document.getElementById('wheel');
@@ -24,11 +24,11 @@ function spinWheel() {
   const rotation = spins * 360 + targetAngle;
 
   wheel.style.transition = 'none';
-  wheel.style.transform = rotate(0deg);
+  wheel.style.transform = `rotate(0deg)`;
 
   setTimeout(() => {
     wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-    wheel.style.transform = rotate(${rotation}deg);
+    wheel.style.transform = `rotate(${rotation}deg)`;
   }, 50);
 
   setTimeout(() => {
@@ -105,7 +105,7 @@ function saveState(currentImgs) {
 
 function positionImgs() {
   imgs.forEach((img, i) => {
-    img.style.left = ${i * (imgWidth + gap)}px;
+    img.style.left = `${i * (imgWidth + gap)}px`;
     img.style.opacity = "1";
     img.classList.remove("leaving", "entering");
   });
@@ -119,7 +119,7 @@ function initJpgStrip() {
 
   for (let i = 0; i < visibleCount; i++) {
     const img = document.createElement('img');
-    img.src = ${jpgPrefix}${initialImgs[i]}${jpgSuffix};
+    img.src = `${jpgPrefix}${initialImgs[i]}${jpgSuffix}`;
     jpgStrip.appendChild(img);
     imgs.push(img);
   }
@@ -135,20 +135,20 @@ function slideNext() {
   imgs[0].style.left = "0px";
 
   for (let i = 1; i < imgs.length; i++) {
-    imgs[i].style.left = ${(i - 1) * (imgWidth + gap)}px;
+    imgs[i].style.left = `${(i - 1) * (imgWidth + gap)}px`;
   }
 
   const newImg = document.createElement('img');
-  newImg.src = ${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix};
+  newImg.src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
   newImg.classList.add("entering");
   newImg.style.opacity = "0";
-  newImg.style.left = ${stripWidth}px;
+  newImg.style.left = `${stripWidth}px`;
 
   jpgStrip.appendChild(newImg);
   imgs.push(newImg);
 
   requestAnimationFrame(() => {
-    newImg.style.left = ${(visibleCount - 1) * (imgWidth + gap)}px;
+    newImg.style.left = `${(visibleCount - 1) * (imgWidth + gap)}px`;
     newImg.style.opacity = "1";
   });
 
@@ -181,14 +181,14 @@ window.addEventListener('load', () => {
     infoIcon.style.opacity = '1';
 
     infoIcon.addEventListener('click', () => {
-      showTelegramAlert(Шансы выпадения:
+      showTelegramAlert(`Шансы выпадения:
 
 0 – 70%
 🎟️ – 20%
 ⭐️50 – 5%
 ⭐️100 – 3%
 ⭐️500 – 1.9%
-🏆Gold Heroic Helmet – 0.1%);
+🏆Gold Heroic Helmet – 0.1%`);
     });
   }
 });
@@ -200,27 +200,21 @@ const squares = document.querySelectorAll('.square');
 let activeIndex = 0; // левый квадрат по умолчанию
 
 function updateActiveSquare(newIndex) {
-  // Снимаем класс с предыдущего активного квадрата
   if (activeIndex !== null && squares[activeIndex]) {
     squares[activeIndex].classList.remove('active');
   }
-
-  // Обновляем индекс активного квадрата
   activeIndex = newIndex;
-
-  // Добавляем класс новому активному квадрату
   if (squares[activeIndex]) {
     squares[activeIndex].classList.add('active');
   }
 }
 
-// Инициализация — подсвечиваем левый квадрат сразу
 updateActiveSquare(activeIndex);
 
 // Назначаем обработчики клика на квадраты
 squares.forEach((square, index) => {
   square.addEventListener('click', () => {
-    if (index === activeIndex) return; // если клик на активный, игнорируем
+    if (index === activeIndex) return;
     updateActiveSquare(index);
   });
 });
@@ -235,21 +229,89 @@ const elementsToToggle = [
   document.querySelector('.btn-spin-wrapper'),
   document.getElementById('jpgStrip'),
   document.querySelector('.info-icon'),
-  document.querySelector('.png-strip-container')  // Добавляем верхнюю полоску сюда
+  document.querySelector('.png-strip-container')
 ];
+
+const inviteScreen = document.getElementById('inviteScreen');
 
 let isAltScreen = false;
 
+// Кнопка "Средний квадрат" - показать экран приглашений
 squareButtons[1].addEventListener('click', () => {
   if (isAltScreen) return;
 
   elementsToToggle.forEach(el => el.style.display = 'none');
+  inviteScreen.style.display = 'flex';
   isAltScreen = true;
 });
 
+// Кнопка "Левый квадрат" - вернуться на основной экран
 squareButtons[0].addEventListener('click', () => {
   if (!isAltScreen) return;
 
   elementsToToggle.forEach(el => el.style.display = '');
+  inviteScreen.style.display = 'none';
   isAltScreen = false;
-}); 
+});
+
+// ====== Логика приглашений ======
+
+// Пример списка приглашённых (имена или id)
+const invitedUsers = [
+  'user1',
+  'user2',
+  'user3',
+  'user4',
+  'user5',
+  'user6',
+  'user7',
+  'user8',
+  'user9',
+  'user10',
+];
+
+// Заполнение списка в inviteList
+const inviteListElem = document.getElementById('inviteList');
+const inviteCountElem = document.getElementById('inviteCount');
+
+function renderInviteList() {
+  inviteListElem.innerHTML = ''; // очистка
+
+  invitedUsers.forEach((user, index) => {
+    const div = document.createElement('div');
+    div.textContent = `${index + 1}. ${user}`;
+    div.style.padding = '5px 0';
+    div.style.borderBottom = '1px solid rgba(255,255,255,0.2)';
+    inviteListElem.appendChild(div);
+  });
+
+  inviteCountElem.textContent = invitedUsers.length;
+}
+
+renderInviteList();
+
+// === Кнопка поделиться ===
+
+const inviteShareBtn = document.querySelector('.invite-share-btn');
+
+inviteShareBtn.addEventListener('click', () => {
+  const text = `Крути рулетку и получай звезды! За каждого приглашенного человека дается 1 билет. Присоединяйся: https://t.me/XStarsCoin_bot`;
+
+  if (Telegram?.WebApp?.shareData) {
+    // Telegram WebApp shareData
+    Telegram.WebApp.shareData({
+      type: 'text',
+      text: text,
+    }).then(() => {
+      showTelegramAlert('Ссылка успешно отправлена!');
+    }).catch(() => {
+      showTelegramAlert('Не удалось отправить ссылку');
+    });
+  } else if (Telegram?.WebApp?.openChat) {
+    // Если есть метод открытия чата (редко бывает), можно попробовать
+    Telegram.WebApp.openChat(text);
+  } else {
+    // fallback: обычный prompt для копирования
+    window.prompt('Скопируйте текст приглашения:', text);
+  }
+});
