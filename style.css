@@ -278,18 +278,3 @@ html, body {
   opacity: 1;
 }
 
-.content-screen {
-  position: absolute;
-  top: 60px; /* чтобы не перекрывало верхнюю полоску */
-  left: 0;
-  right: 0;
-  bottom: 90px; /* чтобы не перекрывало квадраты снизу */
-  display: none;
-  background: url('IMG_2601.PNG') no-repeat center center fixed;
-  background-size: cover;
-  user-select: none;
-}
-
-.content-screen.active {
-  display: block;
-}
