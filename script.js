@@ -197,7 +197,7 @@ window.addEventListener('load', () => {
 
 const squares = document.querySelectorAll('.square');
 
-let activeIndex = 2; // изначально подсвечен правый квадрат (индекс 2)
+let activeIndex = 0; // изначально подсвечен левый квадрат (индекс 0)
 
 function updateActiveSquare(newIndex) {
   if (newIndex === activeIndex) return; // если кликнули на уже активный — ничего не делаем
@@ -222,4 +222,3 @@ squares.forEach((square, index) => {
     updateActiveSquare(index);
   });
 });
-
