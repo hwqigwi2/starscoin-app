@@ -235,6 +235,7 @@ const elementsToToggle = [
   document.querySelector('.btn-spin-wrapper'),
   document.getElementById('jpgStrip'),
   document.querySelector('.info-icon'),
+  document.querySelector('.png-strip-container')  // Добавляем верхнюю полоску сюда
 ];
 
 let isAltScreen = false;
@@ -252,6 +253,5 @@ squareButtons[0].addEventListener('click', () => {
   elementsToToggle.forEach(el => el.style.display = '');
   isAltScreen = false;
 });
-
 
 
