@@ -42,12 +42,12 @@ html, body {
 
 .png-strip-bottom {
   position: fixed;
-  bottom: 0.5vh;
+  bottom: 2vh;
   left: 0.5vw;
-  width: 99vw;
-  height: 65px;
+  width: 75vw;
+  height: 60px;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(50px);
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -55,7 +55,7 @@ html, body {
   padding: 0 20px;
   gap: 10px;
   z-index: 1100; /* ← ДОБАВЬ это */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 
