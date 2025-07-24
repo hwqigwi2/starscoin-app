@@ -224,3 +224,41 @@ squares.forEach((square, index) => {
     updateActiveSquare(index);
   });
 });
+
+const squares = document.querySelectorAll('.square');
+const screens = [
+  document.getElementById('screen0'),
+  document.getElementById('screen1'),
+  document.getElementById('screen2')
+];
+
+let activeIndex = 0;
+
+function updateActiveSquare(newIndex) {
+  if (activeIndex !== null && squares[activeIndex]) {
+    squares[activeIndex].classList.remove('active');
+  }
+
+  squares[newIndex].classList.add('active');
+
+  // Показать соответствующий экран
+  screens.forEach((screen, i) => {
+    if (i === newIndex) {
+      screen.classList.add('active');
+    } else {
+      screen.classList.remove('active');
+    }
+  });
+
+  activeIndex = newIndex;
+}
+
+// Инициализация
+updateActiveSquare(activeIndex);
+
+squares.forEach((square, index) => {
+  square.addEventListener('click', () => {
+    if (index === activeIndex) return;
+    updateActiveSquare(index);
+  });
+});
