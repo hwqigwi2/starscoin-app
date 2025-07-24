@@ -193,35 +193,43 @@ window.addEventListener('load', () => {
   }
 });
 
-// Логика выделения квадратов с прозрачным белым оверлеем
+// === Логика выделения квадратов и переключения видимости ===
 
 const squares = document.querySelectorAll('.square');
+const mainContent = document.querySelector('.main-content');
 
 let activeIndex = 0; // левый квадрат по умолчанию
 
 function updateActiveSquare(newIndex) {
-  // Снимаем класс с предыдущего активного квадрата
   if (activeIndex !== null && squares[activeIndex]) {
     squares[activeIndex].classList.remove('active');
   }
 
-  // Обновляем индекс активного квадрата
   activeIndex = newIndex;
 
-  // Добавляем класс новому активному квадрату
   if (squares[activeIndex]) {
     squares[activeIndex].classList.add('active');
   }
+
+  // Управляем видимостью контента в зависимости от выбранного квадрата
+  if (activeIndex === 1) {
+    // Средний квадрат - скрываем основной контент, оставляем кнопки и фон
+    mainContent.style.display = 'none';
+  } else if (activeIndex === 0) {
+    // Левый квадрат - показываем основной контент
+    mainContent.style.display = '';
+  } else {
+    // Правый квадрат - ничего не меняем (можно добавить логику)
+    mainContent.style.display = '';
+  }
 }
 
-// Инициализация — подсвечиваем левый квадрат сразу
+// Инициализация — подсвечиваем левый квадрат и показываем контент
 updateActiveSquare(activeIndex);
 
-// Назначаем обработчики клика на квадраты
 squares.forEach((square, index) => {
   square.addEventListener('click', () => {
-    if (index === activeIndex) return; // если клик на активный, игнорируем
+    if (index === activeIndex) return;
     updateActiveSquare(index);
   });
 });
-
