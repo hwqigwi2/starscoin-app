@@ -64,16 +64,18 @@ html, body {
 }
 
 .info-icon {
-  height: 45px;
+  position: fixed; /* фиксируем относительно окна */
   width: 45px;
+  height: 45px;
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
-  margin-left: 10px; /* Чтобы совпадало по горизонтали */
-  margin-top: 6px;
   cursor: pointer;
-  position: relative;
-  display: block;
+  /* нижеследующие отступы скорректируем через JS */
+  top: 0;
+  left: 0;
+  opacity: 0; /* спрячем изначально, пока JS не вычислит позицию */
+  transition: opacity 0.3s ease;
 }
 
 
