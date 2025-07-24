@@ -8,41 +8,21 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-
-    <div class="main-content">
-      <!-- Верхняя полоска -->
-      <div class="png-strip-container" id="pngStrip">
-        <img src="IMG_2677.PNG" alt="PNG слева" class="png-strip-left" />
-        <div class="jpg-strip" id="jpgStrip"></div>
-      </div>
-
-      <img src="IMG_2696.PNG" alt="Инфо" class="info-icon" id="infoBtn" />
-
-      <div class="wheel-wrapper">
-        <img id="wheel" class="wheel" src="IMG_2670.PNG" alt="Колесо" />
-        <img id="overlay" class="overlay" src="IMG_2671.PNG" alt="Оверлей" />
-      </div>
-
-      <img src="IMG_2518.PNG" alt="Центр" class="center-icon" />
-
-      <div class="squares-container">
-        <div class="square" data-index="0">
-          <img src="IMG_2711.PNG" alt="Квадрат левый" class="square-img" />
-          <div class="overlay-white"></div>
-        </div>
-        <div class="square" data-index="1">
-          <img src="IMG_2712.PNG" alt="Квадрат средний" class="square-img" />
-          <div class="overlay-white"></div>
-        </div>
-        <div class="square" data-index="2">
-          <img src="IMG_2713.PNG" alt="Квадрат правый" class="square-img" />
-          <div class="overlay-white"></div>
-        </div>
-      </div>
+  <div class="container" id="mainScreen">
+    <div class="png-strip-container" id="pngStrip">
+      <img src="IMG_2677.PNG" alt="PNG слева" class="png-strip-left" />
+      <div class="jpg-strip" id="jpgStrip"></div>
     </div>
 
-    <!-- Кнопки, которые должны всегда быть видимы -->
+    <img src="IMG_2696.PNG" alt="Инфо" class="info-icon" id="infoBtn" />
+
+    <div class="wheel-wrapper">
+      <img id="wheel" class="wheel" src="IMG_2670.PNG" alt="Колесо" />
+      <img id="overlay" class="overlay" src="IMG_2671.PNG" alt="Оверлей" />
+    </div>
+
+    <img src="IMG_2518.PNG" alt="Центр" class="center-icon" />
+
     <div class="btn-bilets-wrapper">
       <img id="btnBilets" class="btn-bilets" src="IMG_2664.PNG" alt="Билеты" />
       <span id="ticketCount" class="ticket-count">3</span>
@@ -50,6 +30,24 @@
 
     <div class="btn-spin-wrapper">
       <img id="btnSpin" class="btn-spin" src="IMG_2665.PNG" alt="Крутить" />
+    </div>
+  </div>
+
+  <!-- Второй экран -->
+  <div class="container" id="secondaryScreen" style="display: none;">
+    <div class="squares-container">
+      <div class="square" data-index="0">
+        <img src="IMG_2711.PNG" alt="Квадрат левый" class="square-img" />
+        <div class="overlay-white"></div>
+      </div>
+      <div class="square" data-index="1">
+        <img src="IMG_2712.PNG" alt="Квадрат средний" class="square-img" />
+        <div class="overlay-white"></div>
+      </div>
+      <div class="square" data-index="2">
+        <img src="IMG_2713.PNG" alt="Квадрат правый" class="square-img" />
+        <div class="overlay-white"></div>
+      </div>
     </div>
   </div>
 
