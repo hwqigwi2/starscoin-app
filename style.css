@@ -48,8 +48,8 @@ html, body {
   width: 75vw;
   height: 70px;
   background: rgba(0, 0, 0, 0.15);       /* ещё прозрачнее фон — чтобы лучше видно было размытие */
-  backdrop-filter: blur(5px);            /* очень сильное размытие */
-  -webkit-backdrop-filter: blur(5px);    /* для Safari */
+  backdrop-filter: blur(3px);            /* очень сильное размытие */
+  -webkit-backdrop-filter: blur(3px);    /* для Safari */
   border-radius: 20px;
   display: flex;
   align-items: center;
