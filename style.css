@@ -157,8 +157,8 @@ html, body {
 
 /* Кнопка билеты */
 .btn-bilets-wrapper {
-  width: 350px;
-  height: 105px;
+  width: 340px;
+  height: 100px;
   position: relative;
   margin-top: 25px;
   user-select: none;
@@ -186,10 +186,10 @@ html, body {
 
 /* Кнопка крутить */
 .btn-spin-wrapper {
-  width: 350px;
-  height: 90px;
+  width: 340px;
+  height: 85px;
   user-select: none;
-  margin-top: 0.5px;
+  top: 3;
 }
 
 .btn-spin {
