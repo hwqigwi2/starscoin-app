@@ -195,33 +195,31 @@ window.addEventListener('load', () => {
 
 // Логика выделения квадратов с прозрачным белым оверлеем
 
-const squares = document.querySelectorAll('.square');
+window.addEventListener('DOMContentLoaded', () => {
+  const squares = document.querySelectorAll('.square');
+  let activeIndex = 0; // левый квадрат
 
-let activeIndex = 0; // левый квадрат
+  function updateActiveSquare(newIndex) {
+    if (newIndex === activeIndex) return;
 
-function updateActiveSquare(newIndex) {
-  if (newIndex === activeIndex) return;
+    if (activeIndex !== null && squares[activeIndex]) {
+      squares[activeIndex].classList.remove('active');
+    }
 
-  if (activeIndex !== null && squares[activeIndex]) {
-    squares[activeIndex].classList.remove('active');
+    activeIndex = newIndex;
+
+    if (squares[activeIndex]) {
+      squares[activeIndex].classList.add('active');
+    }
   }
 
-  activeIndex = newIndex;
-
-  if (squares[activeIndex]) {
-    squares[activeIndex].classList.add('active');
-  }
-}
-
-// Ставим класс активного квадрата сразу после загрузки скрипта
-// С небольшой задержкой, чтобы анимация сработала корректно
-setTimeout(() => {
+  // Сразу подсвечиваем левый квадрат после загрузки DOM
   updateActiveSquare(activeIndex);
-}, 50);
 
-// Обработчики клика
-squares.forEach((square, index) => {
-  square.addEventListener('click', () => {
-    updateActiveSquare(index);
+  // Обработчики клика
+  squares.forEach((square, index) => {
+    square.addEventListener('click', () => {
+      updateActiveSquare(index);
+    });
   });
 });
