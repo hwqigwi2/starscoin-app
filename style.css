@@ -91,8 +91,8 @@ html, body {
   position: absolute;
   width: 80px;
   height: 80px;
-  top: 33%;   /* центр по вертикали */
-  left: 49%;  /* центр по горизонтали */
+  top: 34%;   /* центр по вертикали */
+  left: 48%;  /* центр по горизонтали */
   transform: translate(-50%, -50%); /* сместить назад на половину ширины и высоты */
   pointer-events: none;
   z-index: 10;
@@ -175,7 +175,7 @@ html, body {
 
 .ticket-count {
   position: absolute;
-  top: 63%;
+  top: 64%;
   left: 45%;
   transform: translate(-50%, -50%);
   font-size: 25px;
