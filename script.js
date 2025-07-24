@@ -1,4 +1,4 @@
-   let tickets = 3;
+let tickets = 3;
 let spinning = false;
 
 const wheel = document.getElementById('wheel');
@@ -223,4 +223,4 @@ squares.forEach((square, index) => {
     if (index === activeIndex) return; // если клик на активный, игнорируем
     updateActiveSquare(index);
   });
-});
+});  
