@@ -278,9 +278,4 @@ html, body {
   opacity: 1;
 }
 
-/* ... твои стили как есть ... */
-
-.hidden {
-  display: none !important;
-}
 

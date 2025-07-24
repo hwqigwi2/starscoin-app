@@ -226,42 +226,4 @@ squares.forEach((square, index) => {
 });
 
 
-// --- Белая подсветка квадратов и логика скрытия
-const squares = document.querySelectorAll('.square');
-let activeIndex = 0;
-
-function updateActiveSquare(newIndex) {
-  if (activeIndex !== null && squares[activeIndex]) {
-    squares[activeIndex].classList.remove('active');
-  }
-
-  activeIndex = newIndex;
-
-  if (squares[activeIndex]) {
-    squares[activeIndex].classList.add('active');
-  }
-
-  handleVisibilityLogic(newIndex);
-}
-
-squares.forEach((square, index) => {
-  square.addEventListener('click', () => {
-    if (index === activeIndex) return;
-    updateActiveSquare(index);
-  });
-});
-
-// Показывать/скрывать все, кроме нижних квадратов
-function handleVisibilityLogic(index) {
-  const hideableElements = document.querySelectorAll('.hideable');
-
-  if (index === 1) {
-    hideableElements.forEach(el => el.classList.add('hidden'));
-  } else if (index === 0) {
-    hideableElements.forEach(el => el.classList.remove('hidden'));
-  }
-}
-
-// Подсветить изначально левый
-updateActiveSquare(0);
 
