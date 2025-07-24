@@ -1,4 +1,3 @@
-// Переменные колеса
 let tickets = 3;
 let spinning = false;
 
@@ -8,6 +7,8 @@ const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
 updateUI();
+
+btnSpin.addEventListener('click', spinWheel);
 
 function spinWheel() {
   if (spinning || tickets <= 0) return;
@@ -19,9 +20,7 @@ function spinWheel() {
 
   const rand = Math.random();
   const spins = 5;
-
   const targetAngle = rand < 0.8 ? -75 : 0;
-
   const rotation = spins * 360 + targetAngle;
 
   wheel.style.transition = 'none';
@@ -30,51 +29,43 @@ function spinWheel() {
   setTimeout(() => {
     wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
     wheel.style.transform = `rotate(${rotation}deg)`;
-    overlay.style.transform = `rotate(0deg)`;
   }, 50);
 
   setTimeout(() => {
     spinning = false;
-
-    const result = targetAngle === 0 ? "билет" : "ноль";
-
-    if (result === "билет") {
+    if (targetAngle === 0) {
       tickets++;
       showTelegramAlert("🎉 Вы получили 1 билет!");
     } else {
       showTelegramAlert("😔 В следующий раз повезёт");
     }
-
     updateUI();
   }, 3050);
 }
 
-btnSpin.addEventListener('click', spinWheel);
-
 function updateUI() {
   ticketCount.textContent = tickets;
   btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
-
-  if (tickets <= 0 && !spinning) {
-    btnSpin.src = "IMG_2666.PNG";
-  } else if (!spinning) {
-    btnSpin.src = "IMG_2665.PNG";
-  }
+  btnSpin.src = spinning
+    ? "IMG_2667.PNG"
+    : tickets > 0
+      ? "IMG_2665.PNG"
+      : "IMG_2666.PNG";
 }
 
 function showTelegramAlert(text) {
-  if (window.Telegram && Telegram.WebApp && Telegram.WebApp.showAlert) {
+  if (Telegram?.WebApp?.showAlert) {
     Telegram.WebApp.showAlert(text);
   } else {
     alert(text);
   }
 }
 
-// === Новый код для полоски JPG с сохранением прогресса и плавной анимацией ===
+// === Анимация JPG полосы ===
 
 const imgWidth = 45;
 const gap = 10;
-const visibleCount = 6;
+const visibleCount = 7;
 const stripWidth = imgWidth * visibleCount + gap * (visibleCount - 1);
 
 const jpgOrderRaw = [
@@ -82,69 +73,51 @@ const jpgOrderRaw = [
   2683, 2685, 2685, 2685, 2685, 2680, 2681, 2685, 2680, 2680,
   2684, 2680, 2680, 2681, 2685, 2680, 2685, 2685, 2681
 ];
-
-// Убираем 2684 из массива
 const jpgOrder = jpgOrderRaw.filter(num => num !== 2684);
 
+const jpgStrip = document.getElementById('jpgStrip');
 const jpgPrefix = "IMG_";
 const jpgSuffix = ".JPG";
-
-const jpgStrip = document.getElementById('jpgStrip');
+const STORAGE_KEY = "jpgStripState";
 
 let currentIndex = 0;
 let imgs = [];
 
-const STORAGE_KEY = "jpgStripState";
-
 function loadState() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try {
-      const obj = JSON.parse(saved);
-      if (obj && typeof obj.currentIndex === "number" && Array.isArray(obj.currentImgs)) {
-        currentIndex = obj.currentIndex;
-        return obj.currentImgs;
-      }
-    } catch { }
-  }
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved && Array.isArray(saved.currentImgs)) {
+      currentIndex = saved.currentIndex;
+      return saved.currentImgs;
+    }
+  } catch { }
   return null;
 }
 
 function saveState(currentImgs) {
-  const obj = {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
     currentIndex,
     currentImgs
-  };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+  }));
 }
 
 function positionImgs() {
-  for (let i = 0; i < imgs.length; i++) {
-    imgs[i].style.left = (i * (imgWidth + gap)) + "px";
-    imgs[i].style.top = "0px";
-    imgs[i].style.opacity = "1";
-    imgs[i].classList.remove("leaving");
-    imgs[i].classList.remove("entering");
-  }
+  imgs.forEach((img, i) => {
+    img.style.left = `${i * (imgWidth + gap)}px`;
+    img.style.opacity = "1";
+    img.classList.remove("leaving", "entering");
+  });
 }
 
 function initJpgStrip() {
   jpgStrip.innerHTML = "";
-  let initialImgs = loadState();
-  if (!initialImgs) {
-    initialImgs = [];
-    for (let i = 0; i < visibleCount; i++) {
-      initialImgs.push(jpgOrder[i]);
-    }
-    currentIndex = visibleCount % jpgOrder.length;
-  }
-
+  let initialImgs = loadState() || jpgOrder.slice(0, visibleCount);
+  currentIndex = visibleCount % jpgOrder.length;
   imgs = [];
 
   for (let i = 0; i < visibleCount; i++) {
     const img = document.createElement('img');
     img.src = `${jpgPrefix}${initialImgs[i]}${jpgSuffix}`;
-    img.alt = `IMG_${initialImgs[i]}`;
     jpgStrip.appendChild(img);
     imgs.push(img);
   }
@@ -154,39 +127,34 @@ function initJpgStrip() {
 }
 
 function slideNext() {
-  if (imgs.length === 0) return;
+  if (!imgs.length) return;
 
   imgs[0].classList.add("leaving");
-  imgs[0].style.left = "3px";
+  imgs[0].style.left = "0px";
 
   for (let i = 1; i < imgs.length; i++) {
-    const targetLeft = (i - 1) * (imgWidth + gap);
-    imgs[i].style.left = targetLeft + "px";
+    imgs[i].style.left = `${(i - 1) * (imgWidth + gap)}px`;
   }
 
   const newImg = document.createElement('img');
   newImg.src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
-  newImg.alt = `IMG_${jpgOrder[currentIndex]}`;
-  newImg.style.opacity = "0";
-  newImg.style.left = stripWidth + "px";
   newImg.classList.add("entering");
+  newImg.style.opacity = "0";
+  newImg.style.left = `${stripWidth}px`;
 
   jpgStrip.appendChild(newImg);
   imgs.push(newImg);
 
   requestAnimationFrame(() => {
-    newImg.style.left = ((visibleCount - 1) * (imgWidth + gap)) + "px";
+    newImg.style.left = `${(visibleCount - 1) * (imgWidth + gap)}px`;
     newImg.style.opacity = "1";
   });
 
   currentIndex = (currentIndex + 1) % jpgOrder.length;
 
   setTimeout(() => {
-    const leavingImg = imgs.shift();
-    jpgStrip.removeChild(leavingImg);
-
+    jpgStrip.removeChild(imgs.shift());
     newImg.classList.remove("entering");
-
     positionImgs();
 
     const currentImgs = imgs.map(img => {
