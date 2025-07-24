@@ -92,7 +92,7 @@ html, body {
   width: 80px;
   height: 80px;
   top: 34%;   /* центр по вертикали */
-  left: 48.5%;  /* центр по горизонтали */
+  left: 50%;  /* центр по горизонтали */
   transform: translate(-50%, -50%); /* сместить назад на половину ширины и высоты */
   pointer-events: none;
   z-index: 10;
