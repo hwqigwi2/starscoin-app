@@ -225,21 +225,109 @@ squares.forEach((square, index) => {
   });
 });
 
-const rouletteSection = document.getElementById('rouletteSection');
-const bg = document.querySelector('body'); // фон уже задан фоном у body
+// ... существующий код ...
 
-const squareElements = document.querySelectorAll('.square');
+// === Функционал страницы приглашений ===
+let invitedUsers = JSON.parse(localStorage.getItem('invitedUsers')) || [];
 
-squareElements.forEach((square, index) => {
-  square.addEventListener('click', () => {
-    updateActiveSquare(index); // визуальное выделение
-
-    if (index === 0) {
-      // Левая кнопка — показать рулетку
-      rouletteSection.classList.remove('hidden');
-    } else if (index === 1) {
-      // Средняя кнопка — спрятать рулетку
-      rouletteSection.classList.add('hidden');
-    }
+function renderInvitedList() {
+  const list = document.querySelector('.invite-list');
+  if (!list) return;
+  
+  list.innerHTML = '';
+  
+  invitedUsers.forEach(user => {
+    const item = document.createElement('div');
+    item.className = 'invite-item';
+    item.textContent = user.name;
+    list.appendChild(item);
   });
+  
+  // Обновляем счетчик приглашенных
+  const countElement = document.querySelector('.invite-count');
+  if (countElement) {
+    countElement.textContent = invitedUsers.length;
+  }
+}
+
+function addInvitedUser(user) {
+  invitedUsers.push(user);
+  localStorage.setItem('invitedUsers', JSON.stringify(invitedUsers));
+  renderInvitedList();
+}
+
+// Обработчик кнопки "Поделиться"
+document.getElementById('btnShare')?.addEventListener('click', function() {
+  // Используем Telegram WebApp для отправки приглашения
+  if (window.Telegram && Telegram.WebApp && Telegram.WebApp.shareUrl) {
+    Telegram.WebApp.shareUrl(
+      'https://t.me/XStarsCoin_bot',
+      '🎉 Крути рулетку и получай звезды! За каждого приглашенного друга получишь билет!'
+    );
+  } else {
+    // Альтернатива для браузеров
+    const shareUrl = 'https://t.me/XStarsCoin_bot';
+    if (navigator.share) {
+      navigator.share({
+        title: 'XStarsCoin',
+        text: '🎉 Крути рулетку и получай звезды! За каждого приглашенного друга получишь билет!',
+        url: shareUrl
+      });
+    } else {
+      // Fallback для старых браузеров
+      alert(`Поделитесь ссылкой: ${shareUrl}`);
+    }
+  }
+});
+
+// === Переключение страниц ===
+const pages = {
+  0: 'page-roulette',
+  1: 'page-invite'
+};
+
+function switchPage(index) {
+  // Скрываем все страницы
+  Object.values(pages).forEach(pageId => {
+    document.getElementById(pageId).classList.remove('active');
+  });
+  
+  // Показываем выбранную страницу
+  const pageId = pages[index];
+  if (pageId) {
+    document.getElementById(pageId).classList.add('active');
+    
+    // Если переключились на страницу приглашений - рендерим список
+    if (pageId === 'page-invite') {
+      renderInvitedList();
+    }
+  }
+}
+
+// Обновляем обработчики квадратов
+squares.forEach((square, index) => {
+  square.addEventListener('click', () => {
+    if (index === activeIndex) return;
+    switchPage(index);
+    updateActiveSquare(index);
+  });
+});
+
+// Инициализация при загрузке
+renderInvitedList();
+
+// === Имитация приглашения ===
+// В реальном приложении это будет обрабатываться через реферальные ссылки
+document.getElementById('btnShare')?.addEventListener('click', function() {
+  // ... существующий код отправки ...
+  
+  // Имитация: через 2 секунды добавляем пользователя
+  setTimeout(() => {
+    const randomId = Math.floor(Math.random() * 10000);
+    addInvitedUser({ name: `User${randomId}` });
+    
+    // Начисляем билет за приглашение
+    tickets++;
+    updateUI();
+  }, 2000);
 });
