@@ -6,27 +6,8 @@ const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
-// === Обновление интерфейса ===
-function updateUI() {
-  ticketCount.textContent = tickets;
-  btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
-  btnSpin.src = spinning
-    ? "IMG_2667.PNG"
-    : tickets > 0
-      ? "IMG_2665.PNG"
-      : "IMG_2666.PNG";
-}
+updateUI();
 
-// === Показ уведомления в Telegram или alert ===
-function showTelegramAlert(text) {
-  if (Telegram?.WebApp?.showAlert) {
-    Telegram.WebApp.showAlert(text);
-  } else {
-    alert(text);
-  }
-}
-
-// === Кнопка "Крутить колесо" ===
 btnSpin.addEventListener('click', spinWheel);
 
 function spinWheel() {
@@ -43,11 +24,11 @@ function spinWheel() {
   const rotation = spins * 360 + targetAngle;
 
   wheel.style.transition = 'none';
-  wheel.style.transform = `rotate(0deg)`;
+  wheel.style.transform = rotate(0deg);
 
   setTimeout(() => {
     wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-    wheel.style.transform = `rotate(${rotation}deg)`;
+    wheel.style.transform = rotate(${rotation}deg);
   }, 50);
 
   setTimeout(() => {
@@ -62,12 +43,31 @@ function spinWheel() {
   }, 3050);
 }
 
-updateUI();
+function updateUI() {
+  ticketCount.textContent = tickets;
+  btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
+  btnSpin.src = spinning
+    ? "IMG_2667.PNG"
+    : tickets > 0
+      ? "IMG_2665.PNG"
+      : "IMG_2666.PNG";
+}
+
+function showTelegramAlert(text) {
+  if (Telegram?.WebApp?.showAlert) {
+    Telegram.WebApp.showAlert(text);
+  } else {
+    alert(text);
+  }
+}
 
 // === Анимация JPG полосы ===
+
 const imgWidth = 45;
 const gap = 10;
 const visibleCount = 7;
+const stripWidth = imgWidth * visibleCount + gap * (visibleCount - 1);
+
 const jpgOrder = [
   2685, 2685, 2681, 2685, 2680,
   2680, 2681, 2680, 2685, 2680,
@@ -76,10 +76,12 @@ const jpgOrder = [
   2682, 2680, 2680, 2681, 2685,
   2680, 2681, 2685, 2681
 ];
+
 const jpgStrip = document.getElementById('jpgStrip');
 const jpgPrefix = "IMG_";
 const jpgSuffix = ".JPG";
 const STORAGE_KEY = "jpgStripState";
+
 let currentIndex = 0;
 let imgs = [];
 
@@ -90,7 +92,7 @@ function loadState() {
       currentIndex = saved.currentIndex;
       return saved.currentImgs;
     }
-  } catch {}
+  } catch { }
   return null;
 }
 
@@ -103,7 +105,7 @@ function saveState(currentImgs) {
 
 function positionImgs() {
   imgs.forEach((img, i) => {
-    img.style.left = `${i * (imgWidth + gap)}px`;
+    img.style.left = ${i * (imgWidth + gap)}px;
     img.style.opacity = "1";
     img.classList.remove("leaving", "entering");
   });
@@ -111,52 +113,141 @@ function positionImgs() {
 
 function initJpgStrip() {
   jpgStrip.innerHTML = "";
+  let initialImgs = loadState() || jpgOrder.slice(0, visibleCount);
+  currentIndex = visibleCount % jpgOrder.length;
+  imgs = [];
 
-  const initialIds = loadState() || jpgOrder.slice(0, visibleCount);
-
-  imgs = initialIds.map(id => {
-    const img = document.createElement("img");
-    img.src = jpgPrefix + id + jpgSuffix;
+  for (let i = 0; i < visibleCount; i++) {
+    const img = document.createElement('img');
+    img.src = ${jpgPrefix}${initialImgs[i]}${jpgSuffix};
     jpgStrip.appendChild(img);
-    return img;
-  });
+    imgs.push(img);
+  }
 
   positionImgs();
+  saveState(initialImgs);
+}
 
-  setInterval(() => {
-    const oldImg = imgs.shift();
-    oldImg.classList.add("leaving");
+function slideNext() {
+  if (!imgs.length) return;
 
-    const nextId = jpgOrder[currentIndex % jpgOrder.length];
-    const newImg = document.createElement("img");
-    newImg.src = jpgPrefix + nextId + jpgSuffix;
-    newImg.classList.add("entering");
-    jpgStrip.appendChild(newImg);
-    imgs.push(newImg);
+  imgs[0].classList.add("leaving");
+  imgs[0].style.left = "0px";
 
-    setTimeout(() => {
-      jpgStrip.removeChild(oldImg);
-      positionImgs();
-    }, 1000);
+  for (let i = 1; i < imgs.length; i++) {
+    imgs[i].style.left = ${(i - 1) * (imgWidth + gap)}px;
+  }
 
-    currentIndex++;
-    saveState(imgs.map(img => parseInt(img.src.match(/IMG_(\d+)\.JPG/)[1])));
-  }, 2300);
+  const newImg = document.createElement('img');
+  newImg.src = ${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix};
+  newImg.classList.add("entering");
+  newImg.style.opacity = "0";
+  newImg.style.left = ${stripWidth}px;
+
+  jpgStrip.appendChild(newImg);
+  imgs.push(newImg);
+
+  requestAnimationFrame(() => {
+    newImg.style.left = ${(visibleCount - 1) * (imgWidth + gap)}px;
+    newImg.style.opacity = "1";
+  });
+
+  currentIndex = (currentIndex + 1) % jpgOrder.length;
+
+  setTimeout(() => {
+    jpgStrip.removeChild(imgs.shift());
+    newImg.classList.remove("entering");
+    positionImgs();
+
+    const currentImgs = imgs.map(img => {
+      const match = img.src.match(/IMG_(\d+)\.JPG$/i);
+      return match ? Number(match[1]) : null;
+    });
+    saveState(currentImgs);
+  }, 1000);
 }
 
 initJpgStrip();
+setInterval(slideNext, 5000);
 
-// === Кнопка "Поделиться" ===
-const inviteBtn = document.getElementById('inviteShareBtn');
-if (inviteBtn) {
-  inviteBtn.addEventListener('click', () => {
-    if (Telegram?.WebApp?.shareTelegram) {
-      Telegram.WebApp.shareTelegram({
-        text: '🎯 Заходи в мини-игру и получай билеты каждый день!',
-        url: Telegram.WebApp.initDataUnsafe?.start_param || location.href
-      });
-    } else {
-      alert('Поделиться можно только в Telegram.');
-    }
-  });
+window.addEventListener('load', () => {
+  const pngLeft = document.querySelector('.png-strip-left');
+  const infoIcon = document.getElementById('infoBtn');
+
+  if (pngLeft && infoIcon) {
+    const rect = pngLeft.getBoundingClientRect();
+    infoIcon.style.left = rect.left + 'px';
+    infoIcon.style.top = (rect.bottom + 10) + 'px';
+    infoIcon.style.opacity = '1';
+
+    infoIcon.addEventListener('click', () => {
+      showTelegramAlert(Шансы выпадения:
+
+0 – 70%
+🎟️ – 20%
+⭐️50 – 5%
+⭐️100 – 3%
+⭐️500 – 1.9%
+🏆Gold Heroic Helmet – 0.1%);
+    });
+  }
+});
+
+// Логика выделения квадратов с прозрачным белым оверлеем
+
+const squares = document.querySelectorAll('.square');
+
+let activeIndex = 0; // левый квадрат по умолчанию
+
+function updateActiveSquare(newIndex) {
+  // Снимаем класс с предыдущего активного квадрата
+  if (activeIndex !== null && squares[activeIndex]) {
+    squares[activeIndex].classList.remove('active');
+  }
+
+  // Обновляем индекс активного квадрата
+  activeIndex = newIndex;
+
+  // Добавляем класс новому активному квадрату
+  if (squares[activeIndex]) {
+    squares[activeIndex].classList.add('active');
+  }
 }
+
+// Инициализация — подсвечиваем левый квадрат сразу
+updateActiveSquare(activeIndex);
+
+// Назначаем обработчики клика на квадраты
+squares.forEach((square, index) => {
+  square.addEventListener('click', () => {
+    if (index === activeIndex) return; // если клик на активный, игнорируем
+    updateActiveSquare(index);
+  });
+});
+
+const squareButtons = document.querySelectorAll('.square');
+const elementsToToggle = [
+  document.querySelector('.wheel-wrapper'),
+  document.querySelector('.center-icon'),
+  document.querySelector('.btn-bilets-wrapper'),
+  document.querySelector('.btn-spin-wrapper'),
+  document.getElementById('jpgStrip'),
+  document.querySelector('.info-icon'),
+  document.querySelector('.png-strip-container')  // Добавляем верхнюю полоску сюда
+];
+
+let isAltScreen = false;
+
+squareButtons[1].addEventListener('click', () => {
+  if (isAltScreen) return;
+
+  elementsToToggle.forEach(el => el.style.display = 'none');
+  isAltScreen = true;
+});
+
+squareButtons[0].addEventListener('click', () => {
+  if (!isAltScreen) return;
+
+  elementsToToggle.forEach(el => el.style.display = '');
+  isAltScreen = false;
+});
