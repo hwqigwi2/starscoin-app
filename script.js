@@ -197,10 +197,10 @@ window.addEventListener('load', () => {
 
 const squares = document.querySelectorAll('.square');
 
-let activeIndex = 0; // изначально подсвечен левый квадрат (индекс 0)
+let activeIndex = 0; // левый квадрат
 
 function updateActiveSquare(newIndex) {
-  if (newIndex === activeIndex) return; // если кликнули на уже активный — ничего не делаем
+  if (newIndex === activeIndex) return;
 
   if (activeIndex !== null && squares[activeIndex]) {
     squares[activeIndex].classList.remove('active');
@@ -213,12 +213,13 @@ function updateActiveSquare(newIndex) {
   }
 }
 
-// Инициализация - выставляем изначальный активный квадрат с задержкой, чтобы transition сработал
+// Ставим класс активного квадрата сразу после загрузки скрипта
+// С небольшой задержкой, чтобы анимация сработала корректно
 setTimeout(() => {
   updateActiveSquare(activeIndex);
 }, 50);
 
-// Назначаем обработчики клика на квадраты
+// Обработчики клика
 squares.forEach((square, index) => {
   square.addEventListener('click', () => {
     updateActiveSquare(index);
