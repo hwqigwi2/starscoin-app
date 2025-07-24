@@ -223,3 +223,58 @@ html, body {
   -webkit-user-drag: none;
   cursor: pointer;
 }
+
+.squares-container {
+  position: fixed;
+  bottom: 1vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2vh;
+  z-index: 1100;
+  padding: 0 10px;
+}
+
+.square {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  user-select: none;
+  background: none; /* фон убираем, будет только картинка */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.square-img {
+  width: 65px;
+  height: 65px;
+  border-radius: 15px;
+  object-fit: contain;
+  pointer-events: none; /* чтобы клик шел на контейнер */
+  user-select: none;
+}
+
+.overlay-white {
+  position: absolute;
+  top: -3px; /* чтобы чуть больше квадрата перекрыть */
+  left: -3px;
+  width: 76px;
+  height: 76px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  user-select: none;
+  z-index: 5;
+}
+
+.square.active .overlay-white {
+  opacity: 1;
+}
+

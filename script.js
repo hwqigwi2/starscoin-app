@@ -192,3 +192,34 @@ window.addEventListener('load', () => {
     });
   }
 });
+
+// Логика выделения квадратов с прозрачным белым оверлеем
+
+const squares = document.querySelectorAll('.square');
+
+let activeIndex = 2; // изначально подсвечен правый квадрат (индекс 2)
+
+function updateActiveSquare(newIndex) {
+  if (newIndex === activeIndex) return; // если кликнули на уже активный — ничего не делаем
+
+  if (activeIndex !== null && squares[activeIndex]) {
+    squares[activeIndex].classList.remove('active');
+  }
+
+  activeIndex = newIndex;
+
+  if (squares[activeIndex]) {
+    squares[activeIndex].classList.add('active');
+  }
+}
+
+// Инициализация - выставляем изначальный активный квадрат
+updateActiveSquare(activeIndex);
+
+// Назначаем обработчики клика на квадраты
+squares.forEach((square, index) => {
+  square.addEventListener('click', () => {
+    updateActiveSquare(index);
+  });
+});
+
