@@ -1,4 +1,4 @@
-let tickets = 3;
+  let tickets = 3;
 let spinning = false;
 
 const wheel = document.getElementById('wheel');
@@ -225,6 +225,8 @@ squares.forEach((square, index) => {
   });
 });
 
+// Переключение экранов по нижним кнопкам
+
 const squareButtons = document.querySelectorAll('.square');
 const elementsToToggle = [
   document.querySelector('.wheel-wrapper'),
@@ -250,4 +252,4 @@ squareButtons[0].addEventListener('click', () => {
 
   elementsToToggle.forEach(el => el.style.display = '');
   isAltScreen = false;
-});
+}); 
