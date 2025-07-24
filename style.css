@@ -69,10 +69,13 @@ html, body {
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
-  flex-shrink: 0;
-  margin-right: 10px;
+  margin-left: 10px; /* Чтобы совпадало по горизонтали */
+  margin-top: 6px;
   cursor: pointer;
+  position: relative;
+  display: block;
 }
+
 
 .jpg-strip {
   position: relative;

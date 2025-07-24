@@ -173,7 +173,14 @@ setInterval(slideNext, 5000);
 const infoBtn = document.getElementById('infoBtn');
 if (infoBtn) {
   infoBtn.addEventListener('click', () => {
-    showTelegramAlert(`Шансы выпадения:\n\n0 – 70%\n🎟️ – 20%\n⭐️50 – 5%\n⭐️100 – 3%\n⭐️500 – 2%`);
+    showTelegramAlert(`Шансы выпадения:
+
+0 – 70%
+🎟️ – 20%
+⭐️50 – 5%
+⭐️100 – 3%
+⭐️500 – 1.9%
+🏆Gold Heroic Helmet – 0.1%`);
   });
 }
 
