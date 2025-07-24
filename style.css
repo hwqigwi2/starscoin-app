@@ -22,7 +22,47 @@ html, body {
   align-items: center;
 }
 
-/* Верхняя полоса */
+/* PNG полоска сверху */
+.png-strip-container {
+  position: fixed;
+  top: 0.5vh;
+  left: 0.5vw;
+  width: 99vw;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.2); /* полупрозрачный фон */
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+  z-index: 1000;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.squares-container {
+  position: fixed;
+  bottom: 1vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2vh;              /* расстояние между квадратами */
+  z-index: 1100;
+  /* ширина не задаём, будет по содержимому */
+  padding: 0 10px;        /* по желанию */
+}
+
+.square {
+  width: 70px;
+  height: 70px;
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+
 .png-strip-container {
   position: fixed;
   top: 0.5vh;
@@ -34,6 +74,7 @@ html, body {
   padding: 0 5px;
   gap: 10px;
   z-index: 1000;
+  overflow: hidden;
 }
 
 .png-strip-left {
@@ -45,14 +86,41 @@ html, body {
   border-radius: 15px;
 }
 
+.info-icon {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: auto; /* чтобы кнопка была кликабельной */
+}
+
 .jpg-strip {
   position: relative;
   height: 45px;
-  width: calc(45px * 7 + 10px * 6);
+  width: calc(45px * 7 + 10px * 6); /* 7 иконок */
   overflow: hidden;
   user-select: none;
   border-radius: 15px;
 }
+
+.center-icon {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  top: 34%;   /* центр по вертикали */
+  left: 50%;  /* центр по горизонтали */
+  transform: translate(-50%, -50%); /* сместить назад на половину ширины и высоты */
+  pointer-events: none;
+  z-index: 10;
+}
+
 
 .jpg-strip img {
   position: absolute;
@@ -63,6 +131,8 @@ html, body {
   opacity: 1;
   top: 0;
   border-radius: 15px;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .jpg-strip img.leaving {
@@ -72,17 +142,6 @@ html, body {
 
 .jpg-strip img.entering {
   opacity: 0;
-}
-
-.info-icon {
-  position: fixed;
-  width: 30px;
-  height: 30px;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: auto;
 }
 
 /* Колесо */
@@ -101,6 +160,9 @@ html, body {
   top: 10px;
   left: 0;
   border-radius: 50%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .overlay {
@@ -111,28 +173,27 @@ html, body {
   left: -5%;
   border-radius: 50%;
   pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
   z-index: 10;
 }
 
-.center-icon {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  top: 34%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-}
-
-/* Кнопки */
-.btn-bilets-wrapper, .btn-spin-wrapper {
+/* Кнопка билеты */
+.btn-bilets-wrapper {
   width: 340px;
+  height: 100px;
+  position: relative;
+  margin-top: 25px;
   user-select: none;
 }
 
-.btn-bilets, .btn-spin {
+.btn-bilets {
   width: 100%;
+  height: 100%;
   object-fit: contain;
+  display: block;
+  -webkit-user-drag: none;
+  pointer-events: none;
 }
 
 .ticket-count {
@@ -143,6 +204,24 @@ html, body {
   font-size: 25px;
   font-weight: 900;
   color: white;
+  user-select: none;
+}
+
+/* Кнопка крутить */
+.btn-spin-wrapper {
+  width: 340px;
+  height: 85px;
+  user-select: none;
+  top: 10;
+}
+
+.btn-spin {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  -webkit-user-drag: none;
+  cursor: pointer;
 }
 
 .squares-container {
@@ -161,7 +240,14 @@ html, body {
   width: 70px;
   height: 70px;
   border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   cursor: pointer;
+  user-select: none;
+  background: none; /* фон убираем, будет только картинка */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
 }
 
 .square-img {
@@ -169,11 +255,13 @@ html, body {
   height: 70px;
   border-radius: 15px;
   object-fit: contain;
+  pointer-events: none; /* чтобы клик шел на контейнер */
+  user-select: none;
 }
 
 .overlay-white {
   position: absolute;
-  top: -3px;
+  top: -3px; /* чтобы чуть больше квадрата перекрыть */
   left: -3px;
   width: 75px;
   height: 75px;
@@ -182,8 +270,12 @@ html, body {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.4s ease;
+  user-select: none;
+  z-index: 5;
 }
 
 .square.active .overlay-white {
   opacity: 1;
 }
+
+
