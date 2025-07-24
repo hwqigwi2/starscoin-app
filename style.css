@@ -243,8 +243,6 @@ html, body {
 .invite-screen {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  /* УБРАЛ затемнение, как просил */
-  /* background: #000000cc; */
   background: transparent;
   display: flex;
   flex-direction: column;
@@ -257,7 +255,7 @@ html, body {
 }
 
 .invite-header {
-  width: 370px;
+  width: 310px;
   height: 75px;
   object-fit: contain;
   margin-bottom: 3vh;
@@ -265,39 +263,61 @@ html, body {
   user-select: none;
 }
 
-/* Размер в 2 раза меньше для IMG_2723 */
-.invite-top-bar {
+/* Прямоугольник 240x280 с приглашениями */
+.invite-rect {
   position: relative;
-  height: 35px;
+  width: 240px;
+  height: 280px;
   background: rgba(255 255 255 / 0.1);
+  border-radius: 15px;
+  box-sizing: border-box;
+  border: 2px solid rgba(255 255 255 / 0.2);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 35px; /* под топ-бар */
+  user-select: none;
+}
+
+/* Верхняя рамка в прямоугольнике */
+.invite-top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 35px;
+  background: rgba(255 255 255 / 0.1);
   border-radius: 15px 15px 0 0;
+  border-bottom: none;
   border: 2px solid rgba(255 255 255 / 0.2);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 0 10px;
   user-select: none;
-  width: 185px; /* в 2 раза уже */
-  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: visible;
 }
 
+/* Картинка в верхней рамке */
 .invite-top-bar-img {
-  width: 185px; /* в 2 раза уже */
-  height: 37.5px; /* в 2 раза меньше */
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 310px;
+  height: 75px;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
   z-index: 1;
 }
 
-/* Текст с количеством приглашённых */
+/* Текст количества приглашённых */
 .invite-count {
   color: white;
   font-size: 22px;
@@ -306,24 +326,29 @@ html, body {
   margin-left: auto;
   margin-right: 10px;
   white-space: nowrap;
+  user-select: none;
+  position: relative;
+  z-index: 10;
 }
 
 /* Список приглашённых с прокруткой */
 .invite-list {
-  margin-top: 40px;
+  margin-top: 10px;
+  width: 100%;
   flex-grow: 1;
   overflow-y: auto;
   padding: 5px 10px;
   color: white;
   font-size: 18px;
   user-select: none;
-  max-height: 180px;
+  max-height: 200px; /* чуть больше */
+  box-sizing: border-box;
 }
 
-/* Кнопка поделиться - сделана меньше */
+/* Кнопка поделиться */
 .invite-share-btn {
-  width: 185px; /* в 2 раза уже */
-  height: 37.5px; /* в 2 раза меньше */
+  width: 310px;
+  height: 75px;
   margin-top: 1vh;
   cursor: pointer;
   user-select: none;
@@ -333,6 +358,9 @@ html, body {
   transition: transform 0.2s ease;
   object-fit: contain;
   align-self: center;
+  background: none;
+  border: none;
+  outline: none;
 }
 
 .invite-share-btn:hover {
