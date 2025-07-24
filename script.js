@@ -1,4 +1,4 @@
-let tickets = 3;
+   let tickets = 3;
 let spinning = false;
 
 const wheel = document.getElementById('wheel');
@@ -24,11 +24,11 @@ function spinWheel() {
   const rotation = spins * 360 + targetAngle;
 
   wheel.style.transition = 'none';
-  wheel.style.transform = `rotate(0deg)`;
+  wheel.style.transform = rotate(0deg);
 
   setTimeout(() => {
     wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-    wheel.style.transform = `rotate(${rotation}deg)`;
+    wheel.style.transform = rotate(${rotation}deg);
   }, 50);
 
   setTimeout(() => {
@@ -105,7 +105,7 @@ function saveState(currentImgs) {
 
 function positionImgs() {
   imgs.forEach((img, i) => {
-    img.style.left = `${i * (imgWidth + gap)}px`;
+    img.style.left = ${i * (imgWidth + gap)}px;
     img.style.opacity = "1";
     img.classList.remove("leaving", "entering");
   });
@@ -119,7 +119,7 @@ function initJpgStrip() {
 
   for (let i = 0; i < visibleCount; i++) {
     const img = document.createElement('img');
-    img.src = `${jpgPrefix}${initialImgs[i]}${jpgSuffix}`;
+    img.src = ${jpgPrefix}${initialImgs[i]}${jpgSuffix};
     jpgStrip.appendChild(img);
     imgs.push(img);
   }
@@ -135,20 +135,20 @@ function slideNext() {
   imgs[0].style.left = "0px";
 
   for (let i = 1; i < imgs.length; i++) {
-    imgs[i].style.left = `${(i - 1) * (imgWidth + gap)}px`;
+    imgs[i].style.left = ${(i - 1) * (imgWidth + gap)}px;
   }
 
   const newImg = document.createElement('img');
-  newImg.src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
+  newImg.src = ${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix};
   newImg.classList.add("entering");
   newImg.style.opacity = "0";
-  newImg.style.left = `${stripWidth}px`;
+  newImg.style.left = ${stripWidth}px;
 
   jpgStrip.appendChild(newImg);
   imgs.push(newImg);
 
   requestAnimationFrame(() => {
-    newImg.style.left = `${(visibleCount - 1) * (imgWidth + gap)}px`;
+    newImg.style.left = ${(visibleCount - 1) * (imgWidth + gap)}px;
     newImg.style.opacity = "1";
   });
 
@@ -181,14 +181,14 @@ window.addEventListener('load', () => {
     infoIcon.style.opacity = '1';
 
     infoIcon.addEventListener('click', () => {
-      showTelegramAlert(`Шансы выпадения:
+      showTelegramAlert(Шансы выпадения:
 
 0 – 70%
 🎟️ – 20%
 ⭐️50 – 5%
 ⭐️100 – 3%
 ⭐️500 – 1.9%
-🏆Gold Heroic Helmet – 0.1%`);
+🏆Gold Heroic Helmet – 0.1%);
     });
   }
 });
@@ -224,4 +224,3 @@ squares.forEach((square, index) => {
     updateActiveSquare(index);
   });
 });
-
