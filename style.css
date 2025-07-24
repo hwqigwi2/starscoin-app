@@ -269,7 +269,7 @@ html, body {
   border-radius: 20px;
   pointer-events: none;
   opacity: 0;
-  transition: none;
+  transition: opacity 0.4s ease;
   user-select: none;
   z-index: 5;
 }

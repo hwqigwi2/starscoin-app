@@ -195,31 +195,32 @@ window.addEventListener('load', () => {
 
 // Логика выделения квадратов с прозрачным белым оверлеем
 
-window.addEventListener('DOMContentLoaded', () => {
-  const squares = document.querySelectorAll('.square');
-  let activeIndex = 0; // левый квадрат
+const squares = document.querySelectorAll('.square');
 
-  function updateActiveSquare(newIndex) {
-    if (newIndex === activeIndex) return;
+let activeIndex = 0; // левый квадрат по умолчанию
 
-    if (activeIndex !== null && squares[activeIndex]) {
-      squares[activeIndex].classList.remove('active');
-    }
-
-    activeIndex = newIndex;
-
-    if (squares[activeIndex]) {
-      squares[activeIndex].classList.add('active');
-    }
+function updateActiveSquare(newIndex) {
+  // Снимаем класс с предыдущего активного квадрата
+  if (activeIndex !== null && squares[activeIndex]) {
+    squares[activeIndex].classList.remove('active');
   }
 
-  // Сразу подсвечиваем левый квадрат после загрузки DOM
-  updateActiveSquare(activeIndex);
+  // Обновляем индекс активного квадрата
+  activeIndex = newIndex;
 
-  // Обработчики клика
-  squares.forEach((square, index) => {
-    square.addEventListener('click', () => {
-      updateActiveSquare(index);
-    });
+  // Добавляем класс новому активному квадрату
+  if (squares[activeIndex]) {
+    squares[activeIndex].classList.add('active');
+  }
+}
+
+// Инициализация — подсвечиваем левый квадрат сразу
+updateActiveSquare(activeIndex);
+
+// Назначаем обработчики клика на квадраты
+squares.forEach((square, index) => {
+  square.addEventListener('click', () => {
+    if (index === activeIndex) return; // если клик на активный, игнорируем
+    updateActiveSquare(index);
   });
 });
