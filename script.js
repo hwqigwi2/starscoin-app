@@ -68,12 +68,14 @@ const gap = 10;
 const visibleCount = 7;
 const stripWidth = imgWidth * visibleCount + gap * (visibleCount - 1);
 
-const jpgOrderRaw = [
-  2685, 2685, 2680, 2685, 2680, 2680, 2681, 2680, 2685, 2680,
-  2683, 2685, 2685, 2685, 2685, 2680, 2681, 2685, 2680, 2680,
-  2684, 2680, 2680, 2681, 2685, 2680, 2685, 2685, 2681
+const jpgOrder = [
+  2685, 2685, 2680, 2685, 2680,
+  2680, 2681, 2680, 2685, 2680,
+  2683, 2685, 2685, 2685, 2685,
+  2680, 2681, 2685, 2680, 2680,
+  2682, 2680, 2680, 2681, 2685,
+  2680, 2685, 2685, 2681
 ];
-const jpgOrder = jpgOrderRaw.filter(num => num !== 2684);
 
 const jpgStrip = document.getElementById('jpgStrip');
 const jpgPrefix = "IMG_";
