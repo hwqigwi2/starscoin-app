@@ -213,8 +213,10 @@ function updateActiveSquare(newIndex) {
   }
 }
 
-// Инициализация - выставляем изначальный активный квадрат
-updateActiveSquare(activeIndex);
+// Инициализация - выставляем изначальный активный квадрат с задержкой, чтобы transition сработал
+setTimeout(() => {
+  updateActiveSquare(activeIndex);
+}, 50);
 
 // Назначаем обработчики клика на квадраты
 squares.forEach((square, index) => {
