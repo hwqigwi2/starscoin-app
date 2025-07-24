@@ -63,6 +63,17 @@ html, body {
   border-radius: 15px;
 }
 
+.info-icon {
+  height: 45px;
+  width: 45px;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  flex-shrink: 0;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
 .jpg-strip {
   position: relative;
   height: 45px;
