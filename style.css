@@ -87,6 +87,18 @@ html, body {
   border-radius: 15px;
 }
 
+.center-icon {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  top: 50%;   /* центр по вертикали */
+  left: 50%;  /* центр по горизонтали */
+  transform: translate(-50%, -50%); /* сместить назад на половину ширины и высоты */
+  pointer-events: none;
+  z-index: 10;
+}
+
+
 .jpg-strip img {
   position: absolute;
   width: 45px;
@@ -163,13 +175,12 @@ html, body {
 
 .ticket-count {
   position: absolute;
-  top: 52%;
-  left: 52%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   font-size: 25px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 1px black;
   user-select: none;
 }
 
