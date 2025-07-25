@@ -241,8 +241,9 @@ squareButtons[1].addEventListener('click', () => {
   if (isAltScreen) return;
 
   elementsToToggle.forEach(el => el.style.display = 'none');
-  inviteScreen.style.display = 'none';
-  isAltScreen = true;
+inviteScreen.style.display = 'none';
+document.getElementById('midRect').style.display = 'block';
+isAltScreen = true;
 });
 
 // Кнопка "Левый квадрат" - вернуться на основной экран
@@ -252,6 +253,7 @@ squareButtons[0].addEventListener('click', () => {
   elementsToToggle.forEach(el => el.style.display = '');
   inviteScreen.style.display = 'none';
   isAltScreen = false;
+  document.getElementById('midRect').style.display = 'none';
 });
 
 // ====== Логика приглашений ======
