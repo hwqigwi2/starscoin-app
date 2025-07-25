@@ -236,12 +236,12 @@ const inviteScreen = document.getElementById('inviteScreen');
 
 let isAltScreen = false;
 
-// Кнопка "Средний квадрат" - показать экран приглашений
+// Кнопка "Средний квадрат" - скрыть всё кроме фона и 3 кнопок
 squareButtons[1].addEventListener('click', () => {
   if (isAltScreen) return;
 
   elementsToToggle.forEach(el => el.style.display = 'none');
-  inviteScreen.style.display = 'flex';
+  inviteScreen.style.display = 'none';
   isAltScreen = true;
 });
 
