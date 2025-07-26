@@ -295,17 +295,19 @@ const shareImg = document.querySelector('#midRect .below-rect-img');
 if (shareImg) {
   shareImg.style.cursor = 'pointer';
   shareImg.addEventListener('click', () => {
+    // Формируем ссылку для пересылки через Telegram с уникальным параметром start=USER_ID
     const baseUrl = "https://t.me/share/url";
+    const url = encodeURIComponent("https://t.me/XStarsCoin_bot");
     
-    const url = userId
-      ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`)
-      : encodeURIComponent("https://t.me/XStarsCoin_bot");
-    
-    const text = encodeURIComponent("🎰 Крути и получай звёзды! ✨");
+    // Если есть userId, то вставляем в текст реферальную ссылку
+   const url = userId
+  ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`)
+  : encodeURIComponent("https://t.me/XStarsCoin_bot");
 
-    const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
+const text = encodeURIComponent("🎰 Крути и получай звёзды! ✨");
 
+
+    // Открываем окно выбора чата Telegram для пересылки
     window.open(shareUrl, '_blank');
   });
-}
 }
