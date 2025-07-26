@@ -303,21 +303,20 @@ squareButtons[2].addEventListener('click', () => {
 });
 
 // ======== РЕФЕРАЛЬНАЯ СИСТЕМА И КНОПКА ПОДЕЛИТЬСЯ ========
+// ======== РЕФЕРАЛЬНАЯ СИСТЕМА И КНОПКА ПОДЕЛИТЬСЯ ========
 const shareImg = document.querySelector('#midRect .below-rect-img');
 
 if (shareImg) {
   shareImg.style.cursor = 'pointer';
   shareImg.addEventListener('click', () => {
-    const baseUrl = "https://t.me/share/url";
+    // Формируем текст сообщения с реферальной ссылкой внутри
+    const message = userId
+      ? `🎰 Крути колесо и получай звёзды! ✨\n\nПрисоединяйся по моей ссылке:\nhttps://t.me/XStarsCoin_bot?start=${userId}`
+      : `🎰 Крути колесо и получай звёзды! ✨\n\nПрисоединяйся:\nhttps://t.me/XStarsCoin_bot`;
     
-    const url = userId
-      ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`)
-      : encodeURIComponent("https://t.me/XStarsCoin_bot");
-
-    const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
-
-    const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
-
+    // Кодируем весь текст как единый параметр
+    const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
+    
     window.open(shareUrl, '_blank');
   });
 }
