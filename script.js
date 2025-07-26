@@ -300,12 +300,11 @@ if (shareImg) {
     const url = encodeURIComponent("https://t.me/XStarsCoin_bot");
     
     // Если есть userId, то вставляем в текст реферальную ссылку
-   const url = userId
-  ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`)
-  : encodeURIComponent("https://t.me/XStarsCoin_bot");
+    const text = userId
+      ? encodeURIComponent(`🎰 Крути и получай звёзды! ✨ https://t.me/XStarsCoin_bot?start=${userId}`)
+      : encodeURIComponent("🎰 Крути и получай звёзды! ✨ https://t.me/XStarsCoin_bot");
 
-const text = encodeURIComponent("🎰 Крути и получай звёзды! ✨");
-
+    const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
 
     // Открываем окно выбора чата Telegram для пересылки
     window.open(shareUrl, '_blank');
