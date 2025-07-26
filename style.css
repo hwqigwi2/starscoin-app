@@ -263,10 +263,10 @@ html, body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 300px;
+  width: 100%; /* растянуть на всю ширину родителя */
   height: 50px;
-  border: 2px solid rgba(0, 0, 0, 0.7); /* тёмная рамка */
-  border-radius: 15px 15px 0 0; /* скругление только сверху */
+  border: 2px solid rgba(0, 0, 0, 0.7);
+  border-radius: 15px 15px 0 0;
   background: transparent;
   box-sizing: border-box;
   pointer-events: none;
