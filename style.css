@@ -242,7 +242,7 @@ html, body {
 /* Прямоугольник по центру - прозрачный с размытием */
 .middle-rect {
   position: fixed;
-  top: 45%; /* Было 50%, поднял на 5% */
+  top: 45%; /* поднято на 5% */
   left: 50%;
   width: 300px;
   height: 430px;
@@ -255,7 +255,7 @@ html, body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   pointer-events: none;
   user-select: none;
-  overflow: hidden;
+  overflow: visible; /* чтобы не обрезать картинку выше рамки */
 }
 
 .top-frame {
@@ -264,20 +264,21 @@ html, body {
   left: 0;
   width: 100%;
   height: 50px;
-  background: rgba(0, 0, 0, 0.6); /* Было 0.3, теперь в 2 раза темнее */
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 15px 15px 0 0;
   box-sizing: border-box;
   pointer-events: none;
+  overflow: visible; /* если внутри что-то выходит */
 }
 
 .top-frame-img {
+  position: absolute;
+  left: 10px; /* отступ слева, чтобы не прилипала к краю */
+  top: 50%;
   height: 40px;
   width: 250px;
-  object-fit: contain;
-  position: absolute;
-  left: 0;
-  top: 50%;
   transform: translateY(-50%);
+  object-fit: contain;
   user-select: none;
   pointer-events: none;
 }
@@ -287,10 +288,9 @@ html, body {
   top: -10px; /* на 10 пикселей выше рамки */
   left: 50%;
   transform: translateX(-50%);
-  width: 300px;  /* длина */
-  height: 100px; /* высота */
+  width: 350px;
+  height: 150px;
   object-fit: contain;
   user-select: none;
   pointer-events: none;
 }
-
