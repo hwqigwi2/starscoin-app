@@ -302,7 +302,7 @@ html, body {
   transform: translateX(-50%);
   width: 350px;
   height: 100px;
-  margin-top: 13px; /* отступ 10px ниже */
+  margin-top: 9px; /* отступ 10px ниже */
   object-fit: contain;
   user-select: none;
   pointer-events: none;
