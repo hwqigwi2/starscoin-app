@@ -255,19 +255,19 @@ html, body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   pointer-events: none;
   user-select: none;
-  position: relative; /* чтобы позиционировать вложенный элемент */
+  position: relative; /* для абсолютного позиционирования вложенного */
   overflow: hidden;
 }
 
 .top-frame {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100%; /* растянуть на всю ширину родителя */
+  left: 50%;
+  width: 280px; /* чуть меньше, чтобы было внутри с отступом */
   height: 50px;
-  border: 2px solid rgba(0, 0, 0, 0.7);
-  border-radius: 15px 15px 0 0;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.3); /* темный полупрозрачный фон */
+  border-radius: 15px 15px 0 0; /* скругление только сверху */
   box-sizing: border-box;
   pointer-events: none;
+  transform: translateX(-50%);
 }
