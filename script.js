@@ -260,3 +260,28 @@ squareButtons[2].addEventListener('click', () => {
     updateActiveSquare(2);
   }
 });
+
+// Получаем ID юзера из Telegram WebApp
+const tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
+if (!tgUser) {
+  console.log('Пользователь не определён');
+}
+
+// Генерируем реферальную ссылку
+const refLink = `https://t.me/XStarsCoin_bot?start=ref${tgUser.id}`;
+
+// Текст для шаринга
+const shareText = `Крути и получай звезды! 🚀 Присоединяйся к боту по ссылке: ${refLink}`;
+
+document.getElementById('btnReferralShare').onclick = () => {
+  if (Telegram.WebApp.shareData) {
+    Telegram.WebApp.shareData({ text: shareText }).then(() => {
+      console.log('Шаринг прошёл успешно');
+    }).catch(() => {
+      alert('Не удалось открыть меню шаринга');
+    });
+  } else {
+    // Если shareData не поддерживается, просто открываем ссылку (копировать и отправлять вручную)
+    prompt('Скопируйте эту ссылку и поделитесь с друзьями:', refLink);
+  }
+};
