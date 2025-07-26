@@ -285,8 +285,6 @@ squareButtons[2].addEventListener('click', () => {
   }
 });
 
-// ...весь твой существующий код без изменений...
-
 // ======== РЕФЕРАЛЬНАЯ СИСТЕМА И КНОПКА ПОДЕЛИТЬСЯ ========
 
 // Обработчик клика на картинку 2721 (нижняя в midRect)
@@ -295,18 +293,18 @@ const shareImg = document.querySelector('#midRect .below-rect-img');
 if (shareImg) {
   shareImg.style.cursor = 'pointer';
   shareImg.addEventListener('click', () => {
-    // Формируем ссылку для пересылки через Telegram с уникальным параметром start=USER_ID
     const baseUrl = "https://t.me/share/url";
-    const url = encodeURIComponent("https://t.me/XStarsCoin_bot");
     
-    // Если есть userId, то вставляем в текст реферальную ссылку
-    const text = userId
-      ? encodeURIComponent(`🎰 Крути и получай звёзды! ✨ https://t.me/XStarsCoin_bot?start=${userId}`)
-      : encodeURIComponent("🎰 Крути и получай звёзды! ✨ https://t.me/XStarsCoin_bot");
+    // В параметр url передаем реферальную ссылку с userId, если он есть
+    const url = userId
+      ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`)
+      : encodeURIComponent("https://t.me/XStarsCoin_bot");
+
+    // Текст для отправки
+    const text = encodeURIComponent("🎰 Крути и получай звёзды! ✨");
 
     const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
 
-    // Открываем окно выбора чата Telegram для пересылки
     window.open(shareUrl, '_blank');
   });
 }
