@@ -293,14 +293,15 @@ const shareImg = document.querySelector('#midRect .below-rect-img');
 if (shareImg) {
   shareImg.style.cursor = 'pointer';
   shareImg.addEventListener('click', () => {
-    const shareMessage = userId
-      ? `🎰 Крути и получай звёзды! ✨ ${refLink}`
-      : `🎰 Крути и получай звёзды! ✨ https://t.me/XStarsCoin_bot`;
+    const baseUrl = "https://t.me/share/url";
+    const url = encodeURIComponent("https://t.me/XStarsCoin_bot");
+    const text = userId
+      ? encodeURIComponent(`🎰 Крути и получай звёзды! ✨ ${refLink}`)
+      : encodeURIComponent("🎰 Крути и получай звёзды! ✨ https://t.me/XStarsCoin_bot");
 
-    if (Telegram.WebApp && Telegram.WebApp.share) {
-      Telegram.WebApp.share({ message: shareMessage });
-    } else {
-      alert('Функция "Поделиться" доступна только внутри Telegram WebApp');
-    }
+    const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
+
+    // Открываем в новом окне, чтобы Telegram показал выбор чата для пересылки
+    window.open(shareUrl, '_blank');
   });
 }
