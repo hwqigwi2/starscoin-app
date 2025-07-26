@@ -261,27 +261,26 @@ squareButtons[2].addEventListener('click', () => {
   }
 });
 
-// Получаем ID юзера из Telegram WebApp
-const tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
-if (!tgUser) {
-  console.log('Пользователь не определён');
+// Получаем уникальный реферальный код пользователя (пример, возьмём id Telegram-пользователя из initDataUnsafe)
+const userId = Telegram.WebApp?.initDataUnsafe?.user?.id || 'unknown';
+
+// Формируем реферальный код
+const userRefCode = `ref${userId}`;
+
+// Находим картинку с классом below-rect-img внутри midRect
+const shareImg = document.querySelector('#midRect .below-rect-img');
+
+if (shareImg) {
+  shareImg.style.cursor = 'pointer'; // чтобы было понятно, что кликабельно
+
+  shareImg.addEventListener('click', () => {
+    const shareMessage = `Крути и получай звёзды! ✨ https://t.me/XStarsCoin_bot?start=${userRefCode}`;
+
+    if (Telegram.WebApp && Telegram.WebApp.share) {
+      Telegram.WebApp.share({ message: shareMessage });
+    } else {
+      alert('Функция "Поделиться" доступна только внутри Telegram WebApp');
+    }
+  });
 }
 
-// Генерируем реферальную ссылку
-const refLink = `https://t.me/XStarsCoin_bot?start=ref${tgUser.id}`;
-
-// Текст для шаринга
-const shareText = `Крути и получай звезды! 🚀 Присоединяйся к боту по ссылке: ${refLink}`;
-
-document.getElementById('btnReferralShare').onclick = () => {
-  if (Telegram.WebApp.shareData) {
-    Telegram.WebApp.shareData({ text: shareText }).then(() => {
-      console.log('Шаринг прошёл успешно');
-    }).catch(() => {
-      alert('Не удалось открыть меню шаринга');
-    });
-  } else {
-    // Если shareData не поддерживается, просто открываем ссылку (копировать и отправлять вручную)
-    prompt('Скопируйте эту ссылку и поделитесь с друзьями:', refLink);
-  }
-};
