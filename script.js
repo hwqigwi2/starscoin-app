@@ -14,6 +14,25 @@ let refLink = null;
 
 if (window.Telegram && Telegram.WebApp) {
   userId = Telegram.WebApp.initDataUnsafe?.user?.id || null;
+  
+  // Обработка реферального перехода
+  const startParam = Telegram.WebApp.initDataUnsafe?.start_param || null;
+  if (startParam && startParam !== userId?.toString()) {
+    // Сохраняем информацию о реферале
+    const pendingRefs = JSON.parse(localStorage.getItem('pendingRefs') || '{}');
+    
+    if (!pendingRefs[startParam]) {
+      pendingRefs[startParam] = true;
+      localStorage.setItem('pendingRefs', JSON.stringify(pendingRefs));
+      
+      // Показываем уведомление
+      showTelegramAlert("🎉 Вы зашли по ссылке друга! Спасибо!");
+      
+      // Здесь должен быть запрос к серверу для начисления билетов пригласившему
+      // Например: fetch(`/api/add-ref?inviter=${startParam}`)
+    }
+  }
+  
   if (userId) {
     refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
   }
@@ -218,7 +237,6 @@ window.addEventListener('load', () => {
 });
 
 // Логика выделения квадратов с прозрачным белым оверлеем
-
 const squares = document.querySelectorAll('.square');
 
 let activeIndex = 0; // левый квадрат по умолчанию
@@ -244,7 +262,6 @@ squares.forEach((square, index) => {
 });
 
 // Переключение экранов по нижним кнопкам
-
 const squareButtons = document.querySelectorAll('.square');
 const elementsToToggle = [
   document.querySelector('.wheel-wrapper'),
@@ -286,8 +303,6 @@ squareButtons[2].addEventListener('click', () => {
 });
 
 // ======== РЕФЕРАЛЬНАЯ СИСТЕМА И КНОПКА ПОДЕЛИТЬСЯ ========
-
-// Обработчик клика на картинку 2721 (нижняя в midRect)
 const shareImg = document.querySelector('#midRect .below-rect-img');
 
 if (shareImg) {
@@ -295,16 +310,39 @@ if (shareImg) {
   shareImg.addEventListener('click', () => {
     const baseUrl = "https://t.me/share/url";
     
-    // В параметр url передаем реферальную ссылку с userId, если он есть
     const url = userId
       ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`)
       : encodeURIComponent("https://t.me/XStarsCoin_bot");
 
-    // Текст для отправки
-    const text = encodeURIComponent("🎰 Крути и получай звёзды! ✨");
+    const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
 
     const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
 
     window.open(shareUrl, '_blank');
   });
+}
+
+// Функция для отправки данных о рефералах на сервер
+function sendRefData(inviterId) {
+  // Здесь должен быть fetch-запрос к вашему серверу
+  // Пример:
+  /*
+  fetch('/api/register-ref', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      inviter: inviterId,
+      user: userId
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Реферал зарегистрирован:', data);
+  })
+  .catch(error => {
+    console.error('Ошибка:', error);
+  });
+  */
 }
