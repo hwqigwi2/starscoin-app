@@ -14,40 +14,39 @@ let refLink = null;
 
 if (window.Telegram && Telegram.WebApp) {
   userId = Telegram.WebApp.initDataUnsafe?.user?.id || null;
-  
+
   // Обработка реферального перехода
   const startParam = Telegram.WebApp.initDataUnsafe?.start_param || null;
   if (startParam && startParam !== userId?.toString()) {
-    // Сохраняем информацию о реферале
     const pendingRefs = JSON.parse(localStorage.getItem('pendingRefs') || '{}');
-    
+
     if (!pendingRefs[startParam]) {
       pendingRefs[startParam] = true;
       localStorage.setItem('pendingRefs', JSON.stringify(pendingRefs));
-      
-      // Показываем уведомление
+
       showTelegramAlert("🎉 Вы зашли по ссылке друга! Спасибо!");
-      
-      // Здесь должен быть запрос к серверу для начисления билетов пригласившему
-      // Например: fetch(`/api/add-ref?inviter=${startParam}`)
+
+      // Отправляем данные о реферале на сервер
+      sendRefData(startParam);
     }
   }
-  
+
   if (userId) {
     refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
   }
 
-  // При загрузке проверяем и начисляем билеты за приглашенных друзей (если есть)
   handlePendingRefs();
 }
 
 function handlePendingRefs() {
-  const pendingRefs = parseInt(localStorage.getItem('pendingRefs') || '0');
-  if (pendingRefs > 0) {
-    tickets += pendingRefs;
-    localStorage.setItem('pendingRefs', '0');
+  const pendingRefs = JSON.parse(localStorage.getItem('pendingRefs') || '{}');
+  const total = Object.keys(pendingRefs).length;
+
+  if (total > 0) {
+    tickets += total;
+    localStorage.setItem('pendingRefs', '{}');
     updateUI();
-    showTelegramAlert(`🎉 Вы получили ${pendingRefs} билет(ов) за приглашенных друзей!`);
+    showTelegramAlert(`🎉 Вы получили ${total} билет(ов) за приглашенных друзей!`);
   }
 }
 
@@ -135,7 +134,7 @@ function loadState() {
       currentIndex = saved.currentIndex;
       return saved.currentImgs;
     }
-  } catch { }
+  } catch {}
   return null;
 }
 
@@ -239,7 +238,7 @@ window.addEventListener('load', () => {
 // Логика выделения квадратов с прозрачным белым оверлеем
 const squares = document.querySelectorAll('.square');
 
-let activeIndex = 0; // левый квадрат по умолчанию
+let activeIndex = 0;
 
 function updateActiveSquare(newIndex) {
   if (activeIndex !== null && squares[activeIndex]) {
@@ -253,7 +252,6 @@ function updateActiveSquare(newIndex) {
 
 updateActiveSquare(activeIndex);
 
-// Назначаем обработчики клика на квадраты
 squares.forEach((square, index) => {
   square.addEventListener('click', () => {
     if (index === activeIndex) return;
@@ -277,7 +275,6 @@ const midRect = document.getElementById('midRect');
 
 let isAltScreen = false;
 
-// Кнопка "Средний квадрат" - скрыть всё кроме фона и 3 кнопок, показать midRect
 squareButtons[1].addEventListener('click', () => {
   if (isAltScreen) return;
 
@@ -286,7 +283,6 @@ squareButtons[1].addEventListener('click', () => {
   isAltScreen = true;
 });
 
-// Кнопка "Левый квадрат" - вернуться на основной экран, скрыть midRect
 squareButtons[0].addEventListener('click', () => {
   if (!isAltScreen) return;
 
@@ -295,21 +291,20 @@ squareButtons[0].addEventListener('click', () => {
   isAltScreen = false;
 });
 
-// Правая кнопка (индекс 2) просто переключает выделение, без смены экранов
 squareButtons[2].addEventListener('click', () => {
   if (activeIndex !== 2) {
     updateActiveSquare(2);
   }
 });
 
-// ======== РЕФЕРАЛЬНАЯ СИСТЕМА И КНОПКА ПОДЕЛИТЬСЯ ========
+// ======== РЕФЕРАЛЬНАЯ КНОПКА share ========
 const shareImg = document.querySelector('#midRect .below-rect-img');
 
 if (shareImg) {
   shareImg.style.cursor = 'pointer';
   shareImg.addEventListener('click', () => {
     const baseUrl = "https://t.me/share/url";
-    
+
     const url = userId
       ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`)
       : encodeURIComponent("https://t.me/XStarsCoin_bot");
@@ -322,10 +317,9 @@ if (shareImg) {
   });
 }
 
-// Функция для отправки данных о рефералах на сервер
+// ======== ОТПРАВКА РЕФЕРАЛА НА СЕРВЕР ========
 function sendRefData(inviterId) {
-  // Здесь должен быть fetch-запрос к вашему серверу
-  // Пример:
+  // Пример fetch запроса:
   /*
   fetch('/api/register-ref', {
     method: 'POST',
@@ -337,12 +331,8 @@ function sendRefData(inviterId) {
       user: userId
     })
   })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Реферал зарегистрирован:', data);
-  })
-  .catch(error => {
-    console.error('Ошибка:', error);
-  });
+  .then(res => res.json())
+  .then(data => console.log("✅ Реферал отправлен:", data))
+  .catch(err => console.error("❌ Ошибка отправки реферала:", err));
   */
 }
