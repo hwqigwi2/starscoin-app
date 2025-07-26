@@ -261,8 +261,8 @@ html, body {
 
 .top-frame {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
   width: 100%; /* ровно ширина родителя — 300px */
   height: 50px;
   background: rgba(0, 0, 0, 0.3); /* темный полупрозрачный фон */
