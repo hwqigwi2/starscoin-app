@@ -14,45 +14,40 @@ let refLink = null;
 
 if (window.Telegram && Telegram.WebApp) {
   userId = Telegram.WebApp.initDataUnsafe?.user?.id || null;
-
+  
   // Обработка реферального перехода
   const startParam = Telegram.WebApp.initDataUnsafe?.start_param || null;
   if (startParam && startParam !== userId?.toString()) {
-    // Сохраняем информацию о реферале в localStorage в виде объекта
+    // Сохраняем информацию о реферале
     const pendingRefs = JSON.parse(localStorage.getItem('pendingRefs') || '{}');
-
+    
     if (!pendingRefs[startParam]) {
       pendingRefs[startParam] = true;
       localStorage.setItem('pendingRefs', JSON.stringify(pendingRefs));
-
+      
       // Показываем уведомление
       showTelegramAlert("🎉 Вы зашли по ссылке друга! Спасибо!");
-
-      // Отправляем данные на сервер для учета реферала
-      sendRefData(startParam);
+      
+      // Здесь должен быть запрос к серверу для начисления билетов пригласившему
+      // Например: fetch(`/api/add-ref?inviter=${startParam}`)
     }
   }
-
+  
   if (userId) {
     refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
   }
+
+  // При загрузке проверяем и начисляем билеты за приглашенных друзей (если есть)
+  handlePendingRefs();
 }
 
-// Начисляем билеты за всех pending рефералов (по количеству ключей в объекте)
-handlePendingRefs();
-
 function handlePendingRefs() {
-  const pendingRefs = JSON.parse(localStorage.getItem('pendingRefs') || '{}');
-  const refsCount = Object.keys(pendingRefs).length;
-
-  if (refsCount > 0) {
-    tickets += refsCount;
-
-    // Очищаем хранилище после начисления
-    localStorage.removeItem('pendingRefs');
-
+  const pendingRefs = parseInt(localStorage.getItem('pendingRefs') || '0');
+  if (pendingRefs > 0) {
+    tickets += pendingRefs;
+    localStorage.setItem('pendingRefs', '0');
     updateUI();
-    showTelegramAlert(`🎉 Вы получили ${refsCount} билет(ов) за приглашенных друзей!`);
+    showTelegramAlert(`🎉 Вы получили ${pendingRefs} билет(ов) за приглашенных друзей!`);
   }
 }
 
@@ -314,7 +309,7 @@ if (shareImg) {
   shareImg.style.cursor = 'pointer';
   shareImg.addEventListener('click', () => {
     const baseUrl = "https://t.me/share/url";
-
+    
     const url = userId
       ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`)
       : encodeURIComponent("https://t.me/XStarsCoin_bot");
@@ -327,10 +322,11 @@ if (shareImg) {
   });
 }
 
-// Отправка данных о рефералах на сервер
+// Функция для отправки данных о рефералах на сервер
 function sendRefData(inviterId) {
-  if (!userId) return; // Если userId нет, не отправляем
-
+  // Здесь должен быть fetch-запрос к вашему серверу
+  // Пример:
+  /*
   fetch('/api/register-ref', {
     method: 'POST',
     headers: {
@@ -346,7 +342,7 @@ function sendRefData(inviterId) {
     console.log('Реферал зарегистрирован:', data);
   })
   .catch(error => {
-    console.error('Ошибка при регистрации реферала:', error);
+    console.error('Ошибка:', error);
   });
-}
+  */
 }
