@@ -285,7 +285,7 @@ html, body {
 
 .above-frame-img {
   position: absolute;
-  top: -170px; /* выше рамки на 10 пикселей */
+  top: -155px; /* выше рамки на 10 пикселей */
   left: 51%;
   transform: translateX(-50%);
   width: 400px;
