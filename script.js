@@ -1,5 +1,49 @@
 let tickets = 3;
 let spinning = false;
+let userId = null;
+let refLink = null;
+
+// Инициализация WebApp Telegram
+if (window.Telegram && Telegram.WebApp) {
+  userId = Telegram.WebApp.initDataUnsafe.user?.id;
+  if (userId) {
+    refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
+    checkReferral();
+  }
+}
+
+function checkReferral() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const refId = urlParams.get('start');
+  
+  // Если есть реферальный ID и это не текущий пользователь
+  if (refId && refId !== userId?.toString()) {
+    // Сохраняем в localStorage, что пользователь пришел по реферальной ссылке
+    localStorage.setItem('referral', refId);
+    
+    // Можно показать сообщение
+    showTelegramAlert("🎉 Вы зашли по реферальной ссылке!");
+  }
+}
+
+// Модифицируем функцию spinWheel для начисления билетов за рефералов
+function spinWheel() {
+  if (spinning || tickets <= 0) return;
+
+  // Проверяем, есть ли необработанные рефералы
+  const pendingRefs = parseInt(localStorage.getItem('pendingRefs') || 0;
+  if (pendingRefs > 0) {
+    tickets += pendingRefs;
+    localStorage.setItem('pendingRefs', '0');
+    updateUI();
+    showTelegramAlert(`🎉 Вы получили ${pendingRefs} билет(ов) за приглашенных друзей!`);
+  }
+
+  spinning = true;
+  tickets--;
+  updateUI();
+  // ... остальной код функции ...
+}
 
 const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
@@ -261,26 +305,57 @@ squareButtons[2].addEventListener('click', () => {
   }
 });
 
-// Получаем уникальный реферальный код пользователя (пример, возьмём id Telegram-пользователя из initDataUnsafe)
-const userId = Telegram.WebApp?.initDataUnsafe?.user?.id || 'unknown';
+// Добавьте этот код в конец файла script.js
 
-// Формируем реферальный код
-const userRefCode = `ref${userId}`;
+// Обработчик клика на IMG_2721 (нижняя картинка в midRect)
+document.querySelector('.below-rect-img').addEventListener('click', shareBot);
 
-// Находим картинку с классом below-rect-img внутри midRect
-const shareImg = document.querySelector('#midRect .below-rect-img');
-
-if (shareImg) {
-  shareImg.style.cursor = 'pointer'; // чтобы было понятно, что кликабельно
-
-  shareImg.addEventListener('click', () => {
-    const shareMessage = `Крути и получай звёзды! ✨ https://t.me/XStarsCoin_bot?start=${userRefCode}`;
-
-    if (Telegram.WebApp && Telegram.WebApp.share) {
-      Telegram.WebApp.share({ message: shareMessage });
+function shareBot() {
+  // Проверяем, есть ли WebApp Telegram
+  if (window.Telegram && Telegram.WebApp) {
+    const userId = Telegram.WebApp.initDataUnsafe.user?.id;
+    let shareText = `🎰 Крути колесо и получай звёзды в боте XStarsCoin_bot!\n\n`;
+    
+    if (userId) {
+      const refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
+      shareText += `Моя реферальная ссылка: ${refLink}`;
     } else {
-      alert('Функция "Поделиться" доступна только внутри Telegram WebApp');
+      shareText += "Ссылка на бота: https://t.me/XStarsCoin_bot";
     }
-  });
+
+    // Параметры для кнопок
+    const shareOptions = {
+      title: "Поделиться ботом",
+      text: shareText,
+      url: "https://t.me/XStarsCoin_bot"
+    };
+
+    // Пытаемся использовать нативное API Telegram
+    if (Telegram.WebApp.share) {
+      Telegram.WebApp.share(shareOptions);
+    } 
+    // Если API не доступно, показываем альтернативу
+    else if (navigator.share) {
+      navigator.share(shareOptions).catch(() => {
+        showShareFallback(userId);
+      });
+    } else {
+      showShareFallback(userId);
+    }
+  } else {
+    showShareFallback();
+  }
 }
 
+function showShareFallback(userId = null) {
+  let message = "Скопируйте это сообщение и отправьте друзьям:\n\n";
+  message += "🎰 Крути колесо и получай звёзды в боте XStarsCoin_bot!\n";
+  
+  if (userId) {
+    message += `Моя реферальная ссылка: https://t.me/XStarsCoin_bot?start=${userId}`;
+  } else {
+    message += "Ссылка на бота: https://t.me/XStarsCoin_bot";
+  }
+  
+  alert(message);
+}
