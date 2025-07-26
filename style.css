@@ -305,5 +305,6 @@ html, body {
   margin-top: 5px; /* отступ 10px ниже */
   object-fit: contain;
   user-select: none;
-  pointer-events: none;
+  pointer-events: auto; /* <- важно, чтобы клик сработал */
+  cursor: pointer;       /* улучшает восприятие */
 }
