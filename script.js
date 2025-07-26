@@ -8,6 +8,30 @@ const ticketCount = document.getElementById('ticketCount');
 
 updateUI();
 
+// Получаем userId и формируем реферальную ссылку
+let userId = null;
+let refLink = null;
+
+if (window.Telegram && Telegram.WebApp) {
+  userId = Telegram.WebApp.initDataUnsafe?.user?.id || null;
+  if (userId) {
+    refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
+  }
+
+  // При загрузке проверяем и начисляем билеты за приглашенных друзей (если есть)
+  handlePendingRefs();
+}
+
+function handlePendingRefs() {
+  const pendingRefs = parseInt(localStorage.getItem('pendingRefs') || '0');
+  if (pendingRefs > 0) {
+    tickets += pendingRefs;
+    localStorage.setItem('pendingRefs', '0');
+    updateUI();
+    showTelegramAlert(`🎉 Вы получили ${pendingRefs} билет(ов) за приглашенных друзей!`);
+  }
+}
+
 btnSpin.addEventListener('click', spinWheel);
 
 function spinWheel() {
@@ -261,4 +285,22 @@ squareButtons[2].addEventListener('click', () => {
   }
 });
 
+// ======== РЕФЕРАЛЬНАЯ СИСТЕМА И КНОПКА ПОДЕЛИТЬСЯ ========
 
+// Обработчик клика на картинку 2721 (нижняя в midRect)
+const shareImg = document.querySelector('#midRect .below-rect-img');
+
+if (shareImg) {
+  shareImg.style.cursor = 'pointer';
+  shareImg.addEventListener('click', () => {
+    const shareMessage = userId
+      ? `🎰 Крути и получай звёзды! ✨ ${refLink}`
+      : `🎰 Крути и получай звёзды! ✨ https://t.me/XStarsCoin_bot`;
+
+    if (Telegram.WebApp && Telegram.WebApp.share) {
+      Telegram.WebApp.share({ message: shareMessage });
+    } else {
+      alert('Функция "Поделиться" доступна только внутри Telegram WebApp');
+    }
+  });
+}
