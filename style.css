@@ -269,3 +269,16 @@ html, body {
   box-sizing: border-box;
   pointer-events: none;
 }
+
+.top-frame-img {
+  height: 40px;
+  width: 250px;
+  object-fit: contain;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+  pointer-events: none;
+}
+
