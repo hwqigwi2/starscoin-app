@@ -262,12 +262,12 @@ html, body {
 .top-frame {
   position: absolute;
   top: 0;
-  left: 50%;
-  width: 280px; /* чуть меньше, чтобы было внутри с отступом */
+  left: 0;
+  width: 100%; /* ровно ширина родителя — 300px */
   height: 50px;
   background: rgba(0, 0, 0, 0.3); /* темный полупрозрачный фон */
   border-radius: 15px 15px 0 0; /* скругление только сверху */
   box-sizing: border-box;
   pointer-events: none;
-  transform: translateX(-50%);
+  /* УБРАЛ transform, чтобы не сдвигался */
 }
