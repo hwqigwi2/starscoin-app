@@ -13,10 +13,11 @@ let userId = null;
 let refLink = null;
 
 if (window.Telegram && Telegram.WebApp) {
-  userId = Telegram.WebApp.initDataUnsafe?.user?.id || null;
+  // Сначала пытаемся взять user_id из URL, если нет — из Telegram.WebApp.initDataUnsafe
+  userId = getQueryParam('user_id') || Telegram.WebApp.initDataUnsafe?.user?.id || null;
 
   // Обработка реферального перехода
-  const startParam = Telegram.WebApp.initDataUnsafe?.start_param || null;
+   const startParam = Telegram.WebApp.initDataUnsafe?.start_param || null;
   if (startParam && startParam !== userId?.toString()) {
     const pendingRefs = JSON.parse(localStorage.getItem('pendingRefs') || '{}');
 
@@ -26,8 +27,9 @@ if (window.Telegram && Telegram.WebApp) {
 
       showTelegramAlert("🎉 Вы зашли по ссылке друга! Спасибо!");
 
+
       // Отправляем данные о реферале на сервер
-      sendRefData(startParam);
+        sendRefData(startParam);
     }
   }
 
