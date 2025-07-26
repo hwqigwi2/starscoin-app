@@ -239,113 +239,7 @@ html, body {
   opacity: 1;
 }
 
-/* === Экран приглашений === */
-.invite-screen {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: #000000cc; /* затемнение фона */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding-top: 3vh;
-  font-family: 'Lilita One', cursive;
-  z-index: 2000;
-  user-select: none;
-}
-
-.invite-header {
-  width: 370px;
-  height: 75px;
-  object-fit: contain;
-  margin-bottom: 3vh;
-  -webkit-user-drag: none;
-  user-select: none;
-}
-
-.invite-rect {
-  width: 280px;
-  height: 350px;
-  background: rgba(0,0,0,0.15);
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Верхняя рамка с блюром и прозрачной рамкой */
-.invite-top-bar {
-  position: relative;
-  height: 35px;
-  background: rgba(255 255 255 / 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border-radius: 15px 15px 0 0;
-  border: 2px solid rgba(255 255 255 / 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 0 10px;
-  user-select: none;
-}
-
-/* Изображение в рамке - позиционируется поверх */
-.invite-top-bar-img {
-  width: 370px;
-  height: 75px;
-  object-fit: contain;
-  pointer-events: none;
-  user-select: none;
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1;
-}
-
-/* Текст с количеством приглашённых */
-.invite-count {
-  color: white;
-  font-size: 22px;
-  font-weight: 700;
-  z-index: 10;
-  margin-left: auto;
-  margin-right: 10px;
-  white-space: nowrap;
-}
-
-/* Список приглашённых с прокруткой */
-.invite-list {
-  margin-top: 40px;
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 5px 10px;
-  color: white;
-  font-size: 18px;
-  user-select: none;
-}
-
-/* Кнопка поделиться */
-.invite-share-btn {
-  width: 370px;
-  height: 75px;
-  margin-top: 1vh;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  transition: transform 0.2s ease;
-  object-fit: contain;
-}
-
-.invite-share-btn:hover {
-  transform: scale(1.05);
-}
-
+/* Прямоугольник по центру - прозрачный с размытием */
 .middle-rect {
   position: fixed;
   top: 50%;
@@ -360,6 +254,5 @@ html, body {
   z-index: 1000;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   pointer-events: none;
+  user-select: none;
 }
-
-

@@ -232,88 +232,31 @@ const elementsToToggle = [
   document.querySelector('.png-strip-container')
 ];
 
-const inviteScreen = document.getElementById('inviteScreen');
+const midRect = document.getElementById('midRect');
 
 let isAltScreen = false;
 
-// Кнопка "Средний квадрат" - скрыть всё кроме фона и 3 кнопок
+// Кнопка "Средний квадрат" - скрыть всё кроме фона и 3 кнопок, показать midRect
 squareButtons[1].addEventListener('click', () => {
   if (isAltScreen) return;
 
   elementsToToggle.forEach(el => el.style.display = 'none');
-inviteScreen.style.display = 'none';
-document.getElementById('midRect').style.display = 'block';
-isAltScreen = true;
+  midRect.style.display = 'block';
+  isAltScreen = true;
 });
 
-// Кнопка "Левый квадрат" - вернуться на основной экран
+// Кнопка "Левый квадрат" - вернуться на основной экран, скрыть midRect
 squareButtons[0].addEventListener('click', () => {
   if (!isAltScreen) return;
 
   elementsToToggle.forEach(el => el.style.display = '');
-  inviteScreen.style.display = 'none';
+  midRect.style.display = 'none';
   isAltScreen = false;
-  document.getElementById('midRect').style.display = 'none';
 });
 
-// ====== Логика приглашений ======
-
-// Пример списка приглашённых (имена или id)
-const invitedUsers = [
-  'user1',
-  'user2',
-  'user3',
-  'user4',
-  'user5',
-  'user6',
-  'user7',
-  'user8',
-  'user9',
-  'user10',
-];
-
-// Заполнение списка в inviteList
-const inviteListElem = document.getElementById('inviteList');
-const inviteCountElem = document.getElementById('inviteCount');
-
-function renderInviteList() {
-  inviteListElem.innerHTML = ''; // очистка
-
-  invitedUsers.forEach((user, index) => {
-    const div = document.createElement('div');
-    div.textContent = `${index + 1}. ${user}`;
-    div.style.padding = '5px 0';
-    div.style.borderBottom = '1px solid rgba(255,255,255,0.2)';
-    inviteListElem.appendChild(div);
-  });
-
-  inviteCountElem.textContent = invitedUsers.length;
-}
-
-renderInviteList();
-
-// === Кнопка поделиться ===
-
-const inviteShareBtn = document.querySelector('.invite-share-btn');
-
-inviteShareBtn.addEventListener('click', () => {
-  const text = `Крути рулетку и получай звезды! За каждого приглашенного человека дается 1 билет. Присоединяйся: https://t.me/XStarsCoin_bot`;
-
-  if (Telegram?.WebApp?.shareData) {
-    // Telegram WebApp shareData
-    Telegram.WebApp.shareData({
-      type: 'text',
-      text: text,
-    }).then(() => {
-      showTelegramAlert('Ссылка успешно отправлена!');
-    }).catch(() => {
-      showTelegramAlert('Не удалось отправить ссылку');
-    });
-  } else if (Telegram?.WebApp?.openChat) {
-    // Если есть метод открытия чата (редко бывает), можно попробовать
-    Telegram.WebApp.openChat(text);
-  } else {
-    // fallback: обычный prompt для копирования
-    window.prompt('Скопируйте текст приглашения:', text);
+// Правая кнопка (индекс 2) просто переключает выделение, без смены экранов
+squareButtons[2].addEventListener('click', () => {
+  if (activeIndex !== 2) {
+    updateActiveSquare(2);
   }
 });
