@@ -308,3 +308,22 @@ html, body {
   pointer-events: auto; /* <- важно, чтобы клик сработал */
   cursor: pointer;       /* улучшает восприятие */
 }
+
+.referral-names {
+  position:absolute;
+  top:60px;
+  left:20px;
+  width:200px;
+  max-height:300px;
+  overflow-y:auto;
+  font-family:'Lilita One',cursive;
+  font-weight:400;
+  font-size:20px;
+  color:white;
+  text-align:left;
+}
+.referral-names div {
+  height:50px;
+  line-height:50px;
+}
+

@@ -6,9 +6,13 @@ const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
-// Получаем userId и формируем реферальную ссылку
 let userId = null;
-let referrerId = null;  // Добавил для удобства
+let referrerId = null;
+let userNick = null;
+
+const refBox = document.createElement('div');
+refBox.className = 'referral-names';
+document.getElementById('midRect').appendChild(refBox);
 
 // Функция для получения параметра из URL
 function getQueryParam(name) {
@@ -37,9 +41,9 @@ function showTelegramAlert(text) {
 }
 
 // Отправка данных о реферале на сервер
-async function sendRefData(inviterId) {
+async function sendRefData(inviterId, nick) {
     if (!userId) return;
-    
+
     try {
         const response = await fetch('/api/register-ref', {
             method: 'POST',
@@ -48,20 +52,20 @@ async function sendRefData(inviterId) {
             },
             body: JSON.stringify({
                 inviter: parseInt(inviterId),
-                user: parseInt(userId)
+                user: parseInt(userId),
+                user_nick: nick
             })
         });
-        
+
         const data = await response.json();
         console.log("Реферальные данные отправлены:", data);
-        
+
         if (data.status === 'ok') {
-            // Обновим билеты с сервера после удачного рефа
             await updateTicketsFromServer();
             showTelegramAlert("🎉 Вам начислен бонус за приглашение!");
-        } else if(data.status === "already-registered") {
+        } else if (data.status === "already-registered") {
             console.log("Реферальная система: пользователь уже зарегистрирован по реферальной ссылке.");
-        } else if(data.status === "self-referral") {
+        } else if (data.status === "self-referral") {
             console.log("Реферальная система: попытка самореферала, игнорируем.");
         }
     } catch (err) {
@@ -72,11 +76,11 @@ async function sendRefData(inviterId) {
 // Получение количества билетов с сервера
 async function updateTicketsFromServer() {
     if (!userId) return;
-    
+
     try {
         const response = await fetch(`/api/get-tickets?user_id=${userId}`);
         const data = await response.json();
-        
+
         if (data.tickets !== undefined) {
             tickets = data.tickets;
             updateUI();
@@ -86,40 +90,53 @@ async function updateTicketsFromServer() {
     }
 }
 
-// Обработка реферального перехода
+// Загрузка списка рефералов с сервера и вывод в refBox
+async function loadReferrals() {
+    if (!userId) return;
+
+    try {
+        const response = await fetch(`/api/get-referrals?user_id=${userId}`);
+        const data = await response.json();
+
+        refBox.innerHTML = '';
+        if (data.referrals && Array.isArray(data.referrals)) {
+            data.referrals.forEach((nick, i) => {
+                const div = document.createElement('div');
+                div.textContent = `${i + 1}. ${nick}`;
+                refBox.appendChild(div);
+            });
+        }
+    } catch (err) {
+        console.error("Ошибка загрузки рефералов:", err);
+    }
+}
+
+// Обработка реферального перехода с локальным кэшем, отправка данных
 function handleReferral() {
-    // referrerId берем из URL или из Telegram start_param
-    referrerId = getQueryParam('referrer') || 
-                 (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || 
-                 null;
+    referrerId = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
 
     if (referrerId && referrerId !== userId?.toString()) {
-        // Проверяем локально, отправляли ли уже этот реф
         const pendingRefs = JSON.parse(localStorage.getItem('pendingRefs') || '{}');
-
         if (!pendingRefs[referrerId]) {
             pendingRefs[referrerId] = true;
             localStorage.setItem('pendingRefs', JSON.stringify(pendingRefs));
-            
+
             showTelegramAlert("🎉 Вы зашли по ссылке друга! Спасибо!");
-            sendRefData(referrerId);
+            // userNick может быть null, это ок
+            sendRefData(referrerId, userNick);
         }
     }
 }
 
-// Инициализация пользователя
+// Инициализация пользователя, получение параметров из URL или Telegram WebApp
 function initUser() {
     userId = getQueryParam('user_id') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id) || null;
-    
+    referrerId = getQueryParam('referrer') || null;
+    userNick = getQueryParam('nick') || null;
+
     if (userId) {
-        // Обновляем ссылку для шаринга (если нужно где-то использовать)
-        const refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
-
-        // Обработка реферала (если есть)
         handleReferral();
-
-        // Загружаем актуальное количество билетов с сервера
-        updateTicketsFromServer();
+        updateTicketsFromServer().then(loadReferrals);
     }
 }
 
@@ -154,7 +171,7 @@ function spinWheel() {
             showTelegramAlert("😔 В следующий раз повезёт");
         }
         updateUI();
-        await updateTicketsFromServer(); // Синхронизируем с сервером после вращения
+        await updateTicketsFromServer();
     }, 3050);
 }
 
@@ -188,7 +205,7 @@ function loadState() {
             currentIndex = saved.currentIndex;
             return saved.currentImgs;
         }
-    } catch {}
+    } catch { }
     return null;
 }
 
@@ -298,7 +315,7 @@ window.addEventListener('DOMContentLoaded', () => {
     updateUI();
     initJpgStrip();
     setInterval(slideNext, 5000);
-    
+
     btnSpin.addEventListener('click', spinWheel);
     updateActiveSquare(activeIndex);
 
@@ -307,12 +324,15 @@ window.addEventListener('DOMContentLoaded', () => {
         square.addEventListener('click', () => {
             if (index === activeIndex) return;
             updateActiveSquare(index);
-            
+
             // Обработка переключения экранов
             if (index === 1 && !isAltScreen) {
                 elementsToToggle.forEach(el => el.style.display = 'none');
                 midRect.style.display = 'block';
                 isAltScreen = true;
+
+                // При показе midRect подгружаем рефералов заново
+                loadReferrals();
             } else if (index === 0 && isAltScreen) {
                 elementsToToggle.forEach(el => el.style.display = '');
                 midRect.style.display = 'none';
