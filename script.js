@@ -8,22 +8,12 @@ const ticketCount = document.getElementById('ticketCount');
 
 // Получаем userId и формируем реферальную ссылку
 let userId = null;
-let refLink = null;
+let referrerId = null;  // Добавил для удобства
 
 // Функция для получения параметра из URL
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
-}
-
-// Инициализация пользователя
-function initUser() {
-    userId = getQueryParam('user_id') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id) || null;
-    
-    if (userId) {
-        refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
-        updateTicketsFromServer(); // Загружаем актуальное количество билетов
-    }
 }
 
 // Обновление UI
@@ -66,7 +56,13 @@ async function sendRefData(inviterId) {
         console.log("Реферальные данные отправлены:", data);
         
         if (data.status === 'ok') {
-            updateTicketsFromServer();
+            // Обновим билеты с сервера после удачного рефа
+            await updateTicketsFromServer();
+            showTelegramAlert("🎉 Вам начислен бонус за приглашение!");
+        } else if(data.status === "already-registered") {
+            console.log("Реферальная система: пользователь уже зарегистрирован по реферальной ссылке.");
+        } else if(data.status === "self-referral") {
+            console.log("Реферальная система: попытка самореферала, игнорируем.");
         }
     } catch (err) {
         console.error("Ошибка отправки реферальных данных:", err);
@@ -92,20 +88,38 @@ async function updateTicketsFromServer() {
 
 // Обработка реферального перехода
 function handleReferral() {
-    const referrer = getQueryParam('referrer') || 
-                   (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || 
-                   null;
+    // referrerId берем из URL или из Telegram start_param
+    referrerId = getQueryParam('referrer') || 
+                 (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || 
+                 null;
 
-    if (referrer && referrer !== userId?.toString()) {
+    if (referrerId && referrerId !== userId?.toString()) {
+        // Проверяем локально, отправляли ли уже этот реф
         const pendingRefs = JSON.parse(localStorage.getItem('pendingRefs') || '{}');
 
-        if (!pendingRefs[referrer]) {
-            pendingRefs[referrer] = true;
+        if (!pendingRefs[referrerId]) {
+            pendingRefs[referrerId] = true;
             localStorage.setItem('pendingRefs', JSON.stringify(pendingRefs));
             
             showTelegramAlert("🎉 Вы зашли по ссылке друга! Спасибо!");
-            sendRefData(referrer);
+            sendRefData(referrerId);
         }
+    }
+}
+
+// Инициализация пользователя
+function initUser() {
+    userId = getQueryParam('user_id') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id) || null;
+    
+    if (userId) {
+        // Обновляем ссылку для шаринга (если нужно где-то использовать)
+        const refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
+
+        // Обработка реферала (если есть)
+        handleReferral();
+
+        // Загружаем актуальное количество билетов с сервера
+        updateTicketsFromServer();
     }
 }
 
@@ -131,7 +145,7 @@ function spinWheel() {
         wheel.style.transform = `rotate(${rotation}deg)`;
     }, 50);
 
-    setTimeout(() => {
+    setTimeout(async () => {
         spinning = false;
         if (targetAngle === 0) {
             tickets++;
@@ -140,7 +154,7 @@ function spinWheel() {
             showTelegramAlert("😔 В следующий раз повезёт");
         }
         updateUI();
-        updateTicketsFromServer(); // Синхронизируем с сервером после вращения
+        await updateTicketsFromServer(); // Синхронизируем с сервером после вращения
     }, 3050);
 }
 
@@ -281,7 +295,6 @@ let isAltScreen = false;
 // Инициализация при загрузке
 window.addEventListener('DOMContentLoaded', () => {
     initUser();
-    handleReferral();
     updateUI();
     initJpgStrip();
     setInterval(slideNext, 5000);
