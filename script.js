@@ -1,6 +1,8 @@
 let tickets = 3;
 let spinning = false;
 
+const API_BASE = 'https://starscoin-app-33ik.vercel.app';
+
 const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
@@ -45,7 +47,7 @@ async function sendRefData(inviterId, nick) {
     if (!userId) return;
 
     try {
-        const response = await fetch('/api/register-ref', {
+        const response = await fetch(`${API_BASE}/api/register-ref`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -78,7 +80,7 @@ async function updateTicketsFromServer() {
     if (!userId) return;
 
     try {
-        const response = await fetch(`/api/get-tickets?user_id=${userId}`);
+        const response = await fetch(`${API_BASE}/api/get-tickets?user_id=${userId}`);
         const data = await response.json();
 
         if (data.tickets !== undefined) {
@@ -95,7 +97,7 @@ async function loadReferrals() {
     if (!userId) return;
 
     try {
-        const response = await fetch(`/api/get-referrals?user_id=${userId}`);
+        const response = await fetch(`${API_BASE}/api/get-referrals?user_id=${userId}`);
         const data = await response.json();
 
         refBox.innerHTML = '';

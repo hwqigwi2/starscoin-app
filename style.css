@@ -22,7 +22,6 @@ html, body {
   align-items: center;
 }
 
-/* PNG полоска сверху */
 .png-strip-container {
   position: fixed;
   top: 0.5vh;
@@ -83,29 +82,6 @@ html, body {
   z-index: 10;
 }
 
-.jpg-strip img {
-  position: absolute;
-  width: 45px;
-  height: 45px;
-  object-fit: cover;
-  transition: left 1s ease, opacity 1s ease;
-  opacity: 1;
-  top: 0;
-  border-radius: 15px;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-.jpg-strip img.leaving {
-  opacity: 0;
-  left: 0 !important;
-}
-
-.jpg-strip img.entering {
-  opacity: 0;
-}
-
-/* Колесо */
 .wheel-wrapper {
   position: relative;
   width: 350px;
@@ -139,7 +115,6 @@ html, body {
   z-index: 10;
 }
 
-/* Кнопка билеты */
 .btn-bilets-wrapper {
   width: 340px;
   height: 100px;
@@ -168,7 +143,6 @@ html, body {
   user-select: none;
 }
 
-/* Кнопка крутить */
 .btn-spin-wrapper {
   width: 340px;
   height: 85px;
@@ -239,10 +213,9 @@ html, body {
   opacity: 1;
 }
 
-/* Прямоугольник по центру - прозрачный с размытием */
 .middle-rect {
   position: fixed;
-  top: 45%; /* поднято на 5% */
+  top: 45%;
   left: 50%;
   width: 300px;
   height: 430px;
@@ -255,7 +228,7 @@ html, body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   pointer-events: none;
   user-select: none;
-  overflow: visible; /* чтобы не обрезать картинку выше рамки */
+  overflow: visible;
 }
 
 .top-frame {
@@ -268,12 +241,12 @@ html, body {
   border-radius: 15px 15px 0 0;
   box-sizing: border-box;
   pointer-events: none;
-  overflow: visible; /* если внутри что-то выходит */
+  overflow: visible;
 }
 
 .top-frame-img {
   position: absolute;
-  left: 10px; /* отступ слева, чтобы не прилипала к краю */
+  left: 10px;
   top: 50%;
   height: 40px;
   width: 250px;
@@ -285,7 +258,7 @@ html, body {
 
 .above-frame-img {
   position: absolute;
-  top: -155px; /* выше рамки на 10 пикселей */
+  top: -155px;
   left: 51%;
   transform: translateX(-50%);
   width: 400px;
@@ -297,23 +270,23 @@ html, body {
 
 .below-rect-img {
   position: absolute;
-  top: 100%;       /* сразу под нижним краем .middle-rect */
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
   width: 350px;
   height: 100px;
-  margin-top: 5px; /* отступ 10px ниже */
+  margin-top: 5px;
   object-fit: contain;
   user-select: none;
-  pointer-events: auto; /* <- важно, чтобы клик сработал */
-  cursor: pointer;       /* улучшает восприятие */
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .referral-names {
   position:absolute;
   top:60px;
   left:20px;
-  width:200px;
+  width:260px;
   max-height:300px;
   overflow-y:auto;
   font-family:'Lilita One',cursive;
@@ -326,4 +299,3 @@ html, body {
   height:50px;
   line-height:50px;
 }
-
