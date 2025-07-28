@@ -1,4 +1,4 @@
-const API_URL = "http://193.233.102.156:8000";  // ← твой backend
+const API_URL = "http://193.233.102.156:8000";  
 
 let tickets = 3;
 let spinning = false;
