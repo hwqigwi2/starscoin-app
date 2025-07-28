@@ -1,7 +1,7 @@
 let tickets = 3;
 let spinning = false;
 
-const API_BASE_URL = 'https://193.233.102.156:8000';
+const API_BASE_URL = 'http://193.233.102.156:8000';
 
 const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
