@@ -1,7 +1,7 @@
-const API_URL = "http://193.233.102.156:8000";  
-
 let tickets = 3;
 let spinning = false;
+
+const API_BASE_URL = 'https://starscoin-app-33ik.vercel.app';
 
 const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
@@ -53,7 +53,7 @@ async function sendRefData(inviterId) {
     if (!userId) return;
     
     try {
-        const response = await fetch(`${API_URL}/api/register-ref`, {
+        const response = await fetch(`${API_BASE_URL}/api/register-ref`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -64,14 +64,19 @@ async function sendRefData(inviterId) {
             })
         });
         
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         console.log("Реферальные данные отправлены:", data);
         
         if (data.status === 'ok') {
-            updateTicketsFromServer();
+            await updateTicketsFromServer();
         }
     } catch (err) {
         console.error("Ошибка отправки реферальных данных:", err);
+        showTelegramAlert("Произошла ошибка при обработке реферала");
     }
 }
 
@@ -80,7 +85,12 @@ async function updateTicketsFromServer() {
     if (!userId) return;
     
     try {
-        const response = await fetch(`${API_URL}/api/get-tickets?user_id=${userId}`);
+        const response = await fetch(`${API_BASE_URL}/api/get-tickets?user_id=${userId}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.tickets !== undefined) {
@@ -89,6 +99,7 @@ async function updateTicketsFromServer() {
         }
     } catch (err) {
         console.error("Ошибка получения билетов:", err);
+        showTelegramAlert("Не удалось загрузить количество билетов");
     }
 }
 
