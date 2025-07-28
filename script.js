@@ -1,4 +1,4 @@
-let tickets = 0;
+let tickets = 3;
 let spinning = false;
 
 const wheel = document.getElementById('wheel');
