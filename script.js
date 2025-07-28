@@ -5,6 +5,7 @@ const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
+const inviteButton = document.getElementById('inviteButton'); // Новая кнопка приглашений
 
 let userId = null;
 let referrerId = null;
@@ -78,7 +79,7 @@ async function updateTicketsFromServer() {
     if (!userId) return;
 
     try {
-        const response = await fetch(/api/get-tickets?user_id=${userId});
+        const response = await fetch(`/api/get-tickets?user_id=${userId}`);
         const data = await response.json();
 
         if (data.tickets !== undefined) {
@@ -95,14 +96,14 @@ async function loadReferrals() {
     if (!userId) return;
 
     try {
-        const response = await fetch(/api/get-referrals?user_id=${userId});
+        const response = await fetch(`/api/get-referrals?user_id=${userId}`);
         const data = await response.json();
 
         refBox.innerHTML = '';
         if (data.referrals && Array.isArray(data.referrals)) {
             data.referrals.forEach((nick, i) => {
                 const div = document.createElement('div');
-                div.textContent = ${i + 1}. ${nick};
+                div.textContent = `${i + 1}. ${nick}`;
                 refBox.appendChild(div);
             });
         }
@@ -126,6 +127,40 @@ function handleReferral() {
             sendRefData(referrerId, userNick);
         }
     }
+}
+
+// Функция для копирования реферальной ссылки
+function copyReferralLink() {
+    const referralLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(referralLink).then(() => {
+            showTelegramAlert("Ссылка скопирована в буфер обмена!");
+        }).catch(err => {
+            console.error("Ошибка копирования:", err);
+            fallbackCopy(referralLink);
+        });
+    } else {
+        fallbackCopy(referralLink);
+    }
+}
+
+// Fallback для копирования
+function fallbackCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        document.execCommand('copy');
+        showTelegramAlert("Ссылка скопирована в буфер обмена!");
+    } catch (err) {
+        console.error("Ошибка fallback копирования:", err);
+        showTelegramAlert("Не удалось скопировать ссылку");
+    }
+    
+    document.body.removeChild(textarea);
 }
 
 // Инициализация пользователя, получение параметров из URL или Telegram WebApp
@@ -155,11 +190,11 @@ function spinWheel() {
     const rotation = spins * 360 + targetAngle;
 
     wheel.style.transition = 'none';
-    wheel.style.transform = rotate(0deg);
+    wheel.style.transform = `rotate(0deg)`;
 
     setTimeout(() => {
         wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-        wheel.style.transform = rotate(${rotation}deg);
+        wheel.style.transform = `rotate(${rotation}deg)`;
     }, 50);
 
     setTimeout(async () => {
@@ -218,7 +253,7 @@ function saveState(currentImgs) {
 
 function positionImgs() {
     imgs.forEach((img, i) => {
-        img.style.left = ${i * (imgWidth + gap)}px;
+        img.style.left = `${i * (imgWidth + gap)}px`;
         img.style.opacity = "1";
         img.classList.remove("leaving", "entering");
     });
@@ -232,7 +267,7 @@ function initJpgStrip() {
 
     for (let i = 0; i < visibleCount; i++) {
         const img = document.createElement('img');
-        img.src = ${jpgPrefix}${initialImgs[i]}${jpgSuffix};
+        img.src = `${jpgPrefix}${initialImgs[i]}${jpgSuffix}`;
         jpgStrip.appendChild(img);
         imgs.push(img);
     }
@@ -248,20 +283,20 @@ function slideNext() {
     imgs[0].style.left = "0px";
 
     for (let i = 1; i < imgs.length; i++) {
-        imgs[i].style.left = ${(i - 1) * (imgWidth + gap)}px;
+        imgs[i].style.left = `${(i - 1) * (imgWidth + gap)}px`;
     }
 
     const newImg = document.createElement('img');
-    newImg.src = ${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix};
+    newImg.src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
     newImg.classList.add("entering");
     newImg.style.opacity = "0";
-    newImg.style.left = ${stripWidth}px;
+    newImg.style.left = `${stripWidth}px`;
 
     jpgStrip.appendChild(newImg);
     imgs.push(newImg);
 
     requestAnimationFrame(() => {
-        newImg.style.left = ${(visibleCount - 1) * (imgWidth + gap)}px;
+        newImg.style.left = `${(visibleCount - 1) * (imgWidth + gap)}px`;
         newImg.style.opacity = "1";
     });
 
@@ -319,6 +354,11 @@ window.addEventListener('DOMContentLoaded', () => {
     btnSpin.addEventListener('click', spinWheel);
     updateActiveSquare(activeIndex);
 
+    // Добавляем обработчик для кнопки приглашений
+    if (inviteButton) {
+        inviteButton.addEventListener('click', copyReferralLink);
+    }
+
     // Обработчики для квадратов
     squares.forEach((square, index) => {
         square.addEventListener('click', () => {
@@ -352,14 +392,14 @@ window.addEventListener('DOMContentLoaded', () => {
         infoIcon.style.opacity = '1';
 
         infoIcon.addEventListener('click', () => {
-            showTelegramAlert(Шансы выпадения:
+            showTelegramAlert(`Шансы выпадения:
 
 0 – 70%
 🎟️ – 20%
 ⭐️50 – 5%
 ⭐️100 – 3%
 ⭐️500 – 1.9%
-🏆Gold Heroic Helmet – 0.1%);
+🏆Gold Heroic Helmet – 0.1%`);
         });
     }
 
@@ -371,12 +411,12 @@ window.addEventListener('DOMContentLoaded', () => {
         shareImg.addEventListener('click', () => {
             const baseUrl = "https://t.me/share/url";
             const url = userId
-                ? encodeURIComponent(https://t.me/XStarsCoin_bot?start=${userId})
+                ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`)
                 : encodeURIComponent("https://t.me/XStarsCoin_bot");
             const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
-            const shareUrl = ${baseUrl}?url=${url}&text=${text};
+            const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
 
             window.open(shareUrl, '_blank');
         });
     }
-});  
+}); 
