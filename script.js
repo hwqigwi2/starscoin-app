@@ -235,3 +235,114 @@ window.addEventListener('load', () => {
     });
   }
 });
+
+// Логика выделения квадратов с прозрачным белым оверлеем
+const squares = document.querySelectorAll('.square');
+
+let activeIndex = 0; // левый квадрат по умолчанию
+
+function updateActiveSquare(newIndex) {
+  if (activeIndex !== null && squares[activeIndex]) {
+    squares[activeIndex].classList.remove('active');
+  }
+  activeIndex = newIndex;
+  if (squares[activeIndex]) {
+    squares[activeIndex].classList.add('active');
+  }
+}
+
+updateActiveSquare(activeIndex);
+
+// Назначаем обработчики клика на квадраты
+squares.forEach((square, index) => {
+  square.addEventListener('click', () => {
+    if (index === activeIndex) return;
+    updateActiveSquare(index);
+  });
+});
+
+// Переключение экранов по нижним кнопкам
+const squareButtons = document.querySelectorAll('.square');
+const elementsToToggle = [
+  document.querySelector('.wheel-wrapper'),
+  document.querySelector('.center-icon'),
+  document.querySelector('.btn-bilets-wrapper'),
+  document.querySelector('.btn-spin-wrapper'),
+  document.getElementById('jpgStrip'),
+  document.querySelector('.info-icon'),
+  document.querySelector('.png-strip-container')
+];
+
+const midRect = document.getElementById('midRect');
+
+let isAltScreen = false;
+
+// Кнопка "Средний квадрат" - скрыть всё кроме фона и 3 кнопок, показать midRect
+squareButtons[1].addEventListener('click', () => {
+  if (isAltScreen) return;
+
+  elementsToToggle.forEach(el => el.style.display = 'none');
+  midRect.style.display = 'block';
+  isAltScreen = true;
+});
+
+// Кнопка "Левый квадрат" - вернуться на основной экран, скрыть midRect
+squareButtons[0].addEventListener('click', () => {
+  if (!isAltScreen) return;
+
+  elementsToToggle.forEach(el => el.style.display = '');
+  midRect.style.display = 'none';
+  isAltScreen = false;
+});
+
+// Правая кнопка (индекс 2) просто переключает выделение, без смены экранов
+squareButtons[2].addEventListener('click', () => {
+  if (activeIndex !== 2) {
+    updateActiveSquare(2);
+  }
+});
+
+// ======== РЕФЕРАЛЬНАЯ СИСТЕМА И КНОПКА ПОДЕЛИТЬСЯ ========
+const shareImg = document.querySelector('#midRect .below-rect-img');
+
+if (shareImg) {
+  shareImg.style.cursor = 'pointer';
+  shareImg.addEventListener('click', () => {
+    const baseUrl = "https://t.me/share/url";
+    
+    const url = userId
+      ? encodeURIComponent(https://t.me/XStarsCoin_bot?start=${userId})
+      : encodeURIComponent("https://t.me/XStarsCoin_bot");
+
+    const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
+
+    const shareUrl = ${baseUrl}?url=${url}&text=${text};
+
+    window.open(shareUrl, '_blank');
+  });
+}
+
+// Функция для отправки данных о рефералах на сервер
+function sendRefData(inviterId) {
+  // Здесь должен быть fetch-запрос к вашему серверу
+  // Пример:
+  /*
+  fetch('/api/register-ref', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      inviter: inviterId,
+      user: userId
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Реферал зарегистрирован:', data);
+  })
+  .catch(error => {
+    console.error('Ошибка:', error);
+  });
+  */
+}
