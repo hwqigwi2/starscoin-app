@@ -309,22 +309,26 @@ window.addEventListener('DOMContentLoaded', () => {
             updateActiveSquare(index);
             
             // Обработка переключения экранов
-          if (index === 1) {
+  if (index === 1) {
     // Средняя кнопка: показываем midRect
     elementsToToggle.forEach(el => el.style.display = 'none');
     midRect.style.display = 'block';
+    document.getElementById('topLeftImg').style.display = 'none'; // Скрываем PNG
     isAltScreen = true;
 } else if (index === 2) {
+    // Правая кнопка: показываем PNG
     elementsToToggle.forEach(el => el.style.display = 'none');
     midRect.style.display = 'none';
-    document.getElementById('topLeftImg').style.display = 'block'; // показать картинку
+    document.getElementById('topLeftImg').style.display = 'block'; // Показываем PNG
     isAltScreen = true;
 } else if (index === 0) {
+    // Левая кнопка: возвращаем основной экран, скрываем PNG
     elementsToToggle.forEach(el => el.style.display = '');
     midRect.style.display = 'none';
-    document.getElementById('topLeftImg').style.display = 'none'; // скрыть картинку
+    document.getElementById('topLeftImg').style.display = 'none'; // Скрываем PNG
     isAltScreen = false;
 }
+
 
         });
     });
