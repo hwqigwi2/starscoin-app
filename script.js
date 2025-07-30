@@ -315,14 +315,14 @@ window.addEventListener('DOMContentLoaded', () => {
     midRect.style.display = 'block';
     isAltScreen = true;
 } else if (index === 2) {
-    // Правая кнопка: скрываем всё кроме фона и кнопок
     elementsToToggle.forEach(el => el.style.display = 'none');
     midRect.style.display = 'none';
+    document.getElementById('topLeftImg').style.display = 'block'; // показать картинку
     isAltScreen = true;
 } else if (index === 0) {
-    // Левая кнопка: возвращаем всё обратно
     elementsToToggle.forEach(el => el.style.display = '');
     midRect.style.display = 'none';
+    document.getElementById('topLeftImg').style.display = 'none'; // скрыть картинку
     isAltScreen = false;
 }
 

@@ -9,7 +9,12 @@
 </head>
 <body>
   <div class="container">
+
+<img src="IMG_2772.PNG" id="topLeftImg" class="top-left-image" style="display: none;" />
+
+
     <div class="main-content">
+      <!-- Верхняя полоска -->
       <div class="png-strip-container" id="pngStrip">
         <img src="IMG_2677.PNG" alt="PNG слева" class="png-strip-left" />
         <div class="jpg-strip" id="jpgStrip"></div>
@@ -40,6 +45,7 @@
       </div>
     </div>
 
+    <!-- Кнопки, которые должны всегда быть видимы -->
     <div class="btn-bilets-wrapper">
       <img id="btnBilets" class="btn-bilets" src="IMG_2664.PNG" alt="Билеты" />
       <span id="ticketCount" class="ticket-count">3</span>
@@ -49,14 +55,19 @@
       <img id="btnSpin" class="btn-spin" src="IMG_2665.PNG" alt="Крутить" />
     </div>
 
+    <!-- Прямоугольник посередине, появляется при нажатии средней кнопки -->
     <div id="midRect" class="middle-rect" style="display:none;">
       <div class="top-frame">
         <img src="IMG_2723.PNG" alt="В рамке слева" class="top-frame-img" />
       </div>
       <img src="IMG_2724.PNG" alt="Сверху над рамкой" class="above-frame-img" />
+      
+      <!-- Вот сюда вставлен список рефералов -->
       <div class="referral-names"></div>
+      
       <img src="IMG_2721.PNG" alt="Нижняя картинка" class="below-rect-img" />
     </div>
+
   </div>
 
   <script src="script.js"></script>

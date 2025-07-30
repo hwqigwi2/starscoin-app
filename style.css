@@ -308,3 +308,15 @@ html, body {
   pointer-events: auto; /* <- важно, чтобы клик сработал */
   cursor: pointer;       /* улучшает восприятие */
 }
+
+.top-left-image {
+  position: fixed;
+  top: 5px;
+  left: 10px;
+  width: 225px;
+  height: 71px;
+  object-fit: contain;
+  z-index: 1001; /* выше, чем фон */
+  user-select: none;
+  pointer-events: none;
+}
