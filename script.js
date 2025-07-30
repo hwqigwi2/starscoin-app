@@ -309,28 +309,31 @@ window.addEventListener('DOMContentLoaded', () => {
             updateActiveSquare(index);
             
             // Обработка переключения экранов
-  if (index === 1) {
+if (index === 1) {
     // Средняя кнопка
     elementsToToggle.forEach(el => el.style.display = 'none');
     midRect.style.display = 'block';
     document.getElementById('topLeftImg').style.display = 'none';
     document.getElementById('topLeftImg2777').style.display = 'none';
+    document.getElementById('topLeftImg2774').style.display = 'none';
     isAltScreen = true;
 
 } else if (index === 2) {
-    // Правая кнопка — показать обе картинки
+    // Правая кнопка — показываем все три картинки
     elementsToToggle.forEach(el => el.style.display = 'none');
     midRect.style.display = 'none';
     document.getElementById('topLeftImg').style.display = 'block';      // IMG_2772
     document.getElementById('topLeftImg2777').style.display = 'block';  // IMG_2777
+    document.getElementById('topLeftImg2774').style.display = 'block';  // IMG_2774
     isAltScreen = true;
 
 } else if (index === 0) {
-    // Левая кнопка — скрыть обе картинки
+    // Левая кнопка — скрываем все три картинки
     elementsToToggle.forEach(el => el.style.display = '');
     midRect.style.display = 'none';
     document.getElementById('topLeftImg').style.display = 'none';
     document.getElementById('topLeftImg2777').style.display = 'none';
+    document.getElementById('topLeftImg2774').style.display = 'none';
     isAltScreen = false;
 }
 
