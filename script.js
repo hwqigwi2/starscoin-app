@@ -310,25 +310,29 @@ window.addEventListener('DOMContentLoaded', () => {
             
             // Обработка переключения экранов
   if (index === 1) {
-    // Средняя кнопка: показываем midRect
+    // Средняя кнопка
     elementsToToggle.forEach(el => el.style.display = 'none');
     midRect.style.display = 'block';
-    document.getElementById('topLeftImg').style.display = 'none'; // Скрываем PNG
+    document.getElementById('topLeftImg').style.display = 'none';
+    document.getElementById('topLeftImg2777').style.display = 'none';
     isAltScreen = true;
+
 } else if (index === 2) {
-    // Правая кнопка: показываем PNG
+    // Правая кнопка — показать обе картинки
     elementsToToggle.forEach(el => el.style.display = 'none');
     midRect.style.display = 'none';
-    document.getElementById('topLeftImg').style.display = 'block'; // Показываем PNG
+    document.getElementById('topLeftImg').style.display = 'block';      // IMG_2772
+    document.getElementById('topLeftImg2777').style.display = 'block';  // IMG_2777
     isAltScreen = true;
+
 } else if (index === 0) {
-    // Левая кнопка: возвращаем основной экран, скрываем PNG
+    // Левая кнопка — скрыть обе картинки
     elementsToToggle.forEach(el => el.style.display = '');
     midRect.style.display = 'none';
-    document.getElementById('topLeftImg').style.display = 'none'; // Скрываем PNG
+    document.getElementById('topLeftImg').style.display = 'none';
+    document.getElementById('topLeftImg2777').style.display = 'none';
     isAltScreen = false;
 }
-
 
         });
     });
