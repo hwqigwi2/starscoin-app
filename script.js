@@ -1,7 +1,7 @@
 let tickets = 3;
 let spinning = false;
 
-const API_BASE_URL = 'http://193.233.102.156:8000';
+const API_BASE_URL = '193.233.102.156:8000';
 
 const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
@@ -309,15 +309,23 @@ window.addEventListener('DOMContentLoaded', () => {
             updateActiveSquare(index);
             
             // Обработка переключения экранов
-            if (index === 1 && !isAltScreen) {
-                elementsToToggle.forEach(el => el.style.display = 'none');
-                midRect.style.display = 'block';
-                isAltScreen = true;
-            } else if (index === 0 && isAltScreen) {
-                elementsToToggle.forEach(el => el.style.display = '');
-                midRect.style.display = 'none';
-                isAltScreen = false;
-            }
+          if (index === 1 && !isAltScreen) {
+    // Средняя кнопка: показываем midRect
+    elementsToToggle.forEach(el => el.style.display = 'none');
+    midRect.style.display = 'block';
+    isAltScreen = true;
+} else if (index === 2 && !isAltScreen) {
+    // Правая кнопка: скрываем всё кроме фона и 3 кнопок
+    elementsToToggle.forEach(el => el.style.display = 'none');
+    midRect.style.display = 'none'; // убедимся, что midRect скрыт
+    isAltScreen = true;
+} else if (index === 0 && isAltScreen) {
+    // Левая кнопка: возвращаем всё обратно
+    elementsToToggle.forEach(el => el.style.display = '');
+    midRect.style.display = 'none';
+    isAltScreen = false;
+}
+
         });
     });
 
