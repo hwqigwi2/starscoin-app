@@ -313,30 +313,40 @@ if (index === 1) {
     // Средняя кнопка
     elementsToToggle.forEach(el => el.style.display = 'none');
     midRect.style.display = 'block';
-    document.getElementById('topLeftImg').style.display = 'none';
-    document.getElementById('topLeftImg2777').style.display = 'none';
-    document.getElementById('topLeftImg2774').style.display = 'none';
-    document.getElementById('topLeftImg2773').style.display = 'none';
+
+    // Скрыть все PNG
+    document.getElementById('topLeftImg').style.display = 'none';        // IMG_2772
+    document.getElementById('topLeftImg2777').style.display = 'none';    // IMG_2777
+    document.getElementById('topLeftImg2774').style.display = 'none';    // IMG_2774
+    document.getElementById('topLeftImg2773').style.display = 'none';    // IMG_2773
+    document.getElementById('topRightImg2776').style.display = 'none';   // IMG_2776
+
     isAltScreen = true;
 
 } else if (index === 2) {
     // Правая кнопка — показываем все картинки
     elementsToToggle.forEach(el => el.style.display = 'none');
     midRect.style.display = 'none';
-    document.getElementById('topLeftImg').style.display = 'block';      // IMG_2772
-    document.getElementById('topLeftImg2777').style.display = 'block';  // IMG_2777
-    document.getElementById('topLeftImg2774').style.display = 'block';  // IMG_2774
-    document.getElementById('topLeftImg2773').style.display = 'block';  // IMG_2773
+
+    document.getElementById('topLeftImg').style.display = 'block';        // IMG_2772
+    document.getElementById('topLeftImg2777').style.display = 'block';    // IMG_2777
+    document.getElementById('topLeftImg2774').style.display = 'block';    // IMG_2774
+    document.getElementById('topLeftImg2773').style.display = 'block';    // IMG_2773
+    document.getElementById('topRightImg2776').style.display = 'block';   // IMG_2776
+
     isAltScreen = true;
 
 } else if (index === 0) {
     // Левая кнопка — скрываем все картинки
     elementsToToggle.forEach(el => el.style.display = '');
     midRect.style.display = 'none';
+
     document.getElementById('topLeftImg').style.display = 'none';
     document.getElementById('topLeftImg2777').style.display = 'none';
     document.getElementById('topLeftImg2774').style.display = 'none';
     document.getElementById('topLeftImg2773').style.display = 'none';
+    document.getElementById('topRightImg2776').style.display = 'none';
+
     isAltScreen = false;
 }
         });
