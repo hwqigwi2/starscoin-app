@@ -5,78 +5,12 @@ const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
-const CHANNEL_ID = -1002845235312; // ID вашего канала
+const CHANNEL_ID = -1002845235312;
 const CHANNEL_LINK = "https://t.me/+NTPVUi4rfWs1ZmU0";
 
 // Получаем userId и формируем реферальную ссылку
 let userId = null;
 let refLink = null;
-
-// Добавляем функцию проверки заявки через Telegram WebApp
-async function checkJoinRequest() {
-    if (!window.Telegram?.WebApp) {
-        console.log("Не в Telegram WebApp — проверка невозможна");
-        return false;
-    }
-
-    try {
-        // Отправляем запрос на проверку через Telegram WebApp
-        const result = await Telegram.WebApp.sendData(JSON.stringify({
-            action: "check_join_request",
-            user_id: userId,
-            channel_id: CHANNEL_ID
-        }));
-        
-        // Если статус "request_to_join" — заявка подана
-        return result?.status === "request_to_join";
-    } catch (err) {
-        console.error("Ошибка проверки заявки:", err);
-        return false;
-    }
-}
-
-// Функция для обработки нажатия на кнопку канала (IMG_2777)
-async function handleChannelButtonClick() {
-    // Проверяем, не получал ли уже билет за заявку
-    const alreadyGotTicket = localStorage.getItem(`gotTicket_${CHANNEL_ID}_${userId}`);
-    if (alreadyGotTicket) {
-        showTelegramAlert("🎉 Вы уже получили билет за заявку!");
-        return;
-    }
-
-    // Открываем канал
-    if (Telegram?.WebApp?.openTelegramLink) {
-        Telegram.WebApp.openTelegramLink(CHANNEL_LINK);
-    } else {
-        window.open(CHANNEL_LINK, '_blank');
-    }
-
-    // Даем время на подачу заявки (5 секунд)
-    setTimeout(async () => {
-        const hasRequested = await checkJoinRequest();
-
-        if (hasRequested) {
-            // Даем билет
-            tickets += 1;
-            localStorage.setItem(`gotTicket_${CHANNEL_ID}_${userId}`, "true");
-            
-            // Сохраняем общее количество билетов
-            localStorage.setItem(`user_${userId}_tickets`, tickets.toString());
-            
-            // Скрываем PNG с условиями
-            document.getElementById('topLeftImg2777').style.display = 'none';
-            document.getElementById('topRightImg2776').style.display = 'none';
-            document.getElementById('topLeftImg2774').style.display = 'none';
-            document.getElementById('topLeftImg2773').style.display = 'none';
-            
-            updateUI();
-            showTelegramAlert("🎉 Вы получили 1 билет за заявку!");
-        } else {
-            showTelegramAlert("❌ Вы не подали заявку в канал");
-        }
-    }, 5000);
-}
-
 
 // Функция для получения параметра из URL
 function getQueryParam(name) {
@@ -90,15 +24,7 @@ function initUser() {
     
     if (userId) {
         refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
-        
-        // Загружаем сохраненные билеты из localStorage
-        const savedTickets = localStorage.getItem(`user_${userId}_tickets`);
-        if (savedTickets) {
-            tickets = parseInt(savedTickets);
-        }
-        
-        updateUI();
-        handleReferral();
+        updateTicketsFromServer();
     }
 }
 
@@ -227,7 +153,7 @@ function spinWheel() {
             showTelegramAlert("😔 В следующий раз повезёт");
         }
         updateUI();
-        updateTicketsFromServer(); // Синхронизируем с сервером после вращения
+        updateTicketsFromServer();
     }, 3050);
 }
 
@@ -365,6 +291,70 @@ const elementsToToggle = [
 const midRect = document.getElementById('midRect');
 let isAltScreen = false;
 
+// Функция для проверки заявки через Telegram WebApp
+async function checkJoinRequest() {
+    if (!window.Telegram?.WebApp) {
+        console.log("Не в Telegram WebApp — проверка невозможна");
+        return false;
+    }
+
+    try {
+        const result = await Telegram.WebApp.sendData(JSON.stringify({
+            action: "check_join_request",
+            user_id: userId,
+            channel_id: CHANNEL_ID
+        }));
+        return result?.status === "request_to_join";
+    } catch (err) {
+        console.error("Ошибка проверки заявки:", err);
+        return false;
+    }
+}
+
+// Функция для обработки нажатия на кнопку канала (IMG_2777)
+async function handleChannelButtonClick() {
+    const alreadyGotTicket = localStorage.getItem(`gotTicket_${CHANNEL_ID}_${userId}`);
+    if (alreadyGotTicket) {
+        showTelegramAlert("🎉 Вы уже получили билет за заявку!");
+        return;
+    }
+
+    if (Telegram?.WebApp?.openTelegramLink) {
+        Telegram.WebApp.openTelegramLink(CHANNEL_LINK);
+    } else {
+        window.open(CHANNEL_LINK, '_blank');
+    }
+
+    setTimeout(async () => {
+        const hasRequested = await checkJoinRequest();
+        if (hasRequested) {
+            tickets += 1;
+            localStorage.setItem(`gotTicket_${CHANNEL_ID}_${userId}`, "true");
+            localStorage.setItem(`user_${userId}_tickets`, tickets.toString());
+            
+            document.getElementById('topLeftImg2777').style.display = 'none';
+            document.getElementById('topRightImg2776').style.display = 'none';
+            document.getElementById('topLeftImg2774').style.display = 'none';
+            document.getElementById('topLeftImg2773').style.display = 'none';
+            
+            updateUI();
+            showTelegramAlert("🎉 Вы получили 1 билет за заявку!");
+        } else {
+            showTelegramAlert("❌ Вы не подали заявку в канал");
+        }
+    }, 5000);
+}
+
+// Проверка и скрытие PNG при загрузке
+function checkAndHideConditionImages() {
+    if (userId && localStorage.getItem(`gotTicket_${CHANNEL_ID}_${userId}`)) {
+        document.getElementById('topLeftImg2777').style.display = 'none';
+        document.getElementById('topRightImg2776').style.display = 'none';
+        document.getElementById('topLeftImg2774').style.display = 'none';
+        document.getElementById('topLeftImg2773').style.display = 'none';
+    }
+}
+
 // Инициализация при загрузке
 window.addEventListener('DOMContentLoaded', () => {
     initUser();
@@ -372,6 +362,7 @@ window.addEventListener('DOMContentLoaded', () => {
     updateUI();
     initJpgStrip();
     setInterval(slideNext, 5000);
+    checkAndHideConditionImages();
     
     btnSpin.addEventListener('click', spinWheel);
     updateActiveSquare(activeIndex);
@@ -382,78 +373,43 @@ window.addEventListener('DOMContentLoaded', () => {
             if (index === activeIndex) return;
             updateActiveSquare(index);
             
-            // Обработка переключения экранов
-// Добавляем функцию проверки и скрытия PNG
-function checkAndHideConditionImages() {
-    if (userId && localStorage.getItem(`gotTicket_${CHANNEL_ID}_${userId}`)) {
-        document.getElementById('topLeftImg2777').style.display = 'none';
-        document.getElementById('topRightImg2776').style.display = 'none';
-        document.getElementById('topLeftImg2774').style.display = 'none';
-        document.getElementById('topLeftImg2773').style.display = 'none';
-    }
-}
-
-// Исправленный блок переключения экранов
-squares.forEach((square, index) => {
-    square.addEventListener('click', () => {
-        if (index === activeIndex) return;
-        updateActiveSquare(index);
-        
-        if (index === 1) {
-            // Средняя кнопка
-            elementsToToggle.forEach(el => el.style.display = 'none');
-            midRect.style.display = 'block';
-
-            // Скрыть все PNG
-            document.getElementById('topLeftImg').style.display = 'none';
-            document.getElementById('topLeftImg2777').style.display = 'none';
-            document.getElementById('topLeftImg2774').style.display = 'none';
-            document.getElementById('topLeftImg2773').style.display = 'none';
-            document.getElementById('topRightImg2776').style.display = 'none';
-
-            isAltScreen = true;
-        } else if (index === 2) {
-            // Правая кнопка — показываем все картинки
-            elementsToToggle.forEach(el => el.style.display = 'none');
-            midRect.style.display = 'none';
-
-            document.getElementById('topLeftImg').style.display = 'block';
-            document.getElementById('topLeftImg2777').style.display = 'block';
-            document.getElementById('topLeftImg2774').style.display = 'block';
-            document.getElementById('topLeftImg2773').style.display = 'block';
-            document.getElementById('topRightImg2776').style.display = 'block';
-
-            isAltScreen = true;
-        } else if (index === 0) {
-            // Левая кнопка — скрываем все картинки
-            elementsToToggle.forEach(el => el.style.display = '');
-            midRect.style.display = 'none';
-
-            document.getElementById('topLeftImg').style.display = 'none';
-            document.getElementById('topLeftImg2777').style.display = 'none';
-            document.getElementById('topLeftImg2774').style.display = 'none';
-            document.getElementById('topLeftImg2773').style.display = 'none';
-            document.getElementById('topRightImg2776').style.display = 'none';
-
-            isAltScreen = false;
-        }
-    });
-});
-
-// Инициализация при загрузке (единственный обработчик)
-window.addEventListener('DOMContentLoaded', () => {
-    initUser();
-    checkAndHideConditionImages();
-    handleReferral();
-    updateUI();
-    initJpgStrip();
-    setInterval(slideNext, 5000);
-    
-    btnSpin.addEventListener('click', spinWheel);
-    updateActiveSquare(activeIndex);
-
-    // Остальной код инициализации...
-});        
+            if (index === 1) {
+                // Средняя кнопка (без изменений)
+                elementsToToggle.forEach(el => el.style.display = 'none');
+                midRect.style.display = 'block';
+                document.getElementById('topLeftImg').style.display = 'none';
+                document.getElementById('topLeftImg2777').style.display = 'none';
+                document.getElementById('topLeftImg2774').style.display = 'none';
+                document.getElementById('topLeftImg2773').style.display = 'none';
+                document.getElementById('topRightImg2776').style.display = 'none';
+                isAltScreen = true;
+            } else if (index === 2) {
+                // Правая кнопка - обновленная версия
+                elementsToToggle.forEach(el => el.style.display = 'none');
+                midRect.style.display = 'none';
+                
+                // Показываем все картинки
+                document.getElementById('topLeftImg').style.display = 'block';
+                document.getElementById('topLeftImg2777').style.display = 'block';
+                document.getElementById('topLeftImg2774').style.display = 'block';
+                document.getElementById('topLeftImg2773').style.display = 'block';
+                document.getElementById('topRightImg2776').style.display = 'block';
+                
+                // Добавляем обработчик для кнопки канала
+                document.getElementById('topLeftImg2777').addEventListener('click', handleChannelButtonClick);
+                isAltScreen = true;
+            } else if (index === 0) {
+                // Левая кнопка (без изменений)
+                elementsToToggle.forEach(el => el.style.display = '');
+                midRect.style.display = 'none';
+                document.getElementById('topLeftImg').style.display = 'none';
+                document.getElementById('topLeftImg2777').style.display = 'none';
+                document.getElementById('topLeftImg2774').style.display = 'none';
+                document.getElementById('topLeftImg2773').style.display = 'none';
+                document.getElementById('topRightImg2776').style.display = 'none';
+                isAltScreen = false;
+            }
+        });
     });
 
     // Информационная иконка
@@ -468,7 +424,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
         infoIcon.addEventListener('click', () => {
             showTelegramAlert(`Шансы выпадения:
-
 0 – 70%
 🎟️ – 20%
 ⭐️50 – 5%
@@ -490,9 +445,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 : encodeURIComponent("https://t.me/XStarsCoin_bot");
             const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
             const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
-
             window.open(shareUrl, '_blank');
         });
     }
 });
-
