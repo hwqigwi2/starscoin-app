@@ -391,3 +391,36 @@ if (index === 1) {
         });
     }
 });
+
+async function checkChannelJoinStatus() {
+    if (!userId) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/check-channel-join`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: parseInt(userId) })
+        });
+
+        if (!response.ok) throw new Error('Ошибка сети');
+
+        const data = await response.json();
+
+        showTelegramAlert(data.message);
+
+        if (data.status === 'joined') {
+            // Выдать билет локально и обновить UI
+            tickets++;
+            updateUI();
+
+            // Скрыть PNG с условиями
+            document.getElementById('topLeftImg2777').style.display = 'none';
+            document.getElementById('topLeftImg2774').style.display = 'none';
+            document.getElementById('topLeftImg2773').style.display = 'none';
+            document.getElementById('topRightImg2776').style.display = 'none';
+        }
+
+    } catch (e) {
+        showTelegramAlert("Ошибка при проверке подписки: " + e.message);
+    }
+}
