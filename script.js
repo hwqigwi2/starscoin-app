@@ -1,16 +1,82 @@
 let tickets = 3;
 let spinning = false;
 
-const API_BASE_URL = '193.233.102.156:8000';
-
 const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
+const CHANNEL_ID = -1002845235312; // ID вашего канала
+const CHANNEL_LINK = "https://t.me/+NTPVUi4rfWs1ZmU0";
 
 // Получаем userId и формируем реферальную ссылку
 let userId = null;
 let refLink = null;
+
+// Добавляем функцию проверки заявки через Telegram WebApp
+async function checkJoinRequest() {
+    if (!window.Telegram?.WebApp) {
+        console.log("Не в Telegram WebApp — проверка невозможна");
+        return false;
+    }
+
+    try {
+        // Отправляем запрос на проверку через Telegram WebApp
+        const result = await Telegram.WebApp.sendData(JSON.stringify({
+            action: "check_join_request",
+            user_id: userId,
+            channel_id: CHANNEL_ID
+        }));
+        
+        // Если статус "request_to_join" — заявка подана
+        return result?.status === "request_to_join";
+    } catch (err) {
+        console.error("Ошибка проверки заявки:", err);
+        return false;
+    }
+}
+
+// Функция для обработки нажатия на кнопку канала (IMG_2777)
+async function handleChannelButtonClick() {
+    // Проверяем, не получал ли уже билет за заявку
+    const alreadyGotTicket = localStorage.getItem(`gotTicket_${CHANNEL_ID}_${userId}`);
+    if (alreadyGotTicket) {
+        showTelegramAlert("🎉 Вы уже получили билет за заявку!");
+        return;
+    }
+
+    // Открываем канал
+    if (Telegram?.WebApp?.openTelegramLink) {
+        Telegram.WebApp.openTelegramLink(CHANNEL_LINK);
+    } else {
+        window.open(CHANNEL_LINK, '_blank');
+    }
+
+    // Даем время на подачу заявки (5 секунд)
+    setTimeout(async () => {
+        const hasRequested = await checkJoinRequest();
+
+        if (hasRequested) {
+            // Даем билет
+            tickets += 1;
+            localStorage.setItem(`gotTicket_${CHANNEL_ID}_${userId}`, "true");
+            
+            // Сохраняем общее количество билетов
+            localStorage.setItem(`user_${userId}_tickets`, tickets.toString());
+            
+            // Скрываем PNG с условиями
+            document.getElementById('topLeftImg2777').style.display = 'none';
+            document.getElementById('topRightImg2776').style.display = 'none';
+            document.getElementById('topLeftImg2774').style.display = 'none';
+            document.getElementById('topLeftImg2773').style.display = 'none';
+            
+            updateUI();
+            showTelegramAlert("🎉 Вы получили 1 билет за заявку!");
+        } else {
+            showTelegramAlert("❌ Вы не подали заявку в канал");
+        }
+    }, 5000);
+}
+
 
 // Функция для получения параметра из URL
 function getQueryParam(name) {
@@ -24,7 +90,15 @@ function initUser() {
     
     if (userId) {
         refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
-        updateTicketsFromServer(); // Загружаем актуальное количество билетов
+        
+        // Загружаем сохраненные билеты из localStorage
+        const savedTickets = localStorage.getItem(`user_${userId}_tickets`);
+        if (savedTickets) {
+            tickets = parseInt(savedTickets);
+        }
+        
+        updateUI();
+        handleReferral();
     }
 }
 
@@ -333,8 +407,22 @@ if (index === 1) {
     document.getElementById('topLeftImg2774').style.display = 'block';    // IMG_2774
     document.getElementById('topLeftImg2773').style.display = 'block';    // IMG_2773
     document.getElementById('topRightImg2776').style.display = 'block';   // IMG_2776
+    document.getElementById('topLeftImg2777').addEventListener('click', handleChannelButtonClick);
 
     isAltScreen = true;
+
+function checkAndHideConditionImages() {
+    if (userId && localStorage.getItem(`gotTicket_${CHANNEL_ID}_${userId}`)) {
+        document.getElementById('topLeftImg2777').style.display = 'none';
+        document.getElementById('topRightImg2776').style.display = 'none';
+        document.getElementById('topLeftImg2774').style.display = 'none';
+        document.getElementById('topLeftImg2773').style.display = 'none';
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    initUser();
+    checkAndHideConditionImages(); 
 
 } else if (index === 0) {
     // Левая кнопка — скрываем все картинки
@@ -392,35 +480,3 @@ if (index === 1) {
     }
 });
 
-async function checkChannelJoinStatus() {
-    if (!userId) return;
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/check-channel-join`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: parseInt(userId) })
-        });
-
-        if (!response.ok) throw new Error('Ошибка сети');
-
-        const data = await response.json();
-
-        showTelegramAlert(data.message);
-
-        if (data.status === 'joined') {
-            // Выдать билет локально и обновить UI
-            tickets++;
-            updateUI();
-
-            // Скрыть PNG с условиями
-            document.getElementById('topLeftImg2777').style.display = 'none';
-            document.getElementById('topLeftImg2774').style.display = 'none';
-            document.getElementById('topLeftImg2773').style.display = 'none';
-            document.getElementById('topRightImg2776').style.display = 'none';
-        }
-
-    } catch (e) {
-        showTelegramAlert("Ошибка при проверке подписки: " + e.message);
-    }
-}
