@@ -383,34 +383,7 @@ window.addEventListener('DOMContentLoaded', () => {
             updateActiveSquare(index);
             
             // Обработка переключения экранов
-if (index === 1) {
-    // Средняя кнопка
-    elementsToToggle.forEach(el => el.style.display = 'none');
-    midRect.style.display = 'block';
-
-    // Скрыть все PNG
-    document.getElementById('topLeftImg').style.display = 'none';        // IMG_2772
-    document.getElementById('topLeftImg2777').style.display = 'none';    // IMG_2777
-    document.getElementById('topLeftImg2774').style.display = 'none';    // IMG_2774
-    document.getElementById('topLeftImg2773').style.display = 'none';    // IMG_2773
-    document.getElementById('topRightImg2776').style.display = 'none';   // IMG_2776
-
-    isAltScreen = true;
-
-} else if (index === 2) {
-    // Правая кнопка — показываем все картинки
-    elementsToToggle.forEach(el => el.style.display = 'none');
-    midRect.style.display = 'none';
-
-    document.getElementById('topLeftImg').style.display = 'block';        // IMG_2772
-    document.getElementById('topLeftImg2777').style.display = 'block';    // IMG_2777
-    document.getElementById('topLeftImg2774').style.display = 'block';    // IMG_2774
-    document.getElementById('topLeftImg2773').style.display = 'block';    // IMG_2773
-    document.getElementById('topRightImg2776').style.display = 'block';   // IMG_2776
-    document.getElementById('topLeftImg2777').addEventListener('click', handleChannelButtonClick);
-
-    isAltScreen = true;
-
+// Добавляем функцию проверки и скрытия PNG
 function checkAndHideConditionImages() {
     if (userId && localStorage.getItem(`gotTicket_${CHANNEL_ID}_${userId}`)) {
         document.getElementById('topLeftImg2777').style.display = 'none';
@@ -420,24 +393,67 @@ function checkAndHideConditionImages() {
     }
 }
 
+// Исправленный блок переключения экранов
+squares.forEach((square, index) => {
+    square.addEventListener('click', () => {
+        if (index === activeIndex) return;
+        updateActiveSquare(index);
+        
+        if (index === 1) {
+            // Средняя кнопка
+            elementsToToggle.forEach(el => el.style.display = 'none');
+            midRect.style.display = 'block';
+
+            // Скрыть все PNG
+            document.getElementById('topLeftImg').style.display = 'none';
+            document.getElementById('topLeftImg2777').style.display = 'none';
+            document.getElementById('topLeftImg2774').style.display = 'none';
+            document.getElementById('topLeftImg2773').style.display = 'none';
+            document.getElementById('topRightImg2776').style.display = 'none';
+
+            isAltScreen = true;
+        } else if (index === 2) {
+            // Правая кнопка — показываем все картинки
+            elementsToToggle.forEach(el => el.style.display = 'none');
+            midRect.style.display = 'none';
+
+            document.getElementById('topLeftImg').style.display = 'block';
+            document.getElementById('topLeftImg2777').style.display = 'block';
+            document.getElementById('topLeftImg2774').style.display = 'block';
+            document.getElementById('topLeftImg2773').style.display = 'block';
+            document.getElementById('topRightImg2776').style.display = 'block';
+
+            isAltScreen = true;
+        } else if (index === 0) {
+            // Левая кнопка — скрываем все картинки
+            elementsToToggle.forEach(el => el.style.display = '');
+            midRect.style.display = 'none';
+
+            document.getElementById('topLeftImg').style.display = 'none';
+            document.getElementById('topLeftImg2777').style.display = 'none';
+            document.getElementById('topLeftImg2774').style.display = 'none';
+            document.getElementById('topLeftImg2773').style.display = 'none';
+            document.getElementById('topRightImg2776').style.display = 'none';
+
+            isAltScreen = false;
+        }
+    });
+});
+
+// Инициализация при загрузке (единственный обработчик)
 window.addEventListener('DOMContentLoaded', () => {
     initUser();
-    checkAndHideConditionImages(); 
+    checkAndHideConditionImages();
+    handleReferral();
+    updateUI();
+    initJpgStrip();
+    setInterval(slideNext, 5000);
+    
+    btnSpin.addEventListener('click', spinWheel);
+    updateActiveSquare(activeIndex);
 
-} else if (index === 0) {
-    // Левая кнопка — скрываем все картинки
-    elementsToToggle.forEach(el => el.style.display = '');
-    midRect.style.display = 'none';
-
-    document.getElementById('topLeftImg').style.display = 'none';
-    document.getElementById('topLeftImg2777').style.display = 'none';
-    document.getElementById('topLeftImg2774').style.display = 'none';
-    document.getElementById('topLeftImg2773').style.display = 'none';
-    document.getElementById('topRightImg2776').style.display = 'none';
-
-    isAltScreen = false;
-}
-        });
+    // Остальной код инициализации...
+});        
     });
 
     // Информационная иконка
