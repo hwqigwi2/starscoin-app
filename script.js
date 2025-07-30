@@ -309,17 +309,17 @@ window.addEventListener('DOMContentLoaded', () => {
             updateActiveSquare(index);
             
             // Обработка переключения экранов
-          if (index === 1 && !isAltScreen) {
+          if (index === 1) {
     // Средняя кнопка: показываем midRect
     elementsToToggle.forEach(el => el.style.display = 'none');
     midRect.style.display = 'block';
     isAltScreen = true;
-} else if (index === 2 && !isAltScreen) {
-    // Правая кнопка: скрываем всё кроме фона и 3 кнопок
+} else if (index === 2) {
+    // Правая кнопка: скрываем всё кроме фона и кнопок
     elementsToToggle.forEach(el => el.style.display = 'none');
-    midRect.style.display = 'none'; // убедимся, что midRect скрыт
+    midRect.style.display = 'none';
     isAltScreen = true;
-} else if (index === 0 && isAltScreen) {
+} else if (index === 0) {
     // Левая кнопка: возвращаем всё обратно
     elementsToToggle.forEach(el => el.style.display = '');
     midRect.style.display = 'none';
