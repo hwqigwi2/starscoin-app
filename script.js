@@ -1,3 +1,6 @@
+const API_BASE_URL = "https://starscdihe.online"; // <- сюда свой домен или IP с https
+
+
 let tickets = 3;
 let spinning = false;
 
@@ -12,19 +15,21 @@ const CHANNEL_LINK = "https://t.me/+NTPVUi4rfWs1ZmU0";
 let userId = null;
 let refLink = null;
 
-// Функция для получения параметра из URL
+// Получить параметр из URL
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
 }
 
 // Инициализация пользователя
-function initUser() {
+async function initUser() {
     userId = getQueryParam('user_id') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id) || null;
     
     if (userId) {
         refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
-        updateTicketsFromServer();
+        await updateTicketsFromServer();
+        handleReferral();
+        checkAndHideConditionImages();
     }
 }
 
@@ -55,18 +60,11 @@ async function sendRefData(inviterId) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/register-ref`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                inviter: parseInt(inviterId),
-                user: parseInt(userId)
-            })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ inviter: parseInt(inviterId), user: parseInt(userId) })
         });
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
         const data = await response.json();
         console.log("Реферальные данные отправлены:", data);
@@ -86,14 +84,9 @@ async function updateTicketsFromServer() {
     
     try {
         const response = await fetch(`${API_BASE_URL}/api/get-tickets?user_id=${userId}`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        
-        if (data.tickets !== undefined) {
+        if (typeof data.tickets === 'number') {
             tickets = data.tickets;
             updateUI();
         }
@@ -103,19 +96,15 @@ async function updateTicketsFromServer() {
     }
 }
 
-// Обработка реферального перехода
+// Обработка реферального перехода (только 1 раз)
 function handleReferral() {
-    const referrer = getQueryParam('referrer') || 
-                   (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || 
-                   null;
+    const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
 
     if (referrer && referrer !== userId?.toString()) {
         const pendingRefs = JSON.parse(localStorage.getItem('pendingRefs') || '{}');
-
         if (!pendingRefs[referrer]) {
             pendingRefs[referrer] = true;
             localStorage.setItem('pendingRefs', JSON.stringify(pendingRefs));
-            
             showTelegramAlert("🎉 Вы зашли по ссылке друга! Спасибо!");
             sendRefData(referrer);
         }
