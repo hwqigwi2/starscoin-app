@@ -1,3 +1,7 @@
+const supabaseUrl = 'https://qqczvmnhsymrfnnsilvi.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxY3p2bW5oc3ltcmZubnNpbHZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNTg4MzAsImV4cCI6MjA2OTYzNDgzMH0.HG6iXIM_M5MzaS_UHhPrlBFgk3m5evSLfhPZCOK6g-U';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 let tickets;
 let spinning = false;
 
@@ -12,6 +16,14 @@ const STORAGE_PENDING_REFS = 'pendingRefs';
 
 let userId = null;
 let refLink = null;
+
+async function initAuth() {
+  const { user, error } = await supabase.auth.signIn({
+    provider: 'telegram',
+    token: Telegram.WebApp.initDataUnsafe.user.id.toString()
+  });
+  if (error) console.error(error);
+}
 
 // Получить параметр из URL
 function getQueryParam(name) {
@@ -37,9 +49,16 @@ function loadUserId() {
 }
 
 // Загрузить билеты из localStorage или установить 3 по умолчанию
-function loadTickets() {
-    const saved = parseInt(localStorage.getItem(STORAGE_TICKETS));
-    tickets = isNaN(saved) ? 3 : saved;
+async function loadTickets() {
+  if (!userId) return;
+  
+  const { data, error } = await supabase
+    .from('users')
+    .select('tickets')
+    .eq('user_id', userId)
+    .single();
+
+  tickets = error ? 3 : data.tickets;
 }
 
 // Сохранить билеты в localStorage
@@ -68,25 +87,34 @@ function showTelegramAlert(text) {
 }
 
 // Обработка реферала, добавление билета если новый приглашённый
-function handleReferral() {
-    const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
-    if (!referrer || referrer === userId) return; // если нет реферала или реферал — сам пользователь
+async function handleReferral() {
+  const referrer = getQueryParam('referrer') || Telegram.WebApp.initDataUnsafe?.start_param;
+  if (!referrer || referrer === userId) return;
 
-    // Загружаем уже учтённые рефералы из localStorage
-    const pendingRefs = JSON.parse(localStorage.getItem(STORAGE_PENDING_REFS) || '{}');
+  // Проверяем, есть ли уже такая запись
+  const { count } = await supabase
+    .from('referrals')
+    .select('*', { count: 'exact' })
+    .eq('referred_id', userId)
+    .eq('referrer_id', referrer);
 
-    // Если реферал еще не учтен, добавляем +1 билет
-    if (!pendingRefs[referrer]) {
-        pendingRefs[referrer] = true;
-        localStorage.setItem(STORAGE_PENDING_REFS, JSON.stringify(pendingRefs));
+  if (count === 0) {
+    // Добавляем запись о реферале
+    await supabase.from('referrals').insert({
+      referrer_id: referrer,
+      referred_id: userId
+    });
+    
+    // Начисляем билет пригласившему
+    await supabase.rpc('increment_tickets', {
+      user_id: referrer,
+      amount: 1
+    });
+    
+    showTelegramAlert("🎉 Вы зашли по ссылке друга!");
+  }
+}  
 
-        tickets++;
-        saveTickets();
-        updateUI();
-
-        showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
-    }
-}
 
 function spinWheel() {
     if (spinning || tickets <= 0) return;
