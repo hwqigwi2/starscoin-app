@@ -4,6 +4,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let tickets = 0;
 let spinning = false;
+let userId = null;
+
 
 // DOM элементы
 const wheel = document.getElementById('wheel');
@@ -15,41 +17,43 @@ const jpgStrip = document.getElementById('jpgStrip');
 
 let userId = null;
 
-// Инициализация аутентификации
+// Упрощенная аутентификация для Telegram
 async function initAuth() {
   try {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: `${Telegram.WebApp.initDataUnsafe.user.id}@telegram.org`,
-      password: Telegram.WebApp.initDataUnsafe.user.id.toString()
-    });
-    if (error) throw error;
-  } catch (error) {
-    console.error('Auth error:', error);
-  }
-}
+    userId = Telegram.WebApp.initDataUnsafe?.user?.id?.toString();
+    if (!userId) throw new Error("User ID not found");
+
 
 // Загрузка данных пользователя
 async function loadUserData() {
-  userId = Telegram.WebApp.initDataUnsafe?.user?.id?.toString();
-  if (!userId) {
-    console.error("User ID not found");
-    return;
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('tickets')
+      .eq('user_id', userId)
+      .single();
+
+    if (error) throw error;
+    tickets = data?.tickets || 3;
+    updateUI();
+  } catch (error) {
+    console.error('Load error:', error);
+    tickets = 3;
+    updateUI();
   }
+}
 
-  // Создаем или получаем пользователя
-  const { data, error } = await supabase
-    .from('users')
-    .upsert({ user_id: userId }, { onConflict: 'user_id' })
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error loading user:', error);
+  // Создаем или обновляем пользователя
+    const { error } = await supabase
+      .from('users')
+      .upsert({ user_id: userId }, { onConflict: 'user_id' });
+      
+    if (error) throw error;
+  } catch (error) {
+    console.error('Auth error:', error);
     tickets = 3; // Значение по умолчанию
-  } else {
-    tickets = data.tickets || 3;
+    updateUI();
   }
-  updateUI();
 }
 
 // Обработка рефералов
@@ -287,6 +291,11 @@ function setupButtons() {
 
 // Инициализация при загрузке
 window.addEventListener('DOMContentLoaded', async () => {
+  if (!initTelegramWebApp()) {
+    alert("Это приложение работает только в Telegram");
+    return;
+  }
+
   await initAuth();
   await loadUserData();
   await handleReferral();
