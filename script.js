@@ -1,10 +1,19 @@
-let tickets = parseInt(localStorage.getItem('tickets')) || 3;
+let tickets;
 let spinning = false;
 
 const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
+
+function loadTickets() {
+    const saved = parseInt(localStorage.getItem('tickets'));
+    tickets = isNaN(saved) ? 3 : saved;
+}
+
+function saveTickets() {
+    localStorage.setItem('tickets', tickets);
+}
 
 function updateUI() {
     ticketCount.textContent = tickets;
@@ -14,9 +23,6 @@ function updateUI() {
         : tickets > 0
             ? "IMG_2665.PNG"
             : "IMG_2666.PNG";
-
-    // Сохраняем в localStorage
-    localStorage.setItem('tickets', tickets);
 }
 
 function showTelegramAlert(text) {
@@ -32,6 +38,7 @@ function spinWheel() {
 
     spinning = true;
     tickets--;
+    saveTickets();
     updateUI();
     btnSpin.src = "IMG_2667.PNG";
 
@@ -56,6 +63,7 @@ function spinWheel() {
         } else {
             showTelegramAlert("😔 В следующий раз повезёт");
         }
+        saveTickets();
         updateUI();
     }, 3050);
 }
@@ -165,6 +173,7 @@ const midRect = document.getElementById('midRect');
 let isAltScreen = false;
 
 window.addEventListener('DOMContentLoaded', () => {
+    loadTickets();
     updateUI();
     initJpgStrip();
     setInterval(slideNext, 5000);
@@ -242,4 +251,3 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
