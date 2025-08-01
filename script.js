@@ -1,7 +1,9 @@
+import { createClient } from '@supabase/supabase-js'
 const SUPABASE_URL = 'https://jvezdcspexdvskkdlcwi.supabase.co'; // Твой Supabase URL
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZXpkY3NwZXhkdnNra2RsY3dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNjI5MjcsImV4cCI6MjA2OTYzODkyN30.1Qkliu9JukmhoTmkstHnASMfxwB7Tcp3bCt-2CooNq4';
+const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZXpkY3NwZXhkdnNra2RsY3dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNjI5MjcsImV4cCI6MjA2OTYzODkyN30.1Qkliu9JukmhoTmkstHnASMfxwB7Tcp3bCt-2CooNq4';
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
+export default supabase
 
 let tickets;
 let spinning = false;
