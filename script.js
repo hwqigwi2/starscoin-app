@@ -1,10 +1,3 @@
-import { createClient } from '@supabase/supabase-js'
-const SUPABASE_URL = 'https://jvezdcspexdvskkdlcwi.supabase.co'; // Твой Supabase URL
-const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZXpkY3NwZXhkdnNra2RsY3dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNjI5MjcsImV4cCI6MjA2OTYzODkyN30.1Qkliu9JukmhoTmkstHnASMfxwB7Tcp3bCt-2CooNq4';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
-export default supabase
-
 let tickets;
 let spinning = false;
 
@@ -13,64 +6,17 @@ const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
+const STORAGE_TICKETS = 'tickets';
 const STORAGE_USER_ID = 'user_id';
 const STORAGE_PENDING_REFS = 'pendingRefs';
 
 let userId = null;
 let refLink = null;
 
-console.log('*** Debug info ***');
-console.log('user_id из URL или localStorage:', userId);
-console.log('Telegram.WebApp.initDataUnsafe:', window.Telegram?.WebApp?.initDataUnsafe);
-console.log('userId из Telegram WebApp:', window.Telegram?.WebApp?.initDataUnsafe?.user?.id);
-console.log('start_param из Telegram WebApp:', window.Telegram?.WebApp?.initDataUnsafe?.start_param);
-
-
 // Получить параметр из URL
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
-}
-
-// Создать или получить пользователя из Supabase, если нет - создать с 3 билетами
-async function fetchOrCreateUser(id, inviter = null) {
-    const { data, error } = await supabase
-        .from('users')
-        .select('tickets')
-        .eq('id', id)
-        .single();
-
-    if (error && error.code === 'PGRST116') {
-        // Пользователь не найден - создаём
-        const { data: insertData, error: insertError } = await supabase
-            .from('users')
-            .insert([{ id: id, tickets: 3, inviter_id: inviter }])
-            .select()
-            .single();
-
-        if (insertError) {
-            console.error('Ошибка создания пользователя:', insertError);
-            return 3; // По умолчанию 3 билета
-        }
-        return insertData.tickets;
-    } else if (error) {
-        console.error('Ошибка запроса пользователя:', error);
-        return 3;
-    }
-
-    return data.tickets ?? 3;
-}
-
-// Обновить количество билетов в Supabase
-async function updateTicketsInDb(id, newTickets) {
-    const { error } = await supabase
-        .from('users')
-        .update({ tickets: newTickets })
-        .eq('id', id);
-
-    if (error) {
-        console.error('Ошибка обновления билетов:', error);
-    }
 }
 
 // Загрузить userId из localStorage или URL или Telegram WebApp
@@ -87,19 +33,18 @@ function loadUserId() {
 
     userId = userId.toString();
     localStorage.setItem(STORAGE_USER_ID, userId);
-    refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
+    refLink = https://t.me/XStarsCoin_bot?start=${userId};
 }
 
-// Загрузить билеты из Supabase (async)
-async function loadTickets() {
-    tickets = await fetchOrCreateUser(userId);
-    updateUI();
+// Загрузить билеты из localStorage или установить 3 по умолчанию
+function loadTickets() {
+    const saved = parseInt(localStorage.getItem(STORAGE_TICKETS));
+    tickets = isNaN(saved) ? 3 : saved;
 }
 
-// Сохранить билеты локально и в Supabase
-async function saveTickets() {
-    localStorage.setItem('tickets', tickets);
-    await updateTicketsInDb(userId, tickets);
+// Сохранить билеты в localStorage
+function saveTickets() {
+    localStorage.setItem(STORAGE_TICKETS, tickets);
 }
 
 // Обновить UI по билету и кнопке
@@ -122,43 +67,33 @@ function showTelegramAlert(text) {
     }
 }
 
-// Обработка реферала — проверяем, если пригласил кто-то новый, даём +1 билет
-async function handleReferral() {
+// Обработка реферала, добавление билета если новый приглашённый
+function handleReferral() {
     const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
-    if (!referrer || referrer === userId) return;
+    if (!referrer || referrer === userId) return; // если нет реферала или реферал — сам пользователь
 
     // Загружаем уже учтённые рефералы из localStorage
     const pendingRefs = JSON.parse(localStorage.getItem(STORAGE_PENDING_REFS) || '{}');
 
+    // Если реферал еще не учтен, добавляем +1 билет
     if (!pendingRefs[referrer]) {
-        // Проверим, есть ли такой реферал в базе (чтобы не повторять)
-        const { data, error } = await supabase
-            .from('users')
-            .select('id')
-            .eq('id', userId)
-            .single();
+        pendingRefs[referrer] = true;
+        localStorage.setItem(STORAGE_PENDING_REFS, JSON.stringify(pendingRefs));
 
-        if (!error && data) {
-            // Добавляем билет, отмечаем реферал учтенным
-            pendingRefs[referrer] = true;
-            localStorage.setItem(STORAGE_PENDING_REFS, JSON.stringify(pendingRefs));
+        tickets++;
+        saveTickets();
+        updateUI();
 
-            tickets++;
-            await saveTickets();
-            updateUI();
-
-            showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
-        }
+        showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
     }
 }
 
-// Функция вращения колеса
-async function spinWheel() {
+function spinWheel() {
     if (spinning || tickets <= 0) return;
 
     spinning = true;
     tickets--;
-    await saveTickets();
+    saveTickets();
     updateUI();
     btnSpin.src = "IMG_2667.PNG";
 
@@ -168,27 +103,27 @@ async function spinWheel() {
     const rotation = spins * 360 + targetAngle;
 
     wheel.style.transition = 'none';
-    wheel.style.transform = `rotate(0deg)`;
+    wheel.style.transform = rotate(0deg);
 
     setTimeout(() => {
         wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-        wheel.style.transform = `rotate(${rotation}deg)`;
+        wheel.style.transform = rotate(${rotation}deg);
     }, 50);
 
-    setTimeout(async () => {
+    setTimeout(() => {
         spinning = false;
         if (targetAngle === 0) {
             tickets++;
-            await saveTickets();
             showTelegramAlert("🎉 Вы получили 1 билет!");
         } else {
             showTelegramAlert("😔 В следующий раз повезёт");
         }
+        saveTickets();
         updateUI();
     }, 3050);
 }
 
-// --- JPG лента (оставляю без изменений) ---
+// JPG лента
 const imgWidth = 45;
 const gap = 10;
 const visibleCount = 7;
@@ -211,7 +146,7 @@ let imgs = [];
 
 function positionImgs() {
     imgs.forEach((img, i) => {
-        img.style.left = `${i * (imgWidth + gap)}px`;
+        img.style.left = ${i * (imgWidth + gap)}px;
         img.style.opacity = "1";
         img.classList.remove("leaving", "entering");
     });
@@ -224,7 +159,7 @@ function initJpgStrip() {
 
     for (let i = 0; i < visibleCount; i++) {
         const img = document.createElement('img');
-        img.src = `${jpgPrefix}${jpgOrder[i]}${jpgSuffix}`;
+        img.src = ${jpgPrefix}${jpgOrder[i]}${jpgSuffix};
         jpgStrip.appendChild(img);
         imgs.push(img);
     }
@@ -239,20 +174,20 @@ function slideNext() {
     imgs[0].style.left = "0px";
 
     for (let i = 1; i < imgs.length; i++) {
-        imgs[i].style.left = `${(i - 1) * (imgWidth + gap)}px`;
+        imgs[i].style.left = ${(i - 1) * (imgWidth + gap)}px;
     }
 
     const newImg = document.createElement('img');
-    newImg.src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
+    newImg.src = ${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix};
     newImg.classList.add("entering");
     newImg.style.opacity = "0";
-    newImg.style.left = `${stripWidth}px`;
+    newImg.style.left = ${stripWidth}px;
 
     jpgStrip.appendChild(newImg);
     imgs.push(newImg);
 
     requestAnimationFrame(() => {
-        newImg.style.left = `${(visibleCount - 1) * (imgWidth + gap)}px`;
+        newImg.style.left = ${(visibleCount - 1) * (imgWidth + gap)}px;
         newImg.style.opacity = "1";
     });
 
@@ -265,7 +200,7 @@ function slideNext() {
     }, 1000);
 }
 
-// --- Переключение экранов (3 кнопки квадраты) ---
+// Кнопки переключения
 const squares = document.querySelectorAll('.square');
 let activeIndex = 0;
 
@@ -292,14 +227,10 @@ const elementsToToggle = [
 const midRect = document.getElementById('midRect');
 let isAltScreen = false;
 
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', () => {
     loadUserId();
-
-    if (!userId) return;
-
-    await loadTickets();
-    await handleReferral();
-
+    loadTickets();
+    handleReferral();
     updateUI();
     initJpgStrip();
     setInterval(slideNext, 5000);
@@ -354,13 +285,13 @@ window.addEventListener('DOMContentLoaded', async () => {
         infoIcon.style.opacity = '1';
 
         infoIcon.addEventListener('click', () => {
-            showTelegramAlert(`Шансы выпадения:
+            showTelegramAlert(Шансы выпадения:
 0 – 70%
 🎟️ – 20%
 ⭐️50 – 5%
 ⭐️100 – 3%
 ⭐️500 – 1.9%
-🏆Gold Heroic Helmet – 0.1%`);
+🏆Gold Heroic Helmet – 0.1%);
         });
     }
 
@@ -370,12 +301,13 @@ window.addEventListener('DOMContentLoaded', async () => {
         shareImg.style.cursor = 'pointer';
         shareImg.addEventListener('click', () => {
             const baseUrl = "https://t.me/share/url";
+            // Делаем ссылку с userId, чтобы другие могли по ней зайти и пригласить
             const url = userId
-                ? encodeURIComponent(`https://t.me/XStarsCoin_bot?referrer=${userId}`)
+                ? encodeURIComponent(https://t.me/XStarsCoin_bot?referrer=${userId})
                 : encodeURIComponent("https://t.me/XStarsCoin_bot");
             const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
-            const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
+            const shareUrl = ${baseUrl}?url=${url}&text=${text};
             window.open(shareUrl, '_blank');
         });
     }
-});
+})
