@@ -5,41 +5,12 @@ const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
-const CHANNEL_ID = -1002845235312;
-const CHANNEL_LINK = "https://t.me/+NTPVUi4rfWs1ZmU0";
 
 // Получаем userId и формируем реферальную ссылку
 let userId = null;
 let refLink = null;
 
-// Получить параметр из URL
-function getQueryParam(name) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
-}
 
-// Инициализация пользователя
-async function initUser() {
-    userId = getQueryParam('user_id') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id) || null;
-    
-    if (userId) {
-        refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
-        await updateTicketsFromServer();
-        handleReferral();
-        checkAndHideConditionImages();
-    }
-}
-
-// Обновление UI
-function updateUI() {
-    ticketCount.textContent = tickets;
-    btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
-    btnSpin.src = spinning
-        ? "IMG_2667.PNG"
-        : tickets > 0
-            ? "IMG_2665.PNG"
-            : "IMG_2666.PNG";
-}
 
 // Показать alert в Telegram или обычный alert
 function showTelegramAlert(text) {
