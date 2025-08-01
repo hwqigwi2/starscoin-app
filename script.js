@@ -6,9 +6,6 @@ const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
-const STORAGE_TICKETS = 'tickets';
-const STORAGE_USER_ID = 'user_id';
-const STORAGE_PENDING_REFS = 'pendingRefs';
 
 let userId = null;
 let refLink = null;
