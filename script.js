@@ -1,3 +1,11 @@
+// Подключение Supabase (сначала подключи в html):
+// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+
+const SUPABASE_URL = 'https://jvezdcspexdvskkdlcwi.supabase.co'; // Твой Supabase URL
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZXpkY3NwZXhkdnNra2RsY3dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNjI5MjcsImV4cCI6MjA2OTYzODkyN30.1Qkliu9JukmhoTmkstHnASMfxwB7Tcp3bCt-2CooNq4';
+
+const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 let tickets;
 let spinning = false;
 
@@ -6,7 +14,6 @@ const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
-const STORAGE_TICKETS = 'tickets';
 const STORAGE_USER_ID = 'user_id';
 const STORAGE_PENDING_REFS = 'pendingRefs';
 
@@ -17,6 +24,47 @@ let refLink = null;
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
+}
+
+// Создать или получить пользователя из Supabase, если нет - создать с 3 билетами
+async function fetchOrCreateUser(id, inviter = null) {
+    const { data, error } = await supabase
+        .from('users')
+        .select('tickets')
+        .eq('id', id)
+        .single();
+
+    if (error && error.code === 'PGRST116') {
+        // Пользователь не найден - создаём
+        const { data: insertData, error: insertError } = await supabase
+            .from('users')
+            .insert([{ id: id, tickets: 3, inviter_id: inviter }])
+            .select()
+            .single();
+
+        if (insertError) {
+            console.error('Ошибка создания пользователя:', insertError);
+            return 3; // По умолчанию 3 билета
+        }
+        return insertData.tickets;
+    } else if (error) {
+        console.error('Ошибка запроса пользователя:', error);
+        return 3;
+    }
+
+    return data.tickets ?? 3;
+}
+
+// Обновить количество билетов в Supabase
+async function updateTicketsInDb(id, newTickets) {
+    const { error } = await supabase
+        .from('users')
+        .update({ tickets: newTickets })
+        .eq('id', id);
+
+    if (error) {
+        console.error('Ошибка обновления билетов:', error);
+    }
 }
 
 // Загрузить userId из localStorage или URL или Telegram WebApp
@@ -36,15 +84,16 @@ function loadUserId() {
     refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
 }
 
-// Загрузить билеты из localStorage или установить 3 по умолчанию
-function loadTickets() {
-    const saved = parseInt(localStorage.getItem(STORAGE_TICKETS));
-    tickets = isNaN(saved) ? 3 : saved;
+// Загрузить билеты из Supabase (async)
+async function loadTickets() {
+    tickets = await fetchOrCreateUser(userId);
+    updateUI();
 }
 
-// Сохранить билеты в localStorage
-function saveTickets() {
-    localStorage.setItem(STORAGE_TICKETS, tickets);
+// Сохранить билеты локально и в Supabase
+async function saveTickets() {
+    localStorage.setItem('tickets', tickets);
+    await updateTicketsInDb(userId, tickets);
 }
 
 // Обновить UI по билету и кнопке
@@ -67,33 +116,43 @@ function showTelegramAlert(text) {
     }
 }
 
-// Обработка реферала, добавление билета если новый приглашённый
-function handleReferral() {
+// Обработка реферала — проверяем, если пригласил кто-то новый, даём +1 билет
+async function handleReferral() {
     const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
-    if (!referrer || referrer === userId) return; // если нет реферала или реферал — сам пользователь
+    if (!referrer || referrer === userId) return;
 
     // Загружаем уже учтённые рефералы из localStorage
     const pendingRefs = JSON.parse(localStorage.getItem(STORAGE_PENDING_REFS) || '{}');
 
-    // Если реферал еще не учтен, добавляем +1 билет
     if (!pendingRefs[referrer]) {
-        pendingRefs[referrer] = true;
-        localStorage.setItem(STORAGE_PENDING_REFS, JSON.stringify(pendingRefs));
+        // Проверим, есть ли такой реферал в базе (чтобы не повторять)
+        const { data, error } = await supabase
+            .from('users')
+            .select('id')
+            .eq('id', userId)
+            .single();
 
-        tickets++;
-        saveTickets();
-        updateUI();
+        if (!error && data) {
+            // Добавляем билет, отмечаем реферал учтенным
+            pendingRefs[referrer] = true;
+            localStorage.setItem(STORAGE_PENDING_REFS, JSON.stringify(pendingRefs));
 
-        showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
+            tickets++;
+            await saveTickets();
+            updateUI();
+
+            showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
+        }
     }
 }
 
-function spinWheel() {
+// Функция вращения колеса
+async function spinWheel() {
     if (spinning || tickets <= 0) return;
 
     spinning = true;
     tickets--;
-    saveTickets();
+    await saveTickets();
     updateUI();
     btnSpin.src = "IMG_2667.PNG";
 
@@ -110,20 +169,20 @@ function spinWheel() {
         wheel.style.transform = `rotate(${rotation}deg)`;
     }, 50);
 
-    setTimeout(() => {
+    setTimeout(async () => {
         spinning = false;
         if (targetAngle === 0) {
             tickets++;
+            await saveTickets();
             showTelegramAlert("🎉 Вы получили 1 билет!");
         } else {
             showTelegramAlert("😔 В следующий раз повезёт");
         }
-        saveTickets();
         updateUI();
     }, 3050);
 }
 
-// JPG лента
+// --- JPG лента (оставляю без изменений) ---
 const imgWidth = 45;
 const gap = 10;
 const visibleCount = 7;
@@ -200,7 +259,7 @@ function slideNext() {
     }, 1000);
 }
 
-// Кнопки переключения
+// --- Переключение экранов (3 кнопки квадраты) ---
 const squares = document.querySelectorAll('.square');
 let activeIndex = 0;
 
@@ -227,10 +286,14 @@ const elementsToToggle = [
 const midRect = document.getElementById('midRect');
 let isAltScreen = false;
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     loadUserId();
-    loadTickets();
-    handleReferral();
+
+    if (!userId) return;
+
+    await loadTickets();
+    await handleReferral();
+
     updateUI();
     initJpgStrip();
     setInterval(slideNext, 5000);
@@ -301,7 +364,6 @@ window.addEventListener('DOMContentLoaded', () => {
         shareImg.style.cursor = 'pointer';
         shareImg.addEventListener('click', () => {
             const baseUrl = "https://t.me/share/url";
-            // Делаем ссылку с userId, чтобы другие могли по ней зайти и пригласить
             const url = userId
                 ? encodeURIComponent(`https://t.me/XStarsCoin_bot?referrer=${userId}`)
                 : encodeURIComponent("https://t.me/XStarsCoin_bot");
