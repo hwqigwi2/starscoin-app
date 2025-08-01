@@ -17,6 +17,13 @@ const STORAGE_PENDING_REFS = 'pendingRefs';
 let userId = null;
 let refLink = null;
 
+console.log('*** Debug info ***');
+console.log('user_id из URL или localStorage:', userId);
+console.log('Telegram.WebApp.initDataUnsafe:', window.Telegram?.WebApp?.initDataUnsafe);
+console.log('userId из Telegram WebApp:', window.Telegram?.WebApp?.initDataUnsafe?.user?.id);
+console.log('start_param из Telegram WebApp:', window.Telegram?.WebApp?.initDataUnsafe?.start_param);
+
+
 // Получить параметр из URL
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
