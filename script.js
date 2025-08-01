@@ -6,15 +6,48 @@ const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
+const STORAGE_TICKETS = 'tickets';
+const STORAGE_USER_ID = 'user_id';
+const STORAGE_PENDING_REFS = 'pendingRefs';
+
+let userId = null;
+let refLink = null;
+
+// Получить параметр из URL
+function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
+// Загрузить userId из localStorage или URL или Telegram WebApp
+function loadUserId() {
+    userId = localStorage.getItem(STORAGE_USER_ID)
+        || getQueryParam('user_id')
+        || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id)
+        || null;
+
+    if (!userId) {
+        alert("Ошибка: Не удалось определить user_id");
+        return;
+    }
+
+    userId = userId.toString();
+    localStorage.setItem(STORAGE_USER_ID, userId);
+    refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
+}
+
+// Загрузить билеты из localStorage или установить 3 по умолчанию
 function loadTickets() {
-    const saved = parseInt(localStorage.getItem('tickets'));
+    const saved = parseInt(localStorage.getItem(STORAGE_TICKETS));
     tickets = isNaN(saved) ? 3 : saved;
 }
 
+// Сохранить билеты в localStorage
 function saveTickets() {
-    localStorage.setItem('tickets', tickets);
+    localStorage.setItem(STORAGE_TICKETS, tickets);
 }
 
+// Обновить UI по билету и кнопке
 function updateUI() {
     ticketCount.textContent = tickets;
     btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
@@ -25,11 +58,33 @@ function updateUI() {
             : "IMG_2666.PNG";
 }
 
+// Показать alert в Telegram WebApp или браузере
 function showTelegramAlert(text) {
     if (Telegram?.WebApp?.showAlert) {
         Telegram.WebApp.showAlert(text);
     } else {
         alert(text);
+    }
+}
+
+// Обработка реферала, добавление билета если новый приглашённый
+function handleReferral() {
+    const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
+    if (!referrer || referrer === userId) return; // если нет реферала или реферал — сам пользователь
+
+    // Загружаем уже учтённые рефералы из localStorage
+    const pendingRefs = JSON.parse(localStorage.getItem(STORAGE_PENDING_REFS) || '{}');
+
+    // Если реферал еще не учтен, добавляем +1 билет
+    if (!pendingRefs[referrer]) {
+        pendingRefs[referrer] = true;
+        localStorage.setItem(STORAGE_PENDING_REFS, JSON.stringify(pendingRefs));
+
+        tickets++;
+        saveTickets();
+        updateUI();
+
+        showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
     }
 }
 
@@ -173,7 +228,9 @@ const midRect = document.getElementById('midRect');
 let isAltScreen = false;
 
 window.addEventListener('DOMContentLoaded', () => {
+    loadUserId();
     loadTickets();
+    handleReferral();
     updateUI();
     initJpgStrip();
     setInterval(slideNext, 5000);
@@ -244,7 +301,10 @@ window.addEventListener('DOMContentLoaded', () => {
         shareImg.style.cursor = 'pointer';
         shareImg.addEventListener('click', () => {
             const baseUrl = "https://t.me/share/url";
-            const url = encodeURIComponent("https://t.me/XStarsCoin_bot");
+            // Делаем ссылку с userId, чтобы другие могли по ней зайти и пригласить
+            const url = userId
+                ? encodeURIComponent(`https://t.me/XStarsCoin_bot?referrer=${userId}`)
+                : encodeURIComponent("https://t.me/XStarsCoin_bot");
             const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
             const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
             window.open(shareUrl, '_blank');
