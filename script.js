@@ -6,32 +6,6 @@ const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
-// Получаем userId и формируем реферальную ссылку
-let userId = null;
-let refLink = null;
-
-// Показать alert в Telegram или обычный alert
-function showTelegramAlert(text) {
-    if (Telegram?.WebApp?.showAlert) {
-        Telegram.WebApp.showAlert(text);
-    } else {
-        alert(text);
-    }
-}
-
-// Инициализация пользователя
-async function initUser() {
-    // Получаем userId из query параметра или Telegram WebApp
-    userId = getQueryParam('user_id') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id) || null;
-    if (userId) {
-        refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
-        // Обновление билетов с сервера
-        await updateTicketsFromServer();
-        handleReferral();
-    }
-}
-
-// Обновление UI
 function updateUI() {
     ticketCount.textContent = tickets;
     btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
@@ -42,7 +16,14 @@ function updateUI() {
             : "IMG_2666.PNG";
 }
 
-// Вращение колеса
+function showTelegramAlert(text) {
+    if (Telegram?.WebApp?.showAlert) {
+        Telegram.WebApp.showAlert(text);
+    } else {
+        alert(text);
+    }
+}
+
 function spinWheel() {
     if (spinning || tickets <= 0) return;
 
@@ -73,11 +54,10 @@ function spinWheel() {
             showTelegramAlert("😔 В следующий раз повезёт");
         }
         updateUI();
-        updateTicketsFromServer();
     }, 3050);
 }
 
-// === Анимация JPG полосы ===
+// JPG лента
 const imgWidth = 45;
 const gap = 10;
 const visibleCount = 7;
@@ -95,28 +75,8 @@ const jpgOrder = [
 const jpgStrip = document.getElementById('jpgStrip');
 const jpgPrefix = "IMG_";
 const jpgSuffix = ".JPG";
-const STORAGE_KEY = "jpgStripState";
-
 let currentIndex = 0;
 let imgs = [];
-
-function loadState() {
-    try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        if (saved && Array.isArray(saved.currentImgs)) {
-            currentIndex = saved.currentIndex;
-            return saved.currentImgs;
-        }
-    } catch {}
-    return null;
-}
-
-function saveState(currentImgs) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        currentIndex,
-        currentImgs
-    }));
-}
 
 function positionImgs() {
     imgs.forEach((img, i) => {
@@ -128,19 +88,17 @@ function positionImgs() {
 
 function initJpgStrip() {
     jpgStrip.innerHTML = "";
-    let initialImgs = loadState() || jpgOrder.slice(0, visibleCount);
     currentIndex = visibleCount % jpgOrder.length;
     imgs = [];
 
     for (let i = 0; i < visibleCount; i++) {
         const img = document.createElement('img');
-        img.src = `${jpgPrefix}${initialImgs[i]}${jpgSuffix}`;
+        img.src = `${jpgPrefix}${jpgOrder[i]}${jpgSuffix}`;
         jpgStrip.appendChild(img);
         imgs.push(img);
     }
 
     positionImgs();
-    saveState(initialImgs);
 }
 
 function slideNext() {
@@ -173,18 +131,11 @@ function slideNext() {
         jpgStrip.removeChild(imgs.shift());
         newImg.classList.remove("entering");
         positionImgs();
-
-        const currentImgs = imgs.map(img => {
-            const match = img.src.match(/IMG_(\d+)\.JPG$/i);
-            return match ? Number(match[1]) : null;
-        });
-        saveState(currentImgs);
     }, 1000);
 }
 
-// Логика выделения квадратов с прозрачным белым оверлеем
+// Кнопки переключения
 const squares = document.querySelectorAll('.square');
-
 let activeIndex = 0;
 
 function updateActiveSquare(newIndex) {
@@ -197,39 +148,33 @@ function updateActiveSquare(newIndex) {
     }
 }
 
-// Проверка и скрытие PNG при загрузке
-function checkAndHideConditionImages() {
-    if (userId && localStorage.getItem(`gotTicket_${CHANNEL_ID}_${userId}`)) {
-        document.getElementById('topLeftImg2777').style.display = 'none';
-        document.getElementById('topRightImg2776').style.display = 'none';
-        document.getElementById('topLeftImg2774').style.display = 'none';
-        document.getElementById('topLeftImg2773').style.display = 'none';
-    }
-}
+const elementsToToggle = [
+    document.querySelector('.wheel-wrapper'),
+    document.querySelector('.center-icon'),
+    document.querySelector('.btn-bilets-wrapper'),
+    document.querySelector('.btn-spin-wrapper'),
+    document.getElementById('jpgStrip'),
+    document.querySelector('.info-icon'),
+    document.querySelector('.png-strip-container')
+];
 
-// Инициализация при загрузке
+const midRect = document.getElementById('midRect');
+let isAltScreen = false;
+
 window.addEventListener('DOMContentLoaded', () => {
-    initUser();
-    handleReferral();
     updateUI();
     initJpgStrip();
     setInterval(slideNext, 5000);
-    checkAndHideConditionImages();
-    
-    if (btnSpin) {
-        btnSpin.addEventListener('click', spinWheel);
-    }
 
+    btnSpin.addEventListener('click', spinWheel);
     updateActiveSquare(activeIndex);
 
-    // Обработчики для квадратов
     squares.forEach((square, index) => {
         square.addEventListener('click', () => {
             if (index === activeIndex) return;
             updateActiveSquare(index);
-            
+
             if (index === 1) {
-                // Средняя кнопка (без изменений)
                 elementsToToggle.forEach(el => el.style.display = 'none');
                 midRect.style.display = 'block';
                 document.getElementById('topLeftImg').style.display = 'none';
@@ -239,22 +184,16 @@ window.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('topRightImg2776').style.display = 'none';
                 isAltScreen = true;
             } else if (index === 2) {
-                // Правая кнопка - обновленная версия
                 elementsToToggle.forEach(el => el.style.display = 'none');
                 midRect.style.display = 'none';
-                
-                // Показываем все картинки
+
                 document.getElementById('topLeftImg').style.display = 'block';
                 document.getElementById('topLeftImg2777').style.display = 'block';
                 document.getElementById('topLeftImg2774').style.display = 'block';
                 document.getElementById('topLeftImg2773').style.display = 'block';
                 document.getElementById('topRightImg2776').style.display = 'block';
-                
-                // Добавляем обработчик для кнопки канала
-                document.getElementById('topLeftImg2777').addEventListener('click', handleChannelButtonClick);
                 isAltScreen = true;
             } else if (index === 0) {
-                // Левая кнопка (без изменений)
                 elementsToToggle.forEach(el => el.style.display = '');
                 midRect.style.display = 'none';
                 document.getElementById('topLeftImg').style.display = 'none';
@@ -267,7 +206,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Информационная иконка
+    // Инфо-иконка
     const pngLeft = document.querySelector('.png-strip-left');
     const infoIcon = document.getElementById('infoBtn');
 
@@ -288,16 +227,13 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Реферальная кнопка share
+    // Кнопка поделиться
     const shareImg = document.querySelector('#midRect .below-rect-img');
-
     if (shareImg) {
         shareImg.style.cursor = 'pointer';
         shareImg.addEventListener('click', () => {
             const baseUrl = "https://t.me/share/url";
-            const url = userId
-                ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`)
-                : encodeURIComponent("https://t.me/XStarsCoin_bot");
+            const url = encodeURIComponent("https://t.me/XStarsCoin_bot");
             const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
             const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
             window.open(shareUrl, '_blank');
