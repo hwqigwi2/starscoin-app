@@ -10,8 +10,6 @@ const ticketCount = document.getElementById('ticketCount');
 let userId = null;
 let refLink = null;
 
-
-
 // Показать alert в Telegram или обычный alert
 function showTelegramAlert(text) {
     if (Telegram?.WebApp?.showAlert) {
@@ -21,7 +19,28 @@ function showTelegramAlert(text) {
     }
 }
 
+// Инициализация пользователя
+async function initUser() {
+    // Получаем userId из query параметра или Telegram WebApp
+    userId = getQueryParam('user_id') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id) || null;
+    if (userId) {
+        refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
+        // Обновление билетов с сервера
+        await updateTicketsFromServer();
+        handleReferral();
+    }
+}
 
+// Обновление UI
+function updateUI() {
+    ticketCount.textContent = tickets;
+    btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
+    btnSpin.src = spinning
+        ? "IMG_2667.PNG"
+        : tickets > 0
+            ? "IMG_2665.PNG"
+            : "IMG_2666.PNG";
+}
 
 // Вращение колеса
 function spinWheel() {
@@ -178,22 +197,6 @@ function updateActiveSquare(newIndex) {
     }
 }
 
-// Переключение экранов по нижним кнопкам
-const elementsToToggle = [
-    document.querySelector('.wheel-wrapper'),
-    document.querySelector('.center-icon'),
-    document.querySelector('.btn-bilets-wrapper'),
-    document.querySelector('.btn-spin-wrapper'),
-    document.getElementById('jpgStrip'),
-    document.querySelector('.info-icon'),
-    document.querySelector('.png-strip-container')
-];
-
-const midRect = document.getElementById('midRect');
-let isAltScreen = false;
-
-
-
 // Проверка и скрытие PNG при загрузке
 function checkAndHideConditionImages() {
     if (userId && localStorage.getItem(`gotTicket_${CHANNEL_ID}_${userId}`)) {
@@ -213,7 +216,10 @@ window.addEventListener('DOMContentLoaded', () => {
     setInterval(slideNext, 5000);
     checkAndHideConditionImages();
     
-    btnSpin.addEventListener('click', spinWheel);
+    if (btnSpin) {
+        btnSpin.addEventListener('click', spinWheel);
+    }
+
     updateActiveSquare(activeIndex);
 
     // Обработчики для квадратов
