@@ -1,6 +1,3 @@
-// Подключение Supabase (сначала подключи в html):
-// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-
 const SUPABASE_URL = 'https://jvezdcspexdvskkdlcwi.supabase.co'; // Твой Supabase URL
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZXpkY3NwZXhkdnNra2RsY3dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNjI5MjcsImV4cCI6MjA2OTYzODkyN30.1Qkliu9JukmhoTmkstHnASMfxwB7Tcp3bCt-2CooNq4';
 
