@@ -1,6 +1,3 @@
-const API_BASE_URL = "https://starscdihe.online"; // <- сюда свой домен или IP с https
-
-
 let tickets = 3;
 let spinning = false;
 
@@ -53,63 +50,7 @@ function showTelegramAlert(text) {
     }
 }
 
-// Отправка данных о реферале на сервер
-async function sendRefData(inviterId) {
-    if (!userId) return;
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/register-ref`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ inviter: parseInt(inviterId), user: parseInt(userId) })
-        });
-        
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        
-        const data = await response.json();
-        console.log("Реферальные данные отправлены:", data);
-        
-        if (data.status === 'ok') {
-            await updateTicketsFromServer();
-        }
-    } catch (err) {
-        console.error("Ошибка отправки реферальных данных:", err);
-        showTelegramAlert("Произошла ошибка при обработке реферала");
-    }
-}
 
-// Получение количества билетов с сервера
-async function updateTicketsFromServer() {
-    if (!userId) return;
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/get-tickets?user_id=${userId}`);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        if (typeof data.tickets === 'number') {
-            tickets = data.tickets;
-            updateUI();
-        }
-    } catch (err) {
-        console.error("Ошибка получения билетов:", err);
-        showTelegramAlert("Не удалось загрузить количество билетов");
-    }
-}
-
-// Обработка реферального перехода (только 1 раз)
-function handleReferral() {
-    const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
-
-    if (referrer && referrer !== userId?.toString()) {
-        const pendingRefs = JSON.parse(localStorage.getItem('pendingRefs') || '{}');
-        if (!pendingRefs[referrer]) {
-            pendingRefs[referrer] = true;
-            localStorage.setItem('pendingRefs', JSON.stringify(pendingRefs));
-            showTelegramAlert("🎉 Вы зашли по ссылке друга! Спасибо!");
-            sendRefData(referrer);
-        }
-    }
-}
 
 // Вращение колеса
 function spinWheel() {
@@ -280,59 +221,7 @@ const elementsToToggle = [
 const midRect = document.getElementById('midRect');
 let isAltScreen = false;
 
-// Функция для проверки заявки через Telegram WebApp
-async function checkJoinRequest() {
-    if (!window.Telegram?.WebApp) {
-        console.log("Не в Telegram WebApp — проверка невозможна");
-        return false;
-    }
 
-    try {
-        const result = await Telegram.WebApp.sendData(JSON.stringify({
-            action: "check_join_request",
-            user_id: userId,
-            channel_id: CHANNEL_ID
-        }));
-        return result?.status === "request_to_join";
-    } catch (err) {
-        console.error("Ошибка проверки заявки:", err);
-        return false;
-    }
-}
-
-// Функция для обработки нажатия на кнопку канала (IMG_2777)
-async function handleChannelButtonClick() {
-    const alreadyGotTicket = localStorage.getItem(`gotTicket_${CHANNEL_ID}_${userId}`);
-    if (alreadyGotTicket) {
-        showTelegramAlert("🎉 Вы уже получили билет за заявку!");
-        return;
-    }
-
-    if (Telegram?.WebApp?.openTelegramLink) {
-        Telegram.WebApp.openTelegramLink(CHANNEL_LINK);
-    } else {
-        window.open(CHANNEL_LINK, '_blank');
-    }
-
-    setTimeout(async () => {
-        const hasRequested = await checkJoinRequest();
-        if (hasRequested) {
-            tickets += 1;
-            localStorage.setItem(`gotTicket_${CHANNEL_ID}_${userId}`, "true");
-            localStorage.setItem(`user_${userId}_tickets`, tickets.toString());
-            
-            document.getElementById('topLeftImg2777').style.display = 'none';
-            document.getElementById('topRightImg2776').style.display = 'none';
-            document.getElementById('topLeftImg2774').style.display = 'none';
-            document.getElementById('topLeftImg2773').style.display = 'none';
-            
-            updateUI();
-            showTelegramAlert("🎉 Вы получили 1 билет за заявку!");
-        } else {
-            showTelegramAlert("❌ Вы не подали заявку в канал");
-        }
-    }, 5000);
-}
 
 // Проверка и скрытие PNG при загрузке
 function checkAndHideConditionImages() {
