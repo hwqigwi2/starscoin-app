@@ -1,108 +1,102 @@
-const supabaseUrl = 'https://qqczvmnhsymrfnnsilvi.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxY3p2bW5oc3ltcmZubnNpbHZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNTg4MzAsImV4cCI6MjA2OTYzNDgzMH0.HG6iXIM_M5MzaS_UHhPrlBFgk3m5evSLfhPZCOK6g-U';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-let tickets = 0;
+let tickets;
 let spinning = false;
-let userId = null;
 
-
-// DOM элементы
 const wheel = document.getElementById('wheel');
+const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
-const squares = document.querySelectorAll('.square');
-const midRect = document.getElementById('midRect');
-const jpgStrip = document.getElementById('jpgStrip');
+
+const STORAGE_TICKETS = 'tickets';
+const STORAGE_USER_ID = 'user_id';
+const STORAGE_PENDING_REFS = 'pendingRefs';
 
 let userId = null;
+let refLink = null;
 
-// Упрощенная аутентификация для Telegram
-async function initAuth() {
-  try {
-    userId = Telegram.WebApp.initDataUnsafe?.user?.id?.toString();
-    if (!userId) throw new Error("User ID not found");
-
-
-// Загрузка данных пользователя
-async function loadUserData() {
-  try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('tickets')
-      .eq('user_id', userId)
-      .single();
-
-    if (error) throw error;
-    tickets = data?.tickets || 3;
-    updateUI();
-  } catch (error) {
-    console.error('Load error:', error);
-    tickets = 3;
-    updateUI();
-  }
+// Получить параметр из URL
+function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
 }
 
-  // Создаем или обновляем пользователя
-    const { error } = await supabase
-      .from('users')
-      .upsert({ user_id: userId }, { onConflict: 'user_id' });
-      
-    if (error) throw error;
-  } catch (error) {
-    console.error('Auth error:', error);
-    tickets = 3; // Значение по умолчанию
-    updateUI();
-  }
-}
+// Загрузить userId из localStorage или URL или Telegram WebApp
+function loadUserId() {
+    userId = localStorage.getItem(STORAGE_USER_ID)
+        || getQueryParam('user_id')
+        || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id)
+        || null;
 
-// Обработка рефералов
-async function handleReferral() {
-  const referrer = Telegram.WebApp.initDataUnsafe?.start_param;
-  if (!referrer || referrer === userId) return;
-
-  try {
-    // Проверяем существование реферала
-    const { count, error } = await supabase
-      .from('referrals')
-      .select('*', { count: 'exact' })
-      .eq('referred_id', userId);
-
-    if (count === 0) {
-      // Добавляем запись о реферале
-      await supabase.from('referrals').insert({
-        referrer_id: referrer,
-        referred_id: userId
-      });
-      
-      // Начисляем билет пригласившему
-      await supabase.rpc('increment_tickets', {
-        user_id: referrer,
-        amount: 1
-      });
-      
-      showTelegramAlert("🎉 Вы зашли по ссылке друга!");
+    if (!userId) {
+        alert("Ошибка: Не удалось определить user_id");
+        return;
     }
-  } catch (error) {
-    console.error('Referral error:', error);
-  }
+
+    userId = userId.toString();
+    localStorage.setItem(STORAGE_USER_ID, userId);
+    refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
 }
 
-// Функция вращения колеса
-async function spinWheel() {
-  if (spinning || tickets <= 0) return;
+// Загрузить билеты из localStorage или установить 3 по умолчанию
+function loadTickets() {
+    const saved = parseInt(localStorage.getItem(STORAGE_TICKETS));
+    tickets = isNaN(saved) ? 3 : saved;
+}
 
-  spinning = true;
-  updateUI();
+// Сохранить билеты в localStorage
+function saveTickets() {
+    localStorage.setItem(STORAGE_TICKETS, tickets);
+}
 
-  try {
-    // Уменьшаем билеты
-    await supabase.rpc('decrement_tickets', {
-      user_id: userId,
-      amount: 1
-    });
+// Обновить UI по билету и кнопке
+function updateUI() {
+    ticketCount.textContent = tickets;
+    btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
+    btnSpin.src = spinning
+        ? "IMG_2667.PNG"
+        : tickets > 0
+            ? "IMG_2665.PNG"
+            : "IMG_2666.PNG";
+}
 
-    // Анимация вращения
+// Показать alert в Telegram WebApp или браузере
+function showTelegramAlert(text) {
+    if (Telegram?.WebApp?.showAlert) {
+        Telegram.WebApp.showAlert(text);
+    } else {
+        alert(text);
+    }
+}
+
+// Обработка реферала, добавление билета если новый приглашённый
+function handleReferral() {
+    const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
+    if (!referrer || referrer === userId) return; // если нет реферала или реферал — сам пользователь
+
+    // Загружаем уже учтённые рефералы из localStorage
+    const pendingRefs = JSON.parse(localStorage.getItem(STORAGE_PENDING_REFS) || '{}');
+
+    // Если реферал еще не учтен, добавляем +1 билет
+    if (!pendingRefs[referrer]) {
+        pendingRefs[referrer] = true;
+        localStorage.setItem(STORAGE_PENDING_REFS, JSON.stringify(pendingRefs));
+
+        tickets++;
+        saveTickets();
+        updateUI();
+
+        showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
+    }
+}
+
+function spinWheel() {
+    if (spinning || tickets <= 0) return;
+
+    spinning = true;
+    tickets--;
+    saveTickets();
+    updateUI();
+    btnSpin.src = "IMG_2667.PNG";
+
     const rand = Math.random();
     const spins = 5;
     const targetAngle = rand < 0.8 ? -75 : 0;
@@ -112,193 +106,208 @@ async function spinWheel() {
     wheel.style.transform = `rotate(0deg)`;
 
     setTimeout(() => {
-      wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-      wheel.style.transform = `rotate(${rotation}deg)`;
+        wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
+        wheel.style.transform = `rotate(${rotation}deg)`;
     }, 50);
 
-    setTimeout(async () => {
-      spinning = false;
-      
-      if (targetAngle === 0) {
-        // Начисляем выигрыш
-        await supabase.rpc('increment_tickets', {
-          user_id: userId,
-          amount: 1
-        });
-        showTelegramAlert("🎉 Вы получили 1 билет!");
-      } else {
-        showTelegramAlert("😔 В следующий раз повезёт");
-      }
-      
-      // Обновляем данные
-      await loadUserData();
+    setTimeout(() => {
+        spinning = false;
+        if (targetAngle === 0) {
+            tickets++;
+            showTelegramAlert("🎉 Вы получили 1 билет!");
+        } else {
+            showTelegramAlert("😔 В следующий раз повезёт");
+        }
+        saveTickets();
+        updateUI();
     }, 3050);
-  } catch (error) {
-    console.error('Spin error:', error);
-    spinning = false;
-    updateUI();
-  }
 }
 
-// Обновление UI
-function updateUI() {
-  ticketCount.textContent = tickets;
-  btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
-  btnSpin.src = spinning
-    ? "IMG_2667.PNG"
-    : tickets > 0
-      ? "IMG_2665.PNG"
-      : "IMG_2666.PNG";
-}
+// JPG лента
+const imgWidth = 45;
+const gap = 10;
+const visibleCount = 7;
+const stripWidth = imgWidth * visibleCount + gap * (visibleCount - 1);
 
-// Показать alert
-function showTelegramAlert(text) {
-  if (Telegram?.WebApp?.showAlert) {
-    Telegram.WebApp.showAlert(text);
-  } else {
-    alert(text);
-  }
-}
+const jpgOrder = [
+    2685, 2685, 2681, 2685, 2680,
+    2680, 2681, 2680, 2685, 2680,
+    2683, 2685, 2682, 2685, 2685,
+    2680, 2681, 2685, 2680, 2680,
+    2682, 2680, 2680, 2681, 2685,
+    2680, 2681, 2685, 2681
+];
 
-// Инициализация ленты изображений
-const initJpgStrip = () => {
-  const imgWidth = 45;
-  const gap = 10;
-  const visibleCount = 7;
-  const jpgOrder = [2685, 2685, 2681, 2685, 2680, 2680, 2681, 2680, 2685, 2680, 2683, 2685, 2682, 2685, 2685, 2680, 2681, 2685, 2680, 2680, 2682, 2680, 2680, 2681, 2685, 2680, 2681, 2685, 2681];
-  
-  let currentIndex = 0;
-  let imgs = [];
+const jpgStrip = document.getElementById('jpgStrip');
+const jpgPrefix = "IMG_";
+const jpgSuffix = ".JPG";
+let currentIndex = 0;
+let imgs = [];
 
-  const positionImgs = () => {
+function positionImgs() {
     imgs.forEach((img, i) => {
-      img.style.left = `${i * (imgWidth + gap)}px`;
-      img.style.opacity = "1";
-      img.classList.remove("leaving", "entering");
+        img.style.left = `${i * (imgWidth + gap)}px`;
+        img.style.opacity = "1";
+        img.classList.remove("leaving", "entering");
     });
-  };
+}
 
-  const slideNext = () => {
+function initJpgStrip() {
+    jpgStrip.innerHTML = "";
+    currentIndex = visibleCount % jpgOrder.length;
+    imgs = [];
+
+    for (let i = 0; i < visibleCount; i++) {
+        const img = document.createElement('img');
+        img.src = `${jpgPrefix}${jpgOrder[i]}${jpgSuffix}`;
+        jpgStrip.appendChild(img);
+        imgs.push(img);
+    }
+
+    positionImgs();
+}
+
+function slideNext() {
     if (!imgs.length) return;
 
     imgs[0].classList.add("leaving");
     imgs[0].style.left = "0px";
 
     for (let i = 1; i < imgs.length; i++) {
-      imgs[i].style.left = `${(i - 1) * (imgWidth + gap)}px`;
+        imgs[i].style.left = `${(i - 1) * (imgWidth + gap)}px`;
     }
 
     const newImg = document.createElement('img');
-    newImg.src = `IMG_${jpgOrder[currentIndex]}.JPG`;
+    newImg.src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
     newImg.classList.add("entering");
     newImg.style.opacity = "0";
-    newImg.style.left = `${(imgWidth + gap) * visibleCount}px`;
+    newImg.style.left = `${stripWidth}px`;
 
     jpgStrip.appendChild(newImg);
     imgs.push(newImg);
 
     requestAnimationFrame(() => {
-      newImg.style.left = `${(visibleCount - 1) * (imgWidth + gap)}px`;
-      newImg.style.opacity = "1";
+        newImg.style.left = `${(visibleCount - 1) * (imgWidth + gap)}px`;
+        newImg.style.opacity = "1";
     });
 
     currentIndex = (currentIndex + 1) % jpgOrder.length;
 
     setTimeout(() => {
-      jpgStrip.removeChild(imgs.shift());
-      newImg.classList.remove("entering");
-      positionImgs();
+        jpgStrip.removeChild(imgs.shift());
+        newImg.classList.remove("entering");
+        positionImgs();
     }, 1000);
-  };
+}
 
-  // Инициализация
-  jpgStrip.innerHTML = "";
-  currentIndex = visibleCount % jpgOrder.length;
-  imgs = [];
+// Кнопки переключения
+const squares = document.querySelectorAll('.square');
+let activeIndex = 0;
 
-  for (let i = 0; i < visibleCount; i++) {
-    const img = document.createElement('img');
-    img.src = `IMG_${jpgOrder[i]}.JPG`;
-    jpgStrip.appendChild(img);
-    imgs.push(img);
-  }
+function updateActiveSquare(newIndex) {
+    if (activeIndex !== null && squares[activeIndex]) {
+        squares[activeIndex].classList.remove('active');
+    }
+    activeIndex = newIndex;
+    if (squares[activeIndex]) {
+        squares[activeIndex].classList.add('active');
+    }
+}
 
-  positionImgs();
-  setInterval(slideNext, 5000);
-};
-
-// Обработчики кнопок
-function setupButtons() {
-  const elementsToToggle = [
+const elementsToToggle = [
     document.querySelector('.wheel-wrapper'),
     document.querySelector('.center-icon'),
     document.querySelector('.btn-bilets-wrapper'),
     document.querySelector('.btn-spin-wrapper'),
-    jpgStrip,
+    document.getElementById('jpgStrip'),
     document.querySelector('.info-icon'),
     document.querySelector('.png-strip-container')
-  ];
+];
 
-  // Кнопка вращения
-  btnSpin.addEventListener('click', spinWheel);
+const midRect = document.getElementById('midRect');
+let isAltScreen = false;
 
-  // Кнопки переключения экранов
-  squares.forEach((square, index) => {
-    square.addEventListener('click', () => {
-      if (index === 1) {
-        elementsToToggle.forEach(el => el.style.display = 'none');
-        midRect.style.display = 'block';
-      } else if (index === 2) {
-        elementsToToggle.forEach(el => el.style.display = 'none');
-        midRect.style.display = 'none';
-        document.querySelectorAll('[id^="topLeftImg"], #topRightImg2776').forEach(el => {
-          el.style.display = 'block';
+window.addEventListener('DOMContentLoaded', () => {
+    loadUserId();
+    loadTickets();
+    handleReferral();
+    updateUI();
+    initJpgStrip();
+    setInterval(slideNext, 5000);
+
+    btnSpin.addEventListener('click', spinWheel);
+    updateActiveSquare(activeIndex);
+
+    squares.forEach((square, index) => {
+        square.addEventListener('click', () => {
+            if (index === activeIndex) return;
+            updateActiveSquare(index);
+
+            if (index === 1) {
+                elementsToToggle.forEach(el => el.style.display = 'none');
+                midRect.style.display = 'block';
+                document.getElementById('topLeftImg').style.display = 'none';
+                document.getElementById('topLeftImg2777').style.display = 'none';
+                document.getElementById('topLeftImg2774').style.display = 'none';
+                document.getElementById('topLeftImg2773').style.display = 'none';
+                document.getElementById('topRightImg2776').style.display = 'none';
+                isAltScreen = true;
+            } else if (index === 2) {
+                elementsToToggle.forEach(el => el.style.display = 'none');
+                midRect.style.display = 'none';
+                document.getElementById('topLeftImg').style.display = 'block';
+                document.getElementById('topLeftImg2777').style.display = 'block';
+                document.getElementById('topLeftImg2774').style.display = 'block';
+                document.getElementById('topLeftImg2773').style.display = 'block';
+                document.getElementById('topRightImg2776').style.display = 'block';
+                isAltScreen = true;
+            } else if (index === 0) {
+                elementsToToggle.forEach(el => el.style.display = '');
+                midRect.style.display = 'none';
+                document.getElementById('topLeftImg').style.display = 'none';
+                document.getElementById('topLeftImg2777').style.display = 'none';
+                document.getElementById('topLeftImg2774').style.display = 'none';
+                document.getElementById('topLeftImg2773').style.display = 'none';
+                document.getElementById('topRightImg2776').style.display = 'none';
+                isAltScreen = false;
+            }
         });
-      } else if (index === 0) {
-        elementsToToggle.forEach(el => el.style.display = '');
-        midRect.style.display = 'none';
-        document.querySelectorAll('[id^="topLeftImg"], #topRightImg2776').forEach(el => {
-          el.style.display = 'none';
-        });
-      }
     });
-  });
 
-  // Инфо-иконка
-  const infoIcon = document.getElementById('infoBtn');
-  if (infoIcon) {
-    infoIcon.addEventListener('click', () => {
-      showTelegramAlert(`Шансы выпадения:
+    // Инфо-иконка
+    const pngLeft = document.querySelector('.png-strip-left');
+    const infoIcon = document.getElementById('infoBtn');
+
+    if (pngLeft && infoIcon) {
+        const rect = pngLeft.getBoundingClientRect();
+        infoIcon.style.left = rect.left + 'px';
+        infoIcon.style.top = (rect.bottom + 10) + 'px';
+        infoIcon.style.opacity = '1';
+
+        infoIcon.addEventListener('click', () => {
+            showTelegramAlert(`Шансы выпадения:
 0 – 70%
 🎟️ – 20%
 ⭐️50 – 5%
 ⭐️100 – 3%
 ⭐️500 – 1.9%
 🏆Gold Heroic Helmet – 0.1%`);
-    });
-  }
+        });
+    }
 
-  // Кнопка поделиться
-  const shareImg = document.querySelector('#midRect .below-rect-img');
-  if (shareImg) {
-    shareImg.addEventListener('click', () => {
-      const url = encodeURIComponent(`https://t.me/XStarsCoin_bot?start=${userId}`);
-      const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
-      window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
-    });
-  }
-}
-
-// Инициализация при загрузке
-window.addEventListener('DOMContentLoaded', async () => {
-  if (!initTelegramWebApp()) {
-    alert("Это приложение работает только в Telegram");
-    return;
-  }
-
-  await initAuth();
-  await loadUserData();
-  await handleReferral();
-  initJpgStrip();
-  setupButtons();
+    // Кнопка поделиться
+    const shareImg = document.querySelector('#midRect .below-rect-img');
+    if (shareImg) {
+        shareImg.style.cursor = 'pointer';
+        shareImg.addEventListener('click', () => {
+            const baseUrl = "https://t.me/share/url";
+            // Делаем ссылку с userId, чтобы другие могли по ней зайти и пригласить
+            const url = userId
+                ? encodeURIComponent(`https://t.me/XStarsCoin_bot?referrer=${userId}`)
+                : encodeURIComponent("https://t.me/XStarsCoin_bot");
+            const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
+            const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
+            window.open(shareUrl, '_blank');
+        });
+    }
 });
