@@ -1,4 +1,4 @@
-let tickets = 3;
+let tickets = parseInt(localStorage.getItem('tickets')) || 3;
 let spinning = false;
 
 const wheel = document.getElementById('wheel');
@@ -14,6 +14,9 @@ function updateUI() {
         : tickets > 0
             ? "IMG_2665.PNG"
             : "IMG_2666.PNG";
+
+    // Сохраняем в localStorage
+    localStorage.setItem('tickets', tickets);
 }
 
 function showTelegramAlert(text) {
@@ -186,7 +189,6 @@ window.addEventListener('DOMContentLoaded', () => {
             } else if (index === 2) {
                 elementsToToggle.forEach(el => el.style.display = 'none');
                 midRect.style.display = 'none';
-
                 document.getElementById('topLeftImg').style.display = 'block';
                 document.getElementById('topLeftImg2777').style.display = 'block';
                 document.getElementById('topLeftImg2774').style.display = 'block';
@@ -240,3 +242,4 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
