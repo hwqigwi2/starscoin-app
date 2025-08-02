@@ -1,56 +1,64 @@
 let tickets;
 let spinning = false;
 
-const API_URL = '/api'; // Запросы идут через обратный прокси к backend
-
 const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 
+const STORAGE_TICKETS = 'tickets';
+const STORAGE_USER_ID = 'user_id';
+const STORAGE_PENDING_REFS = 'pendingRefs';
+
 let userId = null;
 let refLink = null;
 
+// Получить параметр из URL
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
 }
 
-async function initUser() {
-    userId = getQueryParam('user_id') || (Telegram?.WebApp?.initDataUnsafe?.user?.id);
+// Загрузить userId из localStorage или URL или Telegram WebApp
+function loadUserId() {
+    userId = localStorage.getItem(STORAGE_USER_ID)
+        || getQueryParam('user_id')
+        || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id)
+        || null;
+
     if (!userId) {
         alert("Ошибка: Не удалось определить user_id");
         return;
     }
+
     userId = userId.toString();
-    localStorage.setItem('user_id', userId);
+    localStorage.setItem(STORAGE_USER_ID, userId);
     refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
-
-    const referrer = getQueryParam('referrer') || Telegram?.WebApp?.initDataUnsafe?.start_param || null;
-
-    // Зарегистрировать пользователя на backend
-    try {
-        const res = await fetch(`${API_URL}/init`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ user_id: userId, referrer_id: referrer })
-        });
-        const data = await res.json();
-        tickets = data.tickets;
-    } catch (e) {
-        alert("Ошибка запроса к серверу");
-        console.error(e);
-        tickets = 0;
-    }
-    updateUI();
 }
 
+// Загрузить билеты из localStorage или установить 3 по умолчанию
+function loadTickets() {
+    const saved = parseInt(localStorage.getItem(STORAGE_TICKETS));
+    tickets = isNaN(saved) ? 3 : saved;
+}
+
+// Сохранить билеты в localStorage
+function saveTickets() {
+    localStorage.setItem(STORAGE_TICKETS, tickets);
+}
+
+// Обновить UI по билету и кнопке
 function updateUI() {
     ticketCount.textContent = tickets;
     btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
-    btnSpin.src = spinning ? "IMG_2667.PNG" : tickets > 0 ? "IMG_2665.PNG" : "IMG_2666.PNG";
+    btnSpin.src = spinning
+        ? "IMG_2667.PNG"
+        : tickets > 0
+            ? "IMG_2665.PNG"
+            : "IMG_2666.PNG";
 }
 
+// Показать alert в Telegram WebApp или браузере
 function showTelegramAlert(text) {
     if (Telegram?.WebApp?.showAlert) {
         Telegram.WebApp.showAlert(text);
@@ -59,11 +67,33 @@ function showTelegramAlert(text) {
     }
 }
 
-async function spinWheel() {
+// Обработка реферала, добавление билета если новый приглашённый
+function handleReferral() {
+    const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
+    if (!referrer || referrer === userId) return; // если нет реферала или реферал — сам пользователь
+
+    // Загружаем уже учтённые рефералы из localStorage
+    const pendingRefs = JSON.parse(localStorage.getItem(STORAGE_PENDING_REFS) || '{}');
+
+    // Если реферал еще не учтен, добавляем +1 билет
+    if (!pendingRefs[referrer]) {
+        pendingRefs[referrer] = true;
+        localStorage.setItem(STORAGE_PENDING_REFS, JSON.stringify(pendingRefs));
+
+        tickets++;
+        saveTickets();
+        updateUI();
+
+        showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
+    }
+}
+
+function spinWheel() {
     if (spinning || tickets <= 0) return;
 
     spinning = true;
     tickets--;
+    saveTickets();
     updateUI();
     btnSpin.src = "IMG_2667.PNG";
 
@@ -80,7 +110,7 @@ async function spinWheel() {
         wheel.style.transform = `rotate(${rotation}deg)`;
     }, 50);
 
-    setTimeout(async () => {
+    setTimeout(() => {
         spinning = false;
         if (targetAngle === 0) {
             tickets++;
@@ -88,23 +118,11 @@ async function spinWheel() {
         } else {
             showTelegramAlert("😔 В следующий раз повезёт");
         }
-        try {
-            await fetch(`${API_URL}/set-tickets`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: userId, tickets })
-            });
-        } catch (e) {
-            console.error("Ошибка сохранения билетов", e);
-        }
+        saveTickets();
         updateUI();
     }, 3050);
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
-    await initUser();
-    btnSpin.addEventListener('click', spinWheel);
-});
 // JPG лента
 const imgWidth = 45;
 const gap = 10;
