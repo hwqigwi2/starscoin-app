@@ -67,6 +67,26 @@ function showTelegramAlert(text) {
     }
 }
 
+// Обработка реферала, добавление билета если новый приглашённый
+function handleReferral() {
+    const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
+    if (!referrer || referrer === userId) return; // если нет реферала или реферал — сам пользователь
+
+    // Загружаем уже учтённые рефералы из localStorage
+    const pendingRefs = JSON.parse(localStorage.getItem(STORAGE_PENDING_REFS) || '{}');
+
+    // Если реферал еще не учтен, добавляем +1 билет
+    if (!pendingRefs[referrer]) {
+        pendingRefs[referrer] = true;
+        localStorage.setItem(STORAGE_PENDING_REFS, JSON.stringify(pendingRefs));
+
+        tickets++;
+        saveTickets();
+        updateUI();
+
+        showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
+    }
+}
 
 function spinWheel() {
     if (spinning || tickets <= 0) return;
