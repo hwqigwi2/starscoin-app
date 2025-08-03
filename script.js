@@ -39,6 +39,31 @@ function loadUserId() {
     refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
 }
 
+
+async function initUser() {
+    if (!userId) return;
+    try {
+        const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
+        const res = await fetch(`${API_BASE_URL}/init`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({user_id: userId, referrer_id: referrer})
+        });
+        if (res.ok) {
+            const data = await res.json();
+            tickets = data.tickets;
+            updateUI();
+        } else {
+            tickets = 3;
+            updateUI();
+        }
+    } catch {
+        tickets = 3;
+        updateUI();
+    }
+}
+
+
 // Загрузить билеты из localStorage или установить 3 по умолчанию
 async function loadTickets() {
     if (!userId) return;
@@ -62,10 +87,10 @@ async function loadTickets() {
 async function saveTickets() {
     if (!userId) return;
     try {
-        await fetch(`${API_BASE_URL}/tickets/${userId}`, {
+        await fetch(`${API_BASE_URL}/set-tickets`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({tickets})
+            body: JSON.stringify({user_id: userId, tickets})
         });
     } catch(e) {
         // Ошибка можно обработать
@@ -276,11 +301,13 @@ const elementsToToggle = [
 const midRect = document.getElementById('midRect');
 let isAltScreen = false;
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     loadUserId();
-    loadTickets();
-    handleReferral();
+
+    await initUser();   // POST /init + установка билетов с сервера
+    
     updateUI();
+
     initJpgStrip();
     setInterval(slideNext, 5000);
 
