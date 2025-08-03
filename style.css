@@ -323,10 +323,10 @@ html, body {
 
 #topOverlayRect {
     position: absolute;
-    top: 75px;
+    top: 65px;
     left: 50%;
     transform: translateX(-50%);
-    width: 365px;
+    width: 370px;
     height: 60px;
     background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(100px);
