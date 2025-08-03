@@ -239,41 +239,46 @@ window.addEventListener('DOMContentLoaded', () => {
     btnSpin.addEventListener('click', spinWheel);
     updateActiveSquare(activeIndex);
 
-    squares.forEach((square, index) => {
-        square.addEventListener('click', () => {
-            if (index === activeIndex) return;
-            updateActiveSquare(index);
+   squares.forEach((square, index) => {
+    square.addEventListener('click', () => {
+        if (index === activeIndex) return;
+        updateActiveSquare(index);
 
-            if (index === 1) {
-                elementsToToggle.forEach(el => el.style.display = 'none');
-                midRect.style.display = 'block';
-                document.getElementById('topLeftImg').style.display = 'none';
-                document.getElementById('topLeftImg2777').style.display = 'none';
-                document.getElementById('topLeftImg2774').style.display = 'none';
-                document.getElementById('topLeftImg2773').style.display = 'none';
-                document.getElementById('topRightImg2776').style.display = 'none';
-                isAltScreen = true;
-            } else if (index === 2) {
-                elementsToToggle.forEach(el => el.style.display = 'none');
-                midRect.style.display = 'none';
-                document.getElementById('topLeftImg').style.display = 'block';
-                document.getElementById('topLeftImg2777').style.display = 'block';
-                document.getElementById('topLeftImg2774').style.display = 'block';
-                document.getElementById('topLeftImg2773').style.display = 'block';
-                document.getElementById('topRightImg2776').style.display = 'block';
-                isAltScreen = true;
-            } else if (index === 0) {
-                elementsToToggle.forEach(el => el.style.display = '');
-                midRect.style.display = 'none';
-                document.getElementById('topLeftImg').style.display = 'none';
-                document.getElementById('topLeftImg2777').style.display = 'none';
-                document.getElementById('topLeftImg2774').style.display = 'none';
-                document.getElementById('topLeftImg2773').style.display = 'none';
-                document.getElementById('topRightImg2776').style.display = 'none';
-                isAltScreen = false;
-            }
-        });
+        if (index === 1) {
+            elementsToToggle.forEach(el => el.style.display = 'none');
+            midRect.style.display = 'block';
+            document.getElementById('topLeftImg').style.display = 'none';
+            document.getElementById('topLeftImg2777').style.display = 'none';
+            document.getElementById('topLeftImg2774').style.display = 'none';
+            document.getElementById('topLeftImg2773').style.display = 'none';
+            document.getElementById('topRightImg2776').style.display = 'none';
+            document.getElementById('topOverlayRect').style.display = 'none'; // ❌ скрыть
+            isAltScreen = true;
+
+        } else if (index === 2) {
+            elementsToToggle.forEach(el => el.style.display = 'none');
+            midRect.style.display = 'none';
+            document.getElementById('topLeftImg').style.display = 'block';
+            document.getElementById('topLeftImg2777').style.display = 'block';
+            document.getElementById('topLeftImg2774').style.display = 'block';
+            document.getElementById('topLeftImg2773').style.display = 'block';
+            document.getElementById('topRightImg2776').style.display = 'block';
+            document.getElementById('topOverlayRect').style.display = 'block'; // ✅ показать
+            isAltScreen = true;
+
+        } else if (index === 0) {
+            elementsToToggle.forEach(el => el.style.display = '');
+            midRect.style.display = 'none';
+            document.getElementById('topLeftImg').style.display = 'none';
+            document.getElementById('topLeftImg2777').style.display = 'none';
+            document.getElementById('topLeftImg2774').style.display = 'none';
+            document.getElementById('topLeftImg2773').style.display = 'none';
+            document.getElementById('topRightImg2776').style.display = 'none';
+            document.getElementById('topOverlayRect').style.display = 'none'; // ❌ скрыть
+            isAltScreen = false;
+        }
     });
+});
 
     // Инфо-иконка
     const pngLeft = document.querySelector('.png-strip-left');
