@@ -13,6 +13,7 @@ const STORAGE_PENDING_REFS = 'pendingRefs';
 let userId = null;
 let refLink = null;
 
+
 // Получить параметр из URL
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
@@ -253,14 +254,19 @@ window.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('topRightImg2776').style.display = 'none';
                 isAltScreen = true;
             } else if (index === 2) {
-                elementsToToggle.forEach(el => el.style.display = 'none');
-                midRect.style.display = 'none';
-                document.getElementById('topLeftImg').style.display = 'block';
-                document.getElementById('topLeftImg2777').style.display = 'block';
-                document.getElementById('topLeftImg2774').style.display = 'block';
-                document.getElementById('topLeftImg2773').style.display = 'block';
-                document.getElementById('topRightImg2776').style.display = 'block';
-                isAltScreen = true;
+    elementsToToggle.forEach(el => el.style.display = 'none');
+    midRect.style.display = 'none';
+    document.getElementById('topLeftImg').style.display = 'block';
+    document.getElementById('topLeftImg2777').style.display = 'block';
+    document.getElementById('topLeftImg2774').style.display = 'block';
+    document.getElementById('topLeftImg2773').style.display = 'block';
+    document.getElementById('topRightImg2776').style.display = 'block';
+    document.getElementById('topOverlayRect').style.display = 'block'; // ✅ ПОКАЗЫВАЕМ
+    isAltScreen = true;
+} else {
+    document.getElementById('topOverlayRect').style.display = 'none'; // ✅ СКРЫВАЕМ
+}
+
             } else if (index === 0) {
                 elementsToToggle.forEach(el => el.style.display = '');
                 midRect.style.display = 'none';
