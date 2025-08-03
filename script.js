@@ -5,7 +5,7 @@ const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
-const API_BASE_URL = "https://starscdihe.online/api";
+const API_BASE_URL = "https://starscdihe.online";
 
 
 const STORAGE_TICKETS = 'tickets';
