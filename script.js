@@ -5,6 +5,8 @@ const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
+const API_BASE_URL = "https://starscdihe.online/api";
+
 
 const STORAGE_TICKETS = 'tickets';
 const STORAGE_USER_ID = 'user_id';
@@ -38,14 +40,33 @@ function loadUserId() {
 }
 
 // Загрузить билеты из localStorage или установить 3 по умолчанию
-function loadTickets() {
-    const saved = parseInt(localStorage.getItem(STORAGE_TICKETS));
-    tickets = isNaN(saved) ? 3 : saved;
+async function loadTickets() {
+    if (!userId) return;
+    try {
+        const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
+        if (res.ok) {
+            const data = await res.json();
+            tickets = data.tickets;
+        } else {
+            tickets = 3; // fallback
+        }
+    } catch (e) {
+        tickets = 3; // fallback если ошибка
+    }
 }
 
 // Сохранить билеты в localStorage
-function saveTickets() {
-    localStorage.setItem(STORAGE_TICKETS, tickets);
+async function saveTickets() {
+    if (!userId) return;
+    try {
+        await fetch(`${API_BASE_URL}/tickets/${userId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({tickets})
+        });
+    } catch(e) {
+        // Ошибка можно обработать
+    }
 }
 
 // Обновить UI по билету и кнопке
@@ -69,60 +90,84 @@ function showTelegramAlert(text) {
 }
 
 // Обработка реферала, добавление билета если новый приглашённый
-function handleReferral() {
+async function handleReferral() {
     const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
-    if (!referrer || referrer === userId) return; // если нет реферала или реферал — сам пользователь
+    if (!referrer || referrer === userId) return;
 
-    // Загружаем уже учтённые рефералы из localStorage
-    const pendingRefs = JSON.parse(localStorage.getItem(STORAGE_PENDING_REFS) || '{}');
-
-    // Если реферал еще не учтен, добавляем +1 билет
-    if (!pendingRefs[referrer]) {
-        pendingRefs[referrer] = true;
-        localStorage.setItem(STORAGE_PENDING_REFS, JSON.stringify(pendingRefs));
-
-        tickets++;
-        saveTickets();
-        updateUI();
-
-        showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
+    try {
+        const res = await fetch(`${API_BASE_URL}/referral`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({user_id: userId, referrer})
+        });
+        if (res.ok) {
+            const data = await res.json();
+            if (data.added) {
+                tickets = data.tickets;  // Обновляем количество билетов с сервера
+                updateUI();
+                showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
+            }
+        }
+    } catch(e) {
+        // обработать ошибку или игнорировать
     }
 }
 
-function spinWheel() {
+async function spinWheel() {
     if (spinning || tickets <= 0) return;
-
     spinning = true;
     tickets--;
-    saveTickets();
     updateUI();
-    btnSpin.src = "IMG_2667.PNG";
 
-    const rand = Math.random();
-    const spins = 5;
-    const targetAngle = rand < 0.8 ? -75 : 0;
-    const rotation = spins * 360 + targetAngle;
+    try {
+        const res = await fetch(`${API_BASE_URL}/spin`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({user_id: userId})
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const won = data.won; // например true/false
 
-    wheel.style.transition = 'none';
-    wheel.style.transform = `rotate(0deg)`;
+            // анимация колеса
+            const spins = 5;
+            const targetAngle = won ? 0 : -75;
+            const rotation = spins * 360 + targetAngle;
 
-    setTimeout(() => {
-        wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-        wheel.style.transform = `rotate(${rotation}deg)`;
-    }, 50);
+            wheel.style.transition = 'none';
+            wheel.style.transform = `rotate(0deg)`;
 
-    setTimeout(() => {
-        spinning = false;
-        if (targetAngle === 0) {
-            tickets++;
-            showTelegramAlert("🎉 Вы получили 1 билет!");
+            setTimeout(() => {
+                wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
+                wheel.style.transform = `rotate(${rotation}deg)`;
+            }, 50);
+
+            setTimeout(() => {
+                spinning = false;
+                if (won) {
+                    tickets++;
+                    showTelegramAlert("🎉 Вы получили 1 билет!");
+                } else {
+                    showTelegramAlert("😔 В следующий раз повезёт");
+                }
+                saveTickets();
+                updateUI();
+            }, 3050);
         } else {
-            showTelegramAlert("😔 В следующий раз повезёт");
+            // Если ошибка от сервера, вернуть билет обратно
+            tickets++;
+            updateUI();
+            spinning = false;
+            showTelegramAlert("Ошибка при запросе к серверу.");
         }
-        saveTickets();
+    } catch(e) {
+        tickets++;
         updateUI();
-    }, 3050);
+        spinning = false;
+        showTelegramAlert("Ошибка соединения с сервером.");
+    }
 }
+
 
 // JPG лента
 const imgWidth = 45;
