@@ -53,6 +53,9 @@ async function loadTickets() {
     } catch (e) {
         tickets = 3; // fallback если ошибка
     }
+
+    // ⬇️ Вставь это
+    updateUI();
 }
 
 // Сохранить билеты в localStorage
