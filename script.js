@@ -10,6 +10,7 @@ const STORAGE_USER_ID = 'user_id';
 const STORAGE_PENDING_REFS = 'pendingRefs';
 let userId = null;
 let refLink = null;
+
 async function initApp() {
     loadUserId();
     
@@ -28,19 +29,30 @@ function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
 }
+
 function loadUserId() {
-    userId = localStorage.getItem(STORAGE_USER_ID)
-        || getQueryParam('user_id')
+    // 1. Пробуем получить user_id из:
+    // - URL параметра (?tg_user_id=)
+    // - Telegram WebApp
+    // - localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    userId = urlParams.get('tg_user_id') 
         || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id)
+        || localStorage.getItem(STORAGE_USER_ID)
         || null;
-    if (!userId) {
-        showTelegramAlert("Ошибка: Не удалось определить user_id");
-        return;
+
+    // 2. Если нашли в URL - сохраняем
+    if (urlParams.get('tg_user_id')) {
+        localStorage.setItem(STORAGE_USER_ID, urlParams.get('tg_user_id'));
+        userId = urlParams.get('tg_user_id');
     }
-    userId = userId.toString();
-    localStorage.setItem(STORAGE_USER_ID, userId);
-    refLink = `https://t.me/XStarsCoin_bot?start=${userId}`;
+
+    // 3. Генерируем реферальную ссылку
+    if (userId) {
+        refLink = `https://t.me/XStarsCoin_bot?start=ref_${userId}`;
+    }
 }
+
 async function initUser() {
     if (!userId) return;
     try {
