@@ -49,7 +49,7 @@ function loadUserId() {
 
     // 3. Генерируем реферальную ссылку
     if (userId) {
-        refLink = `https://t.me/XStarsCoin_bot?start=ref_${userId}`;
+        refLink = `https://t.me/XStarsCoin_bot?start=ref${userId}`;
     }
 }
 
