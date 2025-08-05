@@ -70,21 +70,21 @@ async function initUser() {
     if (!userId) return;
     try {
         const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
-       const res = await fetch(`${API_BASE_URL}/init`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({user_id: userId, referrer_id: referrer})
-});
-        
-if (res.ok) {
-    const data = await res.json();
-    tickets = data.tickets;
-    if (data.new_user === false && referrer) {
-        await handleReferral();
-    }
-} else {
-    tickets = 3; // Fallback
-}
+        const res = await fetch(`${API_BASE_URL}/init`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({user_id: userId.toString(), referrer_id: referrer})
+        });
+        if (res.ok) {
+            const data = await res.json();
+            tickets = data.tickets;
+            // handleReferral вызывай только если new_user = true, то есть новый пользователь
+            if (data.new_user === true && referrer) {
+                await handleReferral();
+            }
+        } else {
+            tickets = 3; // Fallback
+        }
     } catch {
         tickets = 3;
     }
