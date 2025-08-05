@@ -149,71 +149,73 @@ async function handleReferral() {
 }
 
 async function spinWheel() {
-
     if (spinning || tickets <= 0) return;
-    
-    // Проверка наличия user_id
     if (!userId) {
         showTelegramAlert("Ошибка: user_id не определён");
         return;
     }
+
     spinning = true;
     tickets--;
     updateUI();
+
     try {
         const res = await fetch(`${API_BASE_URL}/spin`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({user_id: userId})
+            body: JSON.stringify({ user_id: userId }),
         });
-        
-        if (res.ok) {
-            const data = await res.json();
-            const won = data.won;
-            const spins = 5;
-            const targetAngle = won ? 0 : -75;
-            const rotation = spins * 360 + targetAngle;
-            wheel.style.transition = 'none';
-            wheel.style.transform = `rotate(0deg)`;
-            setTimeout(() => {
-                wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-                wheel.style.transform = `rotate(${rotation}deg)`;
-            }, 50);
-            setTimeout(() => {
-                spinning = false;
-                if (won) {
-                    tickets++;
-                    showTelegramAlert("🎉 Вы получили 1 билет!");
-                } else {
-                    showTelegramAlert("😔 В следующий раз повезёт");
-                }
-                saveTickets();
-                updateUI();
-            }, 3050);
-        } else {
-            // Обработка HTTP ошибок
-            let errorMessage = "Ошибка при запросе к серверу";
-            
-            try {
-                const errorData = await res.json();
-                if (errorData.error) {
-                    errorMessage = errorData.error;
-                }
-            } catch {}
-            
-            // Вернуть билет
-            tickets++;
-            updateUI();
-            spinning = false;
-            showTelegramAlert(errorMessage);
+
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.error || "Ошибка при запросе к серверу");
         }
-    } catch(e) {
-        tickets++;
-        updateUI();
+
+        const data = await res.json();
+        const won = data.won;
+        const spins = 5;
+        const targetAngle = won ? 0 : -75;
+        const rotation = spins * 360 + targetAngle;
+
+        // Сброс перед анимацией
+        wheel.style.transition = 'none';
+        wheel.style.transform = `rotate(0deg)`;
+        
+        // Запуск анимации
+        requestAnimationFrame(() => {
+            wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
+            wheel.style.transform = `rotate(${rotation}deg)`;
+        });
+
+        setTimeout(() => {
+            spinning = false;
+            if (won) {
+                tickets++;
+                showTelegramAlert("🎉 Вы получили 1 билет!");
+            } else {
+                showTelegramAlert("😔 В следующий раз повезёт");
+            }
+            saveTickets();
+            updateUI();
+        }, 3050);
+
+    } catch (error) {
         spinning = false;
-        showTelegramAlert("Ошибка соединения с сервером.");
+        tickets++; // Возвращаем билет
+        updateUI();
+        showTelegramAlert(error.message || "Ошибка соединения с сервером");
     }
 }
+
+// Загрузка билетов каждые 3 секунды (вынести в отдельную инициализацию)
+if (userId) {
+    setInterval(async () => {
+        if (!document.hidden) {
+            await loadTickets();
+        }
+    }, 3000);
+}
+
 // JPG лента
 const imgWidth = 45;
 const gap = 10;
