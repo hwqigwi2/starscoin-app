@@ -21,10 +21,23 @@ async function initApp() {
     
     await initUser();
     await handleReferral();
-    await loadTickets();
+    await loadTickets(); // Добавьте эту строку, если её нет
+    
+    // Добавьте этот блок для принудительного обновления
+    try {
+        const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
+        if (res.ok) {
+            const data = await res.json();
+            tickets = data.tickets;
+        }
+    } catch (e) {
+        console.error('Ошибка обновления билетов:', e);
+    }
     
     updateUI();
 }
+
+
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
@@ -140,7 +153,7 @@ async function handleReferral() {
         if (res.ok) {
             const data = await res.json();
             if (data.added) {
-                // Удалите этот блок полностью
+                await loadTickets(); // Принудительно обновляем билеты после реферала
             }
         }
     } catch(e) {
