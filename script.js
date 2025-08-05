@@ -11,6 +11,9 @@ const STORAGE_PENDING_REFS = 'pendingRefs';
 let userId = null;
 let refLink = null;
 
+let newTicketsReceived = false;
+
+
 async function initApp() {
     loadUserId();
     
@@ -22,6 +25,13 @@ async function initApp() {
     await initUser();
     await handleReferral();
     await loadTickets();
+
+ setInterval(async () => {
+        if (!document.hidden && userId) {
+            await loadTickets();
+        }
+    }, 30000); // Проверка каждые 30 секунд
+}
     
     updateUI();
 }
@@ -85,8 +95,11 @@ async function loadTickets() {
         const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
         if (res.ok) {
             const data = await res.json();
+            if (data.tickets > tickets) {
+                newTicketsReceived = true;
+            }
             tickets = data.tickets;
-            updateUI(); // Добавьте этот вызов здесь
+            updateUI();
         }
     } catch (e) {
         console.error('Ошибка загрузки билетов:', e);
@@ -110,6 +123,15 @@ function updateUI() {
     
     ticketCount.textContent = tickets;
     if (!btnSpin) return;
+
+if (newTicketsReceived) {
+        ticketCount.classList.add('pulse');
+        setTimeout(() => {
+            ticketCount.classList.remove('pulse');
+            newTicketsReceived = false;
+        }, 1000);
+    }
+}
     
     btnSpin.style.cursor = tickets > 0 && !spinning ? 'pointer' : 'default';
     btnSpin.src = spinning
