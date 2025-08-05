@@ -86,12 +86,13 @@ async function loadTickets() {
         if (res.ok) {
             const data = await res.json();
             tickets = data.tickets;
+            updateUI(); // Добавьте этот вызов здесь
         }
     } catch (e) {
         console.error('Ошибка загрузки билетов:', e);
     }
-    updateUI();
 }
+
 async function saveTickets() {
     if (!userId) return;
     try {
@@ -148,6 +149,7 @@ async function handleReferral() {
 }
 
 async function spinWheel() {
+ await loadTickets();
     if (spinning || tickets <= 0) return;
     
     // Проверка наличия user_id
