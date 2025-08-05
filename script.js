@@ -128,7 +128,7 @@ function showTelegramAlert(text) {
 async function handleReferral() {
     const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
     if (!referrer || referrer === userId) return;
-    
+
     try {
         const res = await fetch(`${API_BASE_URL}/referral`, {
             method: 'POST',
@@ -139,9 +139,7 @@ async function handleReferral() {
         if (res.ok) {
             const data = await res.json();
             if (data.added) {
-                tickets = data.tickets;
-                updateUI();
-                showTelegramAlert("🎉 Вы зашли по ссылке друга и получили 1 билет!");
+                // Удалите этот блок полностью
             }
         }
     } catch(e) {
