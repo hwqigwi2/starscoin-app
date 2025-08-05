@@ -70,22 +70,21 @@ async function initUser() {
     if (!userId) return;
     try {
         const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
-        const res = await fetch(`${API_BASE_URL}/init`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({user_id: userId, referrer_id: referrer})
-        });
+       const res = await fetch(`${API_BASE_URL}/init`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({user_id: userId, referrer_id: referrer})
+});
         
-        if (res.ok) {
-            const data = await res.json();
-            tickets = data.tickets || 3; // Добавлено || 3 для fallback
-            if (data.new_user === false && referrer) {
-                // Если пользователь уже существовал, но пришел по рефке
-                await handleReferral();
-            }
-        } else {
-            tickets = 3;
-        }
+if (res.ok) {
+    const data = await res.json();
+    tickets = data.tickets;
+    if (data.new_user === false && referrer) {
+        await handleReferral();
+    }
+} else {
+    tickets = 3; // Fallback
+}
     } catch {
         tickets = 3;
     }
@@ -98,11 +97,13 @@ async function loadTickets() {
         const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
         if (res.ok) {
             const data = await res.json();
-            tickets = data.tickets;
-            updateUI(); // Добавьте этот вызов здесь
+            if (data.tickets !== undefined) {
+                tickets = data.tickets;
+                updateUI();
+            }
         }
     } catch (e) {
-        console.error('Ошибка загрузки билетов:', e);
+        console.error('Ticket load error:', e);
     }
 }
 
