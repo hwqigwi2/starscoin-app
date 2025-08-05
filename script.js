@@ -369,9 +369,7 @@ if (shareImg) {
     shareImg.addEventListener('click', () => {
         const baseUrl = "https://t.me/share/url";
         // Формируем правильную реферальную ссылку с start=refUSERID
-        const url = userId
-            ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=ref${userId}`)
-            : encodeURIComponent("https://t.me/XStarsCoin_bot");
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨")}`;
         const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
         const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
         
