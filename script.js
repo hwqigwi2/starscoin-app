@@ -65,7 +65,11 @@ async function initUser() {
         
         if (res.ok) {
             const data = await res.json();
-            tickets = data.tickets;
+            tickets = data.tickets || 3; // Добавлено || 3 для fallback
+            if (data.new_user === false && referrer) {
+                // Если пользователь уже существовал, но пришел по рефке
+                await handleReferral();
+            }
         } else {
             tickets = 3;
         }
@@ -74,6 +78,7 @@ async function initUser() {
     }
     updateUI();
 }
+
 async function loadTickets() {
     if (!userId) return;
     try {
@@ -119,9 +124,11 @@ function showTelegramAlert(text) {
         alert(text);
     }
 }
+
 async function handleReferral() {
     const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
     if (!referrer || referrer === userId) return;
+    
     try {
         const res = await fetch(`${API_BASE_URL}/referral`, {
             method: 'POST',
@@ -141,6 +148,7 @@ async function handleReferral() {
         console.error('Ошибка реферальной системы:', e);
     }
 }
+
 async function spinWheel() {
     if (spinning || tickets <= 0) return;
     
