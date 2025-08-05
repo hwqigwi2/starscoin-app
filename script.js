@@ -362,28 +362,31 @@ window.addEventListener('DOMContentLoaded', async () => {
             });
         }
         // Кнопка поделиться
-   // Кнопка поделиться
+// Кнопка поделиться
 const shareImg = document.querySelector('#midRect .below-rect-img');
 if (shareImg) {
     shareImg.style.cursor = 'pointer';
     shareImg.addEventListener('click', () => {
-        const baseUrl = "https://t.me/share/url";
-        // Формируем правильную реферальную ссылку с start=refUSERID
-        const url = userId
-            ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=ref${userId}`)
-            : encodeURIComponent("https://t.me/XStarsCoin_bot");
-        const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
-        const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
+        // Формируем реферальную ссылку
+        const botUrl = `https://t.me/XStarsCoin_bot?start=ref${userId || ''}`;
+        const shareText = "🎰 Крути колесо и получай звёзды! ✨";
         
-        if (Telegram?.WebApp?.openLink) {
+        // Для Telegram WebApp
+        if (window.Telegram?.WebApp?.share) {
+            Telegram.WebApp.share({
+                title: "XStarsCoin",
+                text: shareText,
+                url: botUrl
+            });
+        } 
+        // Для обычного браузера или если WebApp.share не поддерживается
+        else if (window.Telegram?.WebApp?.openLink) {
+            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`;
             Telegram.WebApp.openLink(shareUrl);
-        } else {
+        }
+        // Для других случаев
+        else {
+            const shareUrl = `tg://msg_url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`;
             window.open(shareUrl, '_blank');
         }
     });
-}
-    } catch (error) {
-        console.error('Ошибка инициализации:', error);
-        showTelegramAlert("Ошибка при запуске приложения");
-    }
-});
