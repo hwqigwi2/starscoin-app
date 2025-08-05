@@ -362,24 +362,29 @@ window.addEventListener('DOMContentLoaded', async () => {
             });
         }
         // Кнопка поделиться
-   // Кнопка поделиться
-const shareImg = document.querySelector('#midRect .below-rect-img');
-if (shareImg) {
-    shareImg.style.cursor = 'pointer';
-    shareImg.addEventListener('click', () => {
-        const baseUrl = "https://t.me/share/url";
-        // Формируем правильную реферальную ссылку с start=refUSERID
-       const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨")}`;
-        
-        if (Telegram?.WebApp?.openLink) {
-            Telegram.WebApp.openLink(shareUrl);
-        } else {
-            window.open(shareUrl, '_blank');
-        }
-    });
-}
-    } catch (error) {
-        console.error('Ошибка инициализации:', error);
-        showTelegramAlert("Ошибка при запуске приложения");
+// Добавляем обработчик для кнопки поделиться
+try {
+    const shareImg = document.querySelector('#midRect .below-rect-img');
+    if (shareImg) {
+        shareImg.style.cursor = 'pointer';
+        shareImg.addEventListener('click', () => {
+            const baseUrl = "https://t.me/share/url";
+            // Формируем реферальную ссылку с параметром start=refUSERID
+            const url = userId
+                ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=ref${userId}`)
+                : encodeURIComponent("https://t.me/XStarsCoin_bot");
+            const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
+            const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
+            
+            // Проверяем наличие Telegram WebApp API
+            if (window.Telegram?.WebApp?.openLink) {
+                Telegram.WebApp.openLink(shareUrl);
+            } else {
+                window.open(shareUrl, '_blank');
+            }
+        });
     }
-});
+} catch (error) {
+    console.error('Ошибка в коде поделиться:', error);
+    showTelegramAlert("Ошибка функции поделиться");
+}
