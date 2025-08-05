@@ -361,31 +361,29 @@ window.addEventListener('DOMContentLoaded', async () => {
 🏆Gold Heroic Helmet – 0.1%`);
             });
         }
-        
         // Кнопка поделиться
-        try {
-            const shareImg = document.querySelector('#midRect .below-rect-img');
-            if (shareImg) {
-                shareImg.style.cursor = 'pointer';
-                shareImg.addEventListener('click', () => {
-                    const baseUrl = "https://t.me/share/url";
-                    // Формируем реферальную ссылку с параметром start=refUSERID
-                    const url = userId
-                        ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=ref${userId}`)
-                        : encodeURIComponent("https://t.me/XStarsCoin_bot");
-                    const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
-                    const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
-                    
-                    // Проверяем наличие Telegram WebApp API
-                    if (window.Telegram?.WebApp?.openLink) {
-                        Telegram.WebApp.openLink(shareUrl);
-                    } else {
-                        window.open(shareUrl, '_blank');
-                    }
-                });
-            }
-        } catch (error) {
-            console.error('Ошибка в коде поделиться:', error);
-            showTelegramAlert("Ошибка функции поделиться");
+   // Кнопка поделиться
+const shareImg = document.querySelector('#midRect .below-rect-img');
+if (shareImg) {
+    shareImg.style.cursor = 'pointer';
+    shareImg.addEventListener('click', () => {
+        const baseUrl = "https://t.me/share/url";
+        // Формируем правильную реферальную ссылку с start=refUSERID
+        const url = userId
+            ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=ref${userId}`)
+            : encodeURIComponent("https://t.me/XStarsCoin_bot");
+        const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
+        const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
+        
+        if (Telegram?.WebApp?.openLink) {
+            Telegram.WebApp.openLink(shareUrl);
+        } else {
+            window.open(shareUrl, '_blank');
         }
-    }); 
+    });
+}
+    } catch (error) {
+        console.error('Ошибка инициализации:', error);
+        showTelegramAlert("Ошибка при запуске приложения");
+    }
+});
