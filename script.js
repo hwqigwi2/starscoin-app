@@ -388,5 +388,4 @@ window.addEventListener('DOMContentLoaded', async () => {
             console.error('Ошибка в коде поделиться:', error);
             showTelegramAlert("Ошибка функции поделиться");
         }
-    }); // Закрывающая скобка для DOMContentLoaded
-}); // Закрывающая скобка для всего кода
+    }); 
