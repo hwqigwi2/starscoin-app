@@ -94,11 +94,17 @@ async function initUser() {
 async function loadTickets() {
     if (!userId) return;
     try {
-        const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
+        // Добавляем параметр для предотвращения кеширования
+        const timestamp = new Date().getTime();
+        const res = await fetch(`${API_BASE_URL}/tickets/${userId}?_=${timestamp}`);
+        
         if (res.ok) {
             const data = await res.json();
-            tickets = data.tickets;
-            updateUI(); // Добавьте этот вызов здесь
+            // Обновляем только если получили новые данные
+            if (data.tickets !== undefined && data.tickets !== tickets) {
+                tickets = data.tickets;
+                updateUI();
+            }
         }
     } catch (e) {
         console.error('Ошибка загрузки билетов:', e);
@@ -199,17 +205,16 @@ async function spinWheel() {
             wheel.style.transform = `rotate(${rotation}deg)`;
         });
 
-        setTimeout(() => {
-            spinning = false;
-            if (won) {
-                tickets++;
-                showTelegramAlert("🎉 Вы получили 1 билет!");
-            } else {
-                showTelegramAlert("😔 В следующий раз повезёт");
-            }
-            saveTickets();
-            updateUI();
-        }, 3050);
+     setTimeout(() => {
+    spinning = false;
+    if (won) {
+        showTelegramAlert("🎉 Вы получили 1 билет!");
+    } else {
+        showTelegramAlert("😔 В следующий раз повезёт");
+    }
+    loadTickets(); // Добавьте эту строку
+    updateUI();
+}, 3050);
 
     } catch (error) {
         spinning = false;
@@ -225,7 +230,7 @@ if (userId) {
         if (!document.hidden) {
             await loadTickets();
         }
-    }, 3000);
+    }, 1000); // Уменьшено с 3000 до 1000 мс
 }
 
 // JPG лента
