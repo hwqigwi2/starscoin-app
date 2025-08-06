@@ -1,13 +1,10 @@
 let tickets;
 let spinning = false;
 const wheel = document.getElementById('wheel');
-const overlay = document.getElementById('overlay');
 const btnSpin = document.getElementById('btnSpin');
 const ticketCount = document.getElementById('ticketCount');
 const API_BASE_URL = "https://starscdihe.online/api";
-const STORAGE_TICKETS = 'tickets';
 const STORAGE_USER_ID = 'user_id';
-const STORAGE_PENDING_REFS = 'pendingRefs';
 let userId = null;
 let refLink = null;
 
@@ -19,7 +16,7 @@ function getQueryParam(name) {
 function loadUserId() {
     const urlParams = new URLSearchParams(window.location.search);
     userId = urlParams.get('tg_user_id') 
-        || (window.Telegram && Telegram.WebApp.initDataUnsafe?.user?.id)
+        || (window.Telegram && Telegram.WebApp?.initDataUnsafe?.user?.id)
         || localStorage.getItem(STORAGE_USER_ID)
         || null;
 
@@ -36,7 +33,7 @@ function loadUserId() {
 async function initUser() {
     if (!userId) return;
     try {
-        const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
+        const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp?.initDataUnsafe?.start_param) || null;
         const res = await fetch(`${API_BASE_URL}/init`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -88,34 +85,11 @@ function updateUI() {
 }
 
 function showTelegramAlert(text) {
-    if (Telegram?.WebApp?.showAlert) {
+    if (window.Telegram?.WebApp?.showAlert) {
         Telegram.WebApp.showAlert(text);
     } else {
         alert(text);
     }
-}
-
-async function handleReferral() {
-    const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
-    if (!referrer || referrer === userId) return;
-
-    try {
-        const res = await fetch(`${API_BASE_URL}/referral`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({user_id: userId, referrer})
-        });
-        
-        if (res.ok) {
-            const data = await res.json();
-            if (data.added) {
-                await loadTickets();
-            }
-        }
-    } catch(e) {
-        console.error('Ошибка реферальной системы:', e);
-    }
-    await checkReferrals();
 }
 
 async function checkReferrals() {
@@ -207,7 +181,6 @@ async function spinWheel() {
     }
 }
 
-// Остальной код (JPG лента, обработчики интерфейса) остается без изменений
 // JPG лента
 const imgWidth = 45;
 const gap = 10;
@@ -226,6 +199,7 @@ const jpgPrefix = "IMG_";
 const jpgSuffix = ".JPG";
 let currentIndex = 0;
 let imgs = [];
+
 function positionImgs() {
     imgs.forEach((img, i) => {
         img.style.left = `${i * (imgWidth + gap)}px`;
@@ -233,10 +207,14 @@ function positionImgs() {
         img.classList.remove("leaving", "entering");
     });
 }
+
 function initJpgStrip() {
+    if (!jpgStrip) return;
+    
     jpgStrip.innerHTML = "";
     currentIndex = visibleCount % jpgOrder.length;
     imgs = [];
+    
     for (let i = 0; i < visibleCount; i++) {
         const img = document.createElement('img');
         img.src = `${jpgPrefix}${jpgOrder[i]}${jpgSuffix}`;
@@ -245,13 +223,17 @@ function initJpgStrip() {
     }
     positionImgs();
 }
+
 function slideNext() {
-    if (!imgs.length) return;
+    if (!imgs.length || !jpgStrip) return;
+    
     imgs[0].classList.add("leaving");
     imgs[0].style.left = "0px";
+    
     for (let i = 1; i < imgs.length; i++) {
         imgs[i].style.left = `${(i - 1) * (imgWidth + gap)}px`;
     }
+    
     const newImg = document.createElement('img');
     newImg.src = `${jpgPrefix}${jpgOrder[currentIndex]}${jpgSuffix}`;
     newImg.classList.add("entering");
@@ -259,20 +241,27 @@ function slideNext() {
     newImg.style.left = `${stripWidth}px`;
     jpgStrip.appendChild(newImg);
     imgs.push(newImg);
+    
     requestAnimationFrame(() => {
         newImg.style.left = `${(visibleCount - 1) * (imgWidth + gap)}px`;
         newImg.style.opacity = "1";
     });
+    
     currentIndex = (currentIndex + 1) % jpgOrder.length;
+    
     setTimeout(() => {
-        jpgStrip.removeChild(imgs.shift());
-        newImg.classList.remove("entering");
-        positionImgs();
+        if (jpgStrip && imgs.length > 0) {
+            jpgStrip.removeChild(imgs.shift());
+            newImg.classList.remove("entering");
+            positionImgs();
+        }
     }, 1000);
 }
+
 // Кнопки переключения
 const squares = document.querySelectorAll('.square');
 let activeIndex = 0;
+
 function updateActiveSquare(newIndex) {
     if (activeIndex !== null && squares[activeIndex]) {
         squares[activeIndex].classList.remove('active');
@@ -282,6 +271,7 @@ function updateActiveSquare(newIndex) {
         squares[activeIndex].classList.add('active');
     }
 }
+
 const elementsToToggle = [
     document.querySelector('.wheel-wrapper'),
     document.querySelector('.center-icon'),
@@ -291,68 +281,65 @@ const elementsToToggle = [
     document.querySelector('.info-icon'),
     document.querySelector('.png-strip-container')
 ];
+
 const midRect = document.getElementById('midRect');
 let isAltScreen = false;
-window.addEventListener('DOMContentLoaded', async () => {
+
+// Основная функция инициализации
+async function initApp() {
     try {
+        // Загрузка данных пользователя
+        loadUserId();
+        await initUser();
+        await loadTickets();
+        
         // Инициализация Telegram WebApp
-        if (window.Telegram && Telegram.WebApp) {
+        if (window.Telegram?.WebApp) {
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
         }
-        await initApp();
         
+        // Инициализация компонентов
         initJpgStrip();
         setInterval(slideNext, 5000);
+        
         if (btnSpin) {
             btnSpin.addEventListener('click', spinWheel);
         }
+        
         updateActiveSquare(activeIndex);
+        
         squares.forEach((square, index) => {
             square.addEventListener('click', () => {
                 if (index === activeIndex) return;
                 updateActiveSquare(index);
-                if (index === 1) {
-                    elementsToToggle.forEach(el => el.style.display = 'none');
-                    midRect.style.display = 'block';
-                    document.getElementById('topLeftImg').style.display = 'none';
-                    document.getElementById('topLeftImg2777').style.display = 'none';
-                    document.getElementById('topLeftImg2774').style.display = 'none';
-                    document.getElementById('topLeftImg2773').style.display = 'none';
-                    document.getElementById('topRightImg2776').style.display = 'none';
-                    document.getElementById('topOverlayRect').style.display = 'none'; // ❌ скрыть
-                    isAltScreen = true;
-                } else if (index === 2) {
-                    elementsToToggle.forEach(el => el.style.display = 'none');
-                    midRect.style.display = 'none';
-                    document.getElementById('topLeftImg').style.display = 'block';
-                    document.getElementById('topLeftImg2777').style.display = 'block';
-                    document.getElementById('topLeftImg2774').style.display = 'block';
-                    document.getElementById('topLeftImg2773').style.display = 'block';
-                    document.getElementById('topRightImg2776').style.display = 'block';
-                    document.getElementById('topOverlayRect').style.display = 'block'; // ✅ показать
-                    isAltScreen = true;
-                } else if (index === 0) {
-                    elementsToToggle.forEach(el => el.style.display = '');
-                    midRect.style.display = 'none';
-                    document.getElementById('topLeftImg').style.display = 'none';
-                    document.getElementById('topLeftImg2777').style.display = 'none';
-                    document.getElementById('topLeftImg2774').style.display = 'none';
-                    document.getElementById('topLeftImg2773').style.display = 'none';
-                    document.getElementById('topRightImg2776').style.display = 'none';
-                    document.getElementById('topOverlayRect').style.display = 'none'; // ❌ скрыть
-                    isAltScreen = false;
+                
+                const displayValue = index === 0 ? '' : 'none';
+                
+                // Показываем/скрываем элементы
+                elementsToToggle.forEach(el => {
+                    if (el) el.style.display = displayValue;
+                });
+                
+                if (midRect) {
+                    midRect.style.display = index === 1 ? 'block' : 'none';
                 }
+                
+                // Обновляем состояние экрана
+                isAltScreen = index !== 0;
             });
         });
+        
         // Инфо-иконка
         const pngLeft = document.querySelector('.png-strip-left');
         const infoIcon = document.getElementById('infoBtn');
+        
         if (pngLeft && infoIcon) {
             const rect = pngLeft.getBoundingClientRect();
             infoIcon.style.left = rect.left + 'px';
             infoIcon.style.top = (rect.bottom + 10) + 'px';
             infoIcon.style.opacity = '1';
+            
             infoIcon.addEventListener('click', () => {
                 showTelegramAlert(`Шансы выпадения:
 0 – 70%
@@ -363,24 +350,25 @@ window.addEventListener('DOMContentLoaded', async () => {
 🏆Gold Heroic Helmet – 0.1%`);
             });
         }
+        
         // Кнопка поделиться
-    // Кнопка поделиться
         const shareImg = document.querySelector('#midRect .below-rect-img');
         if (shareImg) {
             shareImg.style.cursor = 'pointer';
             shareImg.addEventListener('click', () => {
                 const baseUrl = "https://t.me/share/url";
-                // Делаем ссылку с userId, чтобы другие могли по ней зайти и пригласить
                 const url = userId
                     ? encodeURIComponent(`https://t.me/XStarsCoin_bot?start=ref${userId}`)
                     : encodeURIComponent("https://t.me/XStarsCoin_bot");
                 const text = encodeURIComponent("🎰 Крути колесо и получай звёзды! ✨");
-                const shareUrl = `${baseUrl}?url=${url}&text=${text}`;
-                window.open(shareUrl, '_blank');
+                window.open(`${baseUrl}?url=${url}&text=${text}`, '_blank');
             });
         }
     } catch (error) {
         console.error('Ошибка инициализации:', error);
         showTelegramAlert("Ошибка при запуске приложения");
     }
-});
+}
+
+// Запуск приложения после загрузки DOM
+window.addEventListener('DOMContentLoaded', initApp);
