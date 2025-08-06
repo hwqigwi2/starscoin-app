@@ -157,33 +157,27 @@ async function spinWheel() {
         const data = await res.json();
         tickets = data.tickets;
         
-        if (data.won) {
-            showTelegramAlert("🎉 Вы получили 1 билет!");
-        } else {
-            showTelegramAlert("😔 В следующий раз повезёт");
-        }
+        // Анимация кручения колеса
+        wheel.style.transition = 'transform 3s ease-out';
+        wheel.style.transform = `rotate(${1080 + (data.won ? 0 : 180)}deg)`;
+
+        setTimeout(() => {
+            if (data.won) {
+                showTelegramAlert("🎉 Вы получили 1 билет!");
+            } else {
+                showTelegramAlert("😔 В следующий раз повезёт");
+            }
+            spinning = false;
+            updateUI();
+        }, 3000);
     } catch (error) {
-        // Всегда синхронизируем состояние с сервером
         await loadTickets();
         showTelegramAlert(error.message || "Ошибка соединения");
-    } finally {
         spinning = false;
         updateUI();
     }
 }
-        }, 3000);
-
-    } catch (error) {
-        spinning = false;
-
-        // Если ошибка, возвращаем билет назад
-        tickets += 1;
-        updateUI();
-
-        showTelegramAlert(error.message || "Ошибка соединения с сервером");
-    }
-}
-
+ 
 if (userId) {
     setInterval(async () => {
         if (!document.hidden) {
