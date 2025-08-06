@@ -133,10 +133,8 @@ async function handleReferral() {
         });
 
         if (res.ok) {
-            const data = await res.json();
-            if (data.added) {
-                await loadTickets();
-            }
+            // Всегда обновляем билеты после успешной рефералки
+            await loadTickets();
         }
     } catch(e) {
         console.error('Ошибка реферальной системы:', e);
@@ -159,7 +157,6 @@ async function spinWheel() {
     }
 
     spinning = true;
-
     tickets -= 1;
     updateUI();
 
