@@ -1,4 +1,4 @@
-let tickets;
+let tickets = 3;
 let spinning = false;
 const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
@@ -49,23 +49,19 @@ function loadUserId() {
 
 async function initUser() {
     if (!userId) return;
+    
     try {
-        const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
         const res = await fetch(`${API_BASE_URL}/init`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({user_id: userId, referrer_id: referrer})
+            body: JSON.stringify({
+                user_id: userId,
+                referrer_id: getQueryParam('referrer') 
+            })
         });
-
-        if (res.ok) {
-            const data = await res.json();
-            tickets = data.tickets ?? 3; // fallback 3 если нет данных
-            if (data.new_user === false && referrer) {
-                await handleReferral();
-            }
-        } else {
-            tickets = 3;
-        }
+        
+        const data = await res.json();
+        tickets = data.tickets;
     } catch {
         tickets = 3;
     }
@@ -73,16 +69,14 @@ async function initUser() {
 }
 
 async function loadTickets() {
-    if (!userId) return;
     try {
         const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
         if (res.ok) {
             const data = await res.json();
             tickets = data.tickets;
-            updateUI();
         }
-    } catch (e) {
-        console.error('Ошибка загрузки билетов:', e);
+    } catch(e) {
+        console.error('Ticket sync error:', e);
     }
 }
 
@@ -144,23 +138,8 @@ async function handleReferral() {
 }
 
 async function spinWheel() {
-    if (spinning) return;
-    if (!userId) {
-        showTelegramAlert("Ошибка: user_id не определён");
-        return;
-    }
-
-    // Получаем свежие билеты с сервера
-    await loadTickets();
-
-    if (tickets <= 0) {
-        showTelegramAlert("Нет билетов для кручения");
-        return;
-    }
-
+    if (spinning || tickets <= 0) return;
     spinning = true;
-
-    tickets -= 1;
     updateUI();
 
     try {
@@ -170,39 +149,28 @@ async function spinWheel() {
             body: JSON.stringify({ user_id: userId }),
         });
 
-        const data = await res.json();
-
         if (!res.ok) {
-            throw new Error(data.error || "Ошибка при запросе к серверу");
+            const error = await res.json();
+            throw new Error(error.error || 'Spin failed');
         }
 
-        const won = data.won;
-        const spins = 5;
-        const targetAngle = won ? 0 : -75;
-        const rotation = spins * 360 + targetAngle;
-
-        wheel.style.transition = 'none';
-        wheel.style.transform = `rotate(0deg)`;
-
-        requestAnimationFrame(() => {
-            wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
-            wheel.style.transform = `rotate(${rotation}deg)`;
-        });
-
-        setTimeout(async () => {
-            spinning = false;
-
-            if (won) {
-                // При выигрыше сразу добавляем билет локально
-                tickets += 1;
-                showTelegramAlert("🎉 Вы получили 1 билет!");
-            } else {
-                showTelegramAlert("😔 В следующий раз повезёт");
-            }
-
-            // Обновляем билеты с сервера (на случай рассинхронизации)
-            await loadTickets();
-            updateUI();
+        const data = await res.json();
+        tickets = data.tickets;
+        
+        if (data.won) {
+            showTelegramAlert("🎉 Вы получили 1 билет!");
+        } else {
+            showTelegramAlert("😔 В следующий раз повезёт");
+        }
+    } catch (error) {
+        // Всегда синхронизируем состояние с сервером
+        await loadTickets();
+        showTelegramAlert(error.message || "Ошибка соединения");
+    } finally {
+        spinning = false;
+        updateUI();
+    }
+}
         }, 3000);
 
     } catch (error) {
