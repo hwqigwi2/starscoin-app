@@ -94,17 +94,11 @@ async function initUser() {
 async function loadTickets() {
     if (!userId) return;
     try {
-        // Добавляем параметр для предотвращения кеширования
-        const timestamp = new Date().getTime();
-        const res = await fetch(`${API_BASE_URL}/tickets/${userId}?_=${timestamp}`);
-        
+        const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
         if (res.ok) {
             const data = await res.json();
-            // Обновляем только если получили новые данные
-            if (data.tickets !== undefined && data.tickets !== tickets) {
-                tickets = data.tickets;
-                updateUI();
-            }
+            tickets = data.tickets;
+            updateUI(); // Добавьте этот вызов здесь
         }
     } catch (e) {
         console.error('Ошибка загрузки билетов:', e);
@@ -158,7 +152,7 @@ async function handleReferral() {
         if (res.ok) {
             const data = await res.json();
             if (data.added) {
-                await loadTickets(); // Принудительно обновляем билеты после реферала
+                // Удалите этот блок полностью
             }
         }
     } catch(e) {
@@ -205,16 +199,17 @@ async function spinWheel() {
             wheel.style.transform = `rotate(${rotation}deg)`;
         });
 
-     setTimeout(() => {
-    spinning = false;
-    if (won) {
-        showTelegramAlert("🎉 Вы получили 1 билет!");
-    } else {
-        showTelegramAlert("😔 В следующий раз повезёт");
-    }
-    loadTickets(); // Добавьте эту строку
-    updateUI();
-}, 3050);
+        setTimeout(() => {
+            spinning = false;
+            if (won) {
+                tickets++;
+                showTelegramAlert("🎉 Вы получили 1 билет!");
+            } else {
+                showTelegramAlert("😔 В следующий раз повезёт");
+            }
+            saveTickets();
+            updateUI();
+        }, 3050);
 
     } catch (error) {
         spinning = false;
@@ -230,7 +225,7 @@ if (userId) {
         if (!document.hidden) {
             await loadTickets();
         }
-    }, 1000); // Уменьшено с 3000 до 1000 мс
+    }, 3000);
 }
 
 // JPG лента
