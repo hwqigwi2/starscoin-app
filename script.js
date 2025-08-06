@@ -20,14 +20,20 @@ async function initApp() {
     }
     
     await initUser();
+    await handleReferral();
+    await loadTickets(); // Добавьте эту строку, если её нет
     
-    // Всегда обрабатываем реферала при наличии
-    const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
-    if (referrer && referrer !== userId) {
-        await handleReferral();
+    // Добавьте этот блок для принудительного обновления
+    try {
+        const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
+        if (res.ok) {
+            const data = await res.json();
+            tickets = data.tickets;
+        }
+    } catch (e) {
+        console.error('Ошибка обновления билетов:', e);
     }
     
-    await loadTickets();
     updateUI();
 }
 
@@ -66,17 +72,18 @@ async function initUser() {
         const res = await fetch(`${API_BASE_URL}/init`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({user_id: userId.toString(), referrer_id: referrer})
+            body: JSON.stringify({user_id: userId, referrer_id: referrer})
         });
+        
         if (res.ok) {
             const data = await res.json();
-            tickets = data.tickets;
-            // handleReferral вызывай только если new_user = true, то есть новый пользователь
-            if (data.new_user === true && referrer) {
+            tickets = data.tickets || 3; // Добавлено || 3 для fallback
+            if (data.new_user === false && referrer) {
+                // Если пользователь уже существовал, но пришел по рефке
                 await handleReferral();
             }
         } else {
-            tickets = 3; // Fallback
+            tickets = 3;
         }
     } catch {
         tickets = 3;
@@ -90,13 +97,11 @@ async function loadTickets() {
         const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
         if (res.ok) {
             const data = await res.json();
-            if (data.tickets !== undefined) {
-                tickets = data.tickets;
-                updateUI();
-            }
+            tickets = data.tickets;
+            updateUI(); // Добавьте этот вызов здесь
         }
     } catch (e) {
-        console.error('Ticket load error:', e);
+        console.error('Ошибка загрузки билетов:', e);
     }
 }
 
@@ -141,17 +146,17 @@ async function handleReferral() {
         const res = await fetch(`${API_BASE_URL}/referral`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ 
-                user_id: userId, 
-                referrer: referrer
-            })
+            body: JSON.stringify({user_id: userId, referrer})
         });
         
         if (res.ok) {
-            await loadTickets();
+            const data = await res.json();
+            if (data.added) {
+                await loadTickets(); // Принудительно обновляем билеты после реферала
+            }
         }
     } catch(e) {
-        console.error('Referral error:', e);
+        console.error('Ошибка реферальной системы:', e);
     }
 }
 
@@ -163,6 +168,7 @@ async function spinWheel() {
     }
 
     spinning = true;
+    tickets--;
     updateUI();
 
     try {
@@ -178,21 +184,16 @@ async function spinWheel() {
         }
 
         const data = await res.json();
-        
-        // Обновляем билеты с сервера
-        if (data.tickets !== undefined) {
-            tickets = data.tickets;
-        }
-        
         const won = data.won;
         const spins = 5;
         const targetAngle = won ? 0 : -75;
         const rotation = spins * 360 + targetAngle;
 
-        // Анимация вращения
+        // Сброс перед анимацией
         wheel.style.transition = 'none';
         wheel.style.transform = `rotate(0deg)`;
         
+        // Запуск анимации
         requestAnimationFrame(() => {
             wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
             wheel.style.transform = `rotate(${rotation}deg)`;
@@ -201,15 +202,18 @@ async function spinWheel() {
         setTimeout(() => {
             spinning = false;
             if (won) {
+                tickets++;
                 showTelegramAlert("🎉 Вы получили 1 билет!");
             } else {
                 showTelegramAlert("😔 В следующий раз повезёт");
             }
+            saveTickets();
             updateUI();
         }, 3050);
 
     } catch (error) {
         spinning = false;
+        tickets++; // Возвращаем билет
         updateUI();
         showTelegramAlert(error.message || "Ошибка соединения с сервером");
     }
