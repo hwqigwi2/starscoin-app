@@ -150,7 +150,17 @@ async function spinWheel() {
         return;
     }
 
+    // Получаем свежие билеты с сервера
+    await loadTickets();
+
+    if (tickets <= 0) {
+        showTelegramAlert("Нет билетов для кручения");
+        return;
+    }
+
     spinning = true;
+
+    tickets -= 1;
     updateUI();
 
     try {
@@ -183,19 +193,25 @@ async function spinWheel() {
             spinning = false;
 
             if (won) {
+                // При выигрыше сразу добавляем билет локально
+                tickets += 1;
                 showTelegramAlert("🎉 Вы получили 1 билет!");
             } else {
                 showTelegramAlert("😔 В следующий раз повезёт");
             }
 
+            // Обновляем билеты с сервера (на случай рассинхронизации)
             await loadTickets();
             updateUI();
-        }, 3050);
+        }, 3000);
 
     } catch (error) {
         spinning = false;
-        await loadTickets();
+
+        // Если ошибка, возвращаем билет назад
+        tickets += 1;
         updateUI();
+
         showTelegramAlert(error.message || "Ошибка соединения с сервером");
     }
 }
