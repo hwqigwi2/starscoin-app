@@ -152,7 +152,7 @@ async function handleReferral() {
         if (res.ok) {
             const data = await res.json();
             if (data.added) {
-                // Удалите этот блок полностью
+                await loadTickets(); // Принудительно обновляем билеты после реферала
             }
         }
     } catch(e) {
