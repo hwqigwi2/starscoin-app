@@ -124,19 +124,24 @@ function showTelegramAlert(text) {
 async function handleReferral() {
   const referrer =
     getQueryParam('referrer') ||
-    (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) ||
+    window.Telegram?.WebApp?.initDataUnsafe?.start_param ||
     null;
   if (!referrer || referrer === userId) return;
 
   try {
+    // Важно: именно /telegram-referral, а не /referral
     const res = await fetch(`${API_BASE_URL}/telegram-referral`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ referrer_id: referrer, user_id: userId }),
+      body: JSON.stringify({ referrer_id: referrer, user_id: userId })
     });
 
     if (res.ok) {
+      // Сразу после начисления билета синхронизируем
       await loadTickets();
+      updateUI();
+    } else {
+      console.error('Referral request failed:', res.status);
     }
   } catch (e) {
     console.error('Ошибка реферальной системы:', e);
@@ -150,40 +155,47 @@ async function spinWheel() {
     return;
   }
 
-  // Получаем свежие билеты с сервера
+  // 1. Сначала берём актуальные билеты с сервера
   await loadTickets();
   if (tickets <= 0) {
     showTelegramAlert("Нет билетов для кручения");
     return;
   }
 
+  // 2. Моментальное списание локально и апдейт UI
+  tickets -= 1;
+  updateUI();
+
   spinning = true;
   btnSpin.style.cursor = 'default';
 
   try {
+    // 3. Запрос спина – на бэке сразу снимут 1 билет
     const res = await fetch(`${API_BASE_URL}/spin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId }),
+      body: JSON.stringify({ user_id: userId })
     });
     const data = await res.json();
-
     if (!res.ok) {
       throw new Error(data.error || "Ошибка при запросе к серверу");
     }
 
-    const spins = 5;
+    // 4. Анимация колеса
+    const spins       = 5;
     const targetAngle = data.won ? 0 : -75;
     wheel.style.transition = 'none';
-    wheel.style.transform = 'rotate(0deg)';
-
+    wheel.style.transform  = 'rotate(0deg)';
     requestAnimationFrame(() => {
-      wheel.style.transition = 'transform 3s cubic-bezier(0.33,1,0.68,1)';
-      wheel.style.transform = `rotate(${spins * 360 + targetAngle}deg)`;
+      wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
+      wheel.style.transform  = `rotate(${spins*360 + targetAngle}deg)`;
     });
 
+    // 5. По завершении анимации синхронизируем окончательный счёт
     setTimeout(() => {
       spinning = false;
+
+      // Доверяем серверу: берем точное значение билетов
       tickets = data.tickets;
       updateUI();
 
@@ -196,6 +208,11 @@ async function spinWheel() {
 
   } catch (error) {
     spinning = false;
+
+    // В случае сбоя возвращаем билет обратно
+    tickets += 1;
+    updateUI();
+
     showTelegramAlert(error.message || "Ошибка соединения с сервером");
   }
 }
