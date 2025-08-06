@@ -74,15 +74,21 @@ async function initUser() {
 
 async function loadTickets() {
     if (!userId) return;
+    
     try {
-        const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
-        if (res.ok) {
-            const data = await res.json();
-            tickets = data.tickets;
+        const response = await fetch(`${API_BASE_URL}/sync-state`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user_id: userId })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            tickets = data.tickets ?? 0;
             updateUI();
         }
     } catch (e) {
-        console.error('Ошибка загрузки билетов:', e);
+        console.error('Load tickets error:', e);
     }
 }
 
@@ -144,77 +150,72 @@ async function handleReferral() {
 }
 
 async function spinWheel() {
-    if (spinning) return;
-    if (!userId) {
-        showTelegramAlert("Ошибка: user_id не определён");
-        return;
-    }
-
-    // Получаем свежие билеты с сервера
-    await loadTickets();
-
-    if (tickets <= 0) {
-        showTelegramAlert("Нет билетов для кручения");
-        return;
-    }
-
-    spinning = true;
-
-    tickets -= 1;
-    updateUI();
-
+    if (spinning || !userId || !wheel) return;
+    
     try {
-        const res = await fetch(`${API_BASE_URL}/spin`, {
+        spinning = true;
+        updateUI();
+
+        const response = await fetch(`${API_BASE_URL}/spin`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ user_id: userId }),
+            body: JSON.stringify({ user_id: userId })
         });
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.error || "Ошибка при запросе к серверу");
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Ошибка сервера');
         }
 
-        const won = data.won;
+        const data = await response.json();
+        tickets = data.tickets;
+
+        // Анимация
         const spins = 5;
-        const targetAngle = won ? 0 : -75;
+        const targetAngle = data.won ? 0 : -75;
         const rotation = spins * 360 + targetAngle;
 
         wheel.style.transition = 'none';
         wheel.style.transform = `rotate(0deg)`;
-
-        requestAnimationFrame(() => {
+        
+        await new Promise(resolve => {
             wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
             wheel.style.transform = `rotate(${rotation}deg)`;
+            setTimeout(resolve, 3050);
         });
 
-        setTimeout(async () => {
-            spinning = false;
-
-            if (won) {
-                // При выигрыше сразу добавляем билет локально
-                tickets += 1;
-                showTelegramAlert("🎉 Вы получили 1 билет!");
-            } else {
-                showTelegramAlert("😔 В следующий раз повезёт");
-            }
-
-            // Обновляем билеты с сервера (на случай рассинхронизации)
-            await loadTickets();
-            updateUI();
-        }, 3000);
+        if (data.won) {
+            showTelegramAlert(
+                data.prizeType === 'ticket' 
+                    ? "🎉 Вы выиграли 1 билет!" 
+                    : "🏆 Вы выиграли приз!"
+            );
+        } else {
+            showTelegramAlert("😔 В следующий раз повезёт");
+        }
 
     } catch (error) {
+        console.error('Spin error:', error);
+        showTelegramAlert(error.message);
+        
+        // Синхронизируем состояние с сервером
+        await fetch(`${API_BASE_URL}/sync-state`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user_id: userId })
+        }).then(async res => {
+            const state = await res.json();
+            if (state.tickets !== undefined) {
+                tickets = state.tickets;
+            }
+        }).catch(e => console.error('Sync failed:', e));
+        
+    } finally {
         spinning = false;
-
-        // Если ошибка, возвращаем билет назад
-        tickets += 1;
         updateUI();
-
-        showTelegramAlert(error.message || "Ошибка соединения с сервером");
     }
 }
+
 
 if (userId) {
     setInterval(async () => {
