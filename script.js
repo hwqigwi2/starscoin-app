@@ -13,27 +13,13 @@ let refLink = null;
 
 async function initApp() {
     loadUserId();
-    
     if (!userId) {
         showTelegramAlert("Ошибка: Не удалось определить user_id");
         return;
     }
     
-    await initUser();
+    await initUser(); // Только эта функция должна инициализировать билеты
     await handleReferral();
-    await loadTickets(); // Добавьте эту строку, если её нет
-    
-    // Добавьте этот блок для принудительного обновления
-    try {
-        const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
-        if (res.ok) {
-            const data = await res.json();
-            tickets = data.tickets;
-        }
-    } catch (e) {
-        console.error('Ошибка обновления билетов:', e);
-    }
-    
     updateUI();
 }
 
@@ -67,6 +53,7 @@ function loadUserId() {
 
 async function initUser() {
     if (!userId) return;
+    
     try {
         const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
         const res = await fetch(`${API_BASE_URL}/init`, {
@@ -75,18 +62,13 @@ async function initUser() {
             body: JSON.stringify({user_id: userId, referrer_id: referrer})
         });
         
-        if (res.ok) {
-            const data = await res.json();
-            tickets = data.tickets || 3; // Добавлено || 3 для fallback
-            if (data.new_user === false && referrer) {
-                // Если пользователь уже существовал, но пришел по рефке
-                await handleReferral();
-            }
-        } else {
-            tickets = 3;
-        }
-    } catch {
-        tickets = 3;
+        if (!res.ok) throw new Error('Server error');
+        
+        const data = await res.json();
+        tickets = data.tickets;
+    } catch (e) {
+        console.error('Ошибка инициализации:', e);
+        // Не устанавливаем tickets=3 при ошибке!
     }
     updateUI();
 }
@@ -94,11 +76,21 @@ async function initUser() {
 async function loadTickets() {
     if (!userId) return;
     try {
-        const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
-        if (res.ok) {
-            const data = await res.json();
+        const timestamp = Date.now();
+        const res = await fetch(`${API_BASE_URL}/tickets/${userId}?_=${timestamp}`);
+        
+        if (res.status === 404) {
+            // Пользователь не найден, нужно инициализировать
+            await initUser();
+            return;
+        }
+        
+        if (!res.ok) throw new Error('Server error');
+        
+        const data = await res.json();
+        if (data.tickets !== undefined && data.tickets !== tickets) {
             tickets = data.tickets;
-            updateUI(); // Добавьте этот вызов здесь
+            updateUI();
         }
     } catch (e) {
         console.error('Ошибка загрузки билетов:', e);
