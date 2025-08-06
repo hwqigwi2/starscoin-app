@@ -1,4 +1,4 @@
-let tickets = 3;
+let tickets;
 let spinning = false;
 const wheel = document.getElementById('wheel');
 const overlay = document.getElementById('overlay');
@@ -49,19 +49,23 @@ function loadUserId() {
 
 async function initUser() {
     if (!userId) return;
-    
     try {
+        const referrer = getQueryParam('referrer') || (window.Telegram && Telegram.WebApp.initDataUnsafe?.start_param) || null;
         const res = await fetch(`${API_BASE_URL}/init`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                user_id: userId,
-                referrer_id: getQueryParam('referrer') 
-            })
+            body: JSON.stringify({user_id: userId, referrer_id: referrer})
         });
-        
-        const data = await res.json();
-        tickets = data.tickets;
+
+        if (res.ok) {
+            const data = await res.json();
+            tickets = data.tickets ?? 3; // fallback 3 если нет данных
+            if (data.new_user === false && referrer) {
+                await handleReferral();
+            }
+        } else {
+            tickets = 3;
+        }
     } catch {
         tickets = 3;
     }
@@ -69,14 +73,16 @@ async function initUser() {
 }
 
 async function loadTickets() {
+    if (!userId) return;
     try {
         const res = await fetch(`${API_BASE_URL}/tickets/${userId}`);
         if (res.ok) {
             const data = await res.json();
             tickets = data.tickets;
+            updateUI();
         }
-    } catch(e) {
-        console.error('Ticket sync error:', e);
+    } catch (e) {
+        console.error('Ошибка загрузки билетов:', e);
     }
 }
 
@@ -138,8 +144,23 @@ async function handleReferral() {
 }
 
 async function spinWheel() {
-    if (spinning || tickets <= 0) return;
+    if (spinning) return;
+    if (!userId) {
+        showTelegramAlert("Ошибка: user_id не определён");
+        return;
+    }
+
+    // Получаем свежие билеты с сервера
+    await loadTickets();
+
+    if (tickets <= 0) {
+        showTelegramAlert("Нет билетов для кручения");
+        return;
+    }
+
     spinning = true;
+
+    tickets -= 1;
     updateUI();
 
     try {
@@ -149,35 +170,52 @@ async function spinWheel() {
             body: JSON.stringify({ user_id: userId }),
         });
 
+        const data = await res.json();
+
         if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Spin failed');
+            throw new Error(data.error || "Ошибка при запросе к серверу");
         }
 
-        const data = await res.json();
-        tickets = data.tickets;
-        
-        // Анимация кручения колеса
-        wheel.style.transition = 'transform 3s ease-out';
-        wheel.style.transform = `rotate(${1080 + (data.won ? 0 : 180)}deg)`;
+        const won = data.won;
+        const spins = 5;
+        const targetAngle = won ? 0 : -75;
+        const rotation = spins * 360 + targetAngle;
 
-        setTimeout(() => {
-            if (data.won) {
+        wheel.style.transition = 'none';
+        wheel.style.transform = `rotate(0deg)`;
+
+        requestAnimationFrame(() => {
+            wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
+            wheel.style.transform = `rotate(${rotation}deg)`;
+        });
+
+        setTimeout(async () => {
+            spinning = false;
+
+            if (won) {
+                // При выигрыше сразу добавляем билет локально
+                tickets += 1;
                 showTelegramAlert("🎉 Вы получили 1 билет!");
             } else {
                 showTelegramAlert("😔 В следующий раз повезёт");
             }
-            spinning = false;
+
+            // Обновляем билеты с сервера (на случай рассинхронизации)
+            await loadTickets();
             updateUI();
         }, 3000);
+
     } catch (error) {
-        await loadTickets();
-        showTelegramAlert(error.message || "Ошибка соединения");
         spinning = false;
+
+        // Если ошибка, возвращаем билет назад
+        tickets += 1;
         updateUI();
+
+        showTelegramAlert(error.message || "Ошибка соединения с сервером");
     }
 }
- 
+
 if (userId) {
     setInterval(async () => {
         if (!document.hidden) {
